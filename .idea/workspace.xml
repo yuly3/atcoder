@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="120572e1-edf0-4bec-9dbd-117ee6d9c3db" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ABC131/A.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ABC131/C.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ABC131/D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Atcoder.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Atcoder.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC131/B.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC131/B.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ABC129/A.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC129/A.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ABC129/D.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC129/D.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,21 +26,15 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
   </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../paiza" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="Python.test">
     <configuration name="ABC142" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -94,6 +86,18 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -131,5 +135,15 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update" />
     <option name="LAST_COMMIT_MESSAGE" value="update" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="1654" y="872" key="FileChooserDialogImpl/0.0.3840.2120@0.0.3840.2120" timestamp="1576541777428" />
+    <state x="825" y="390" width="1155" height="892" key="SettingsEditor" timestamp="1576543934638">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="825" y="390" width="1155" height="892" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576543934638" />
   </component>
 </project>
