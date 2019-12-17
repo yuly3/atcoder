@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="120572e1-edf0-4bec-9dbd-117ee6d9c3db" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Atcoder.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Atcoder.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC138/D.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC129/A.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC129/A.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC129/D.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC129/D.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ABC132/D.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC132/D.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,7 +33,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../paiza" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
   </component>
   <component name="RunManager" selected="Python.test">
     <configuration name="ABC142" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -116,7 +115,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576458933050</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="update">
+      <created>1576544659940</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1576544659940</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -137,13 +143,25 @@
     <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="452" y="633" key="#Notifications" timestamp="1576544710008">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="452" y="633" key="#Notifications/0.0.3840.2120@0.0.3840.2120" timestamp="1576544710008" />
+    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1576544659517">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1576544659517" />
     <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="1654" y="872" key="FileChooserDialogImpl/0.0.3840.2120@0.0.3840.2120" timestamp="1576541777428" />
-    <state x="825" y="390" width="1155" height="892" key="SettingsEditor" timestamp="1576543934638">
+    <state x="825" y="390" width="1155" height="892" key="SettingsEditor" timestamp="1576550110540">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="825" y="390" width="1155" height="892" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576543934638" />
+    <state x="825" y="390" width="1155" height="892" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576550110540" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1576544679952">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1576544679952" />
   </component>
 </project>
