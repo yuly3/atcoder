@@ -1,28 +1,20 @@
-line = input()
-numbers = line.split(" ")
-n = int(numbers[0])
-argMin = int(numbers[1])
+def solve():
+    N, K, *a = map(int, open(0).read().split())
 
-line = input()
-numbers = line.split(" ")
-numberArgs = [0] * len(numbers)
-for i in range(len(numbers)):
-    numberArgs[i] = int(numbers[i])
-
-count = 0
-tmp = 0
-j = 0
-for i in range(n):
-    while tmp < argMin:
-        if j == n:
-            break
-        else:
-            tmp += numberArgs[j]
+    ans, a_sum, j = 0, a[0], 1
+    for i in range(N):
+        while a_sum < K:
+            if j == N:
+                break
+            a_sum += a[j]
             j += 1
-    if tmp < argMin:
-        break
-    else:
-        count += n - j + 1
-        tmp -= numberArgs[i]
+        if a_sum < K:
+            continue
+        else:
+            ans += N - j + 1
+            a_sum -= a[i]
+    print(ans)
 
-print(count)
+
+if __name__ == '__main__':
+    solve()
