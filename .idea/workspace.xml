@@ -183,7 +183,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576678086548</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="update">
+      <created>1576679027959</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1576679027959</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -208,10 +215,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="452" y="633" key="#Notifications/0.0.3840.2120@0.0.3840.2120" timestamp="1576544710008" />
-    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1576678086176">
+    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1576679027622">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1576678086176" />
+    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1576679027622" />
     <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
@@ -220,10 +227,18 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="825" y="390" width="1591" height="1233" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576573055823" />
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1576678100239">
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1576679037615">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1576678100239" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1576679037615" />
+    <state x="93" y="100" width="1734" height="1927" key="dock-window-1" timestamp="1576679530191">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="93" y="100" width="1734" height="1927" key="dock-window-1/0.0.3840.2120@0.0.3840.2120" timestamp="1576679530191" />
+    <state x="221" y="364" width="1734" height="1927" key="dock-window-2" timestamp="1576679530191">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="221" y="364" width="1734" height="1927" key="dock-window-2/0.0.3840.2120@0.0.3840.2120" timestamp="1576679530191" />
     <state x="369" y="142" width="1177" height="1976" key="search.everywhere.popup" timestamp="1576590195823">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
