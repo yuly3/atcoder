@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="120572e1-edf0-4bec-9dbd-117ee6d9c3db" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC125/A.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC125/A.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC125/B.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC125/B.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC125/C.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC125/C.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC125/D.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC125/D.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +31,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../paiza" />
+    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="RunManager" selected="Python.test">
@@ -229,7 +226,21 @@
       <option name="project" value="LOCAL" />
       <updated>1576944130805</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="update">
+      <created>1576964110844</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1576964110844</updated>
+    </task>
+    <task id="LOCAL-00019" summary="update">
+      <created>1576964119063</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1576964119063</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -254,10 +265,14 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="452" y="633" key="#Notifications/0.0.3840.2120@0.0.3840.2120" timestamp="1576544710008" />
-    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1576964110476">
+    <state x="621" y="824" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1576964850857">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1576964110476" />
+    <state x="621" y="824" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.3840.2120@0.0.3840.2120" timestamp="1576964850857" />
+    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1576964118711">
+      <screen x="0" y="0" width="3840" height="2120" />
+    </state>
+    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1576964118711" />
     <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
@@ -266,10 +281,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="825" y="390" width="1591" height="1233" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576857994754" />
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1576944143621">
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1576964133329">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1576944143621" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1576964133329" />
     <state x="93" y="100" width="1734" height="1927" key="dock-window-1" timestamp="1576679530191">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
