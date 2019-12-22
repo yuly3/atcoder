@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="120572e1-edf0-4bec-9dbd-117ee6d9c3db" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ABC148/F.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC146/A.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC146/A.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC146/B.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC146/B.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC146/C.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC146/C.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC146/D.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC146/D.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ABC146/F.py" beforeDir="false" afterPath="$PROJECT_DIR$/ABC146/F.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -273,7 +269,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577009838242</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="update">
+      <created>1577022743487</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1577022743487</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -302,10 +305,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="621" y="824" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.3840.2120@0.0.3840.2120" timestamp="1576964850857" />
-    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1577009837879">
+    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1577022743137">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1577009837879" />
+    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1577022743137" />
     <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
@@ -314,10 +317,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="825" y="390" width="1591" height="1233" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576857994754" />
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1577009847232">
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1577022751801">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1577009847232" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1577022751801" />
     <state x="93" y="100" width="1734" height="1927" key="dock-window-1" timestamp="1576679530191">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
