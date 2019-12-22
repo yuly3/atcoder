@@ -1,9 +1,10 @@
 def solve():
     N = int(input())
-    S = list(input())
+    S, T = map(str, input().split())
+    
     ans = []
-    for s in S:
-        ans.append(chr((ord(s) - ord('A') + N) % 26 + ord('A')))
+    for i in range(N):
+        ans.append(S[i]+T[i])
     print(''.join(ans))
 
 

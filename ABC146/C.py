@@ -1,7 +1,5 @@
 def solve():
     a, b, x = map(int, input().split())
-    dx = 0
-    ans = 0
 
     if x - a - b < 0:
         print(0)
