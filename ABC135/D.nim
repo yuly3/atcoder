@@ -1,4 +1,4 @@
-import sequtils, math
+import math
 
 
 proc solve(): void =
