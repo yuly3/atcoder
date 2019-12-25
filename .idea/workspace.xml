@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="120572e1-edf0-4bec-9dbd-117ee6d9c3db" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/ABC002/D.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC007/C.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC088/D.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC104/C.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AGC033/A.nim" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AGC039/A.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ARC029/A.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARC004/A.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARC004/A.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +41,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../paiza" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunManager" selected="Python.test">
     <configuration name="ABC142" type="PythonConfigurationType" factoryName="Python" temporary="true">
@@ -318,7 +326,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577160892955</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="update">
+      <created>1577190527600</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1577190527600</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -347,10 +362,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="621" y="824" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.3840.2120@0.0.3840.2120" timestamp="1576964850857" />
-    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1577160892495">
+    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1577190527149">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1577160892495" />
+    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1577190527149" />
     <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
@@ -359,14 +374,14 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="460" y="572" key="MultipleFileMergeDialog/0.0.3840.2120@0.0.3840.2120" timestamp="1577090489031" />
-    <state x="825" y="390" width="1591" height="1233" key="SettingsEditor" timestamp="1576857994754">
+    <state x="197" y="320" width="1591" height="1233" key="SettingsEditor" timestamp="1577305663742">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="825" y="390" width="1591" height="1233" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1576857994754" />
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1577160901324">
+    <state x="197" y="320" width="1591" height="1233" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1577305663742" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1577307715939">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1577160901324" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1577307715939" />
     <state x="624" y="919" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1577090481218">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>

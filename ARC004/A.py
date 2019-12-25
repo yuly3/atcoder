@@ -3,7 +3,7 @@ from math import sqrt
 
 def solve():
     N = int(input())
-    xy_l = [0 for _ in range(N)]
+    xy_l = [[] for _ in range(N)]
     for i in range(N):
         xy_l[i] = list(map(int, input().split()))
     ans = 0
