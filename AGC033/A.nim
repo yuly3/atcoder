@@ -4,7 +4,7 @@ proc solve() =
     var H, W: int
     (H, W) = stdin.readLine.strip.split.map(parseInt)
     var grid = mapIt(0..<H, stdin.readLine)
-
+    
     type P = object
         y, x: int
     var que = initQueue[P]()
