@@ -1,3 +1,6 @@
+from math import sqrt
+
+
 def cmb(n, r, mod):
     if r < 0 or n < r:
         return 0
@@ -27,3 +30,15 @@ def factorization(n):
         arr.append([n, 1])
 
     return arr
+
+
+def eratosthenes(n):
+    prime = []
+    limit = sqrt(n)
+    data = [i + 1 for i in range(1, n)]
+    while True:
+        p = data[0]
+        if limit <= p:
+            return prime + data
+        prime.append(p)
+        data = [e for e in data if e % p != 0]

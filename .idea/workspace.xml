@@ -2,10 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="120572e1-edf0-4bec-9dbd-117ee6d9c3db" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ABC006/D.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ABC012/D.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ABC073/D.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC041/D.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC077/C.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC079/D.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC149/A.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC149/B.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC149/C.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ABC149/D.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AGC041/A.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parts.py" beforeDir="false" afterPath="$PROJECT_DIR$/parts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -370,7 +376,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577546301474</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="update">
+      <created>1577564795796</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1577564795796</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -399,10 +412,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="621" y="824" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.3840.2120@0.0.3840.2120" timestamp="1576964850857" />
-    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1577546300995">
+    <state x="505" y="579" key="CommitChangelistDialog2" timestamp="1577564795359">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1577546300995" />
+    <state x="505" y="579" key="CommitChangelistDialog2/0.0.3840.2120@0.0.3840.2120" timestamp="1577564795359" />
     <state x="1654" y="872" key="FileChooserDialogImpl" timestamp="1576541777428">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
@@ -415,10 +428,10 @@
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
     <state x="197" y="320" width="1591" height="1233" key="SettingsEditor/0.0.3840.2120@0.0.3840.2120" timestamp="1577305663742" />
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1577546316206">
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2" timestamp="1577564803001">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
-    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1577546316206" />
+    <state x="452" y="726" key="Vcs.Push.Dialog.v2/0.0.3840.2120@0.0.3840.2120" timestamp="1577564803001" />
     <state x="624" y="919" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1577090481218">
       <screen x="0" y="0" width="3840" height="2120" />
     </state>
