@@ -20,8 +20,8 @@ proc solve() =
             for k in 0..N:
                 if not dp[i][j][k]:
                     continue
-                dp[i+1][j][k+d[i+1][j]] = true
-                dp[i][j+1][k+d[i][j+1]] = true
+                dp[i+1][j][k + d[i+1][j]] = true
+                dp[i][j+1][k + d[i][j+1]] = true
                 dp[i+1][j][abs(k - d[i+1][j])] = true
                 dp[i][j+1][abs(k - d[i][j+1])] = true
     
