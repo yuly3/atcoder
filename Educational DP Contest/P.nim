@@ -17,8 +17,8 @@ proc dfs(v, parent: int) =
 
 
 proc solve() =
+    var x, y: int
     for _ in 0..<N - 1:
-        var x, y: int
         (x, y) = stdin.readLine.split.map(parseInt)
         graph[x].add(y)
         graph[y].add(x)
