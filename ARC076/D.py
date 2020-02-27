@@ -1,3 +1,6 @@
+from operator import itemgetter
+
+
 class UnionFind:
     def __init__(self, n):
         self.n = n
@@ -46,22 +49,26 @@ class UnionFind:
 
 
 def solve():
-    N, M = map(int, input().split())
-    A, B = [0] * M, [0] * M
-    for i in range(M):
-        A[i], B[i] = map(lambda x: int(x) - 1, input().split())
+    N = int(input())
+    xy = [list(map(lambda x: int(x) - 1, input().split())) + [i] for i in range(N)]
     
-    disconnect = []
-    d = N * (N - 1) // 2
+    sorted_x = sorted(xy, key=itemgetter(0, 1))
+    sorted_y = sorted(xy, key=itemgetter(1, 0))
+    edges = []
+    for i in range(N - 1):
+        cost = min(abs(sorted_x[i][0] - sorted_x[i + 1][0]), abs(sorted_x[i][1] - sorted_x[i + 1][1]))
+        edges.append([cost, sorted_x[i][2], sorted_x[i + 1][2]])
+        cost = min(abs(sorted_y[i][0] - sorted_y[i + 1][0]), abs(sorted_y[i][1] - sorted_y[i + 1][1]))
+        edges.append([cost, sorted_y[i][2], sorted_y[i + 1][2]])
+    edges.sort(key=itemgetter(0))
+    
+    ans = 0
     uf_tree = UnionFind(N)
-    for ai, bi in zip(A[::-1], B[::-1]):
-        disconnect.append(d)
-        if uf_tree.find(ai) != uf_tree.find(bi):
-            d -= uf_tree.size(ai) * uf_tree.size(bi)
-            uf_tree.union(ai, bi)
-    
-    for ans in disconnect[::-1]:
-        print(ans)
+    for cost, u, v in edges:
+        if not uf_tree.same(u, v):
+            ans += cost
+            uf_tree.union(u, v)
+    print(ans)
 
 
 if __name__ == '__main__':

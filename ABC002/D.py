@@ -11,10 +11,8 @@ def solve():
     ans = 0
     for i in range(N, 0, -1):
         for members in combinations(range(1, N+1), i):
-            flag = True
             for comb in combinations(members, 2):
                 if comb not in xy:
-                    flag = False
                     break
             else:
                 ans = max(ans, i)

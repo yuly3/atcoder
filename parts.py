@@ -1,4 +1,4 @@
-def cmb(n, r, mod):
+def cmb(n, r, mod=10 ** 9 + 7):
     if r < 0 or n < r:
         return 0
     r = min(r, n - r)
@@ -7,6 +7,33 @@ def cmb(n, r, mod):
         numerator = (numerator * (n + 1 - i)) % mod
         denominator = (denominator * i) % mod
     return numerator * pow(denominator, mod - 2, mod) % mod
+
+
+def cmb_replace(n, r, mod=10 ** 9 + 7):
+    return cmb(n + r - 1, r, mod)
+
+
+class COM:
+    def __init__(self, n: int, mod: int):
+        self.n = n
+        self.mod = mod
+        self.fact = [0] * (n + 1)
+        self.factinv = [0] * (n + 1)
+        self.inv = [0] * (n + 1)
+        
+        self.fact[0] = self.fact[1] = 1
+        self.factinv[0] = self.factinv[1] = 1
+        self.inv[1] = 1
+        for i in range(2, n + 1):
+            self.fact[i] = (self.fact[i - 1] * i) % mod
+            self.inv[i] = (-self.inv[mod % i] * (mod // i)) % mod
+            self.factinv[i] = (self.factinv[i - 1] * self.inv[i]) % mod
+    
+    def get_cmb(self, n: int, k: int):
+        if (k < 0) or (n < k):
+            return 0
+        k = min(k, n - k)
+        return self.fact[n] * self.factinv[k] % self.mod * self.factinv[n - k] % self.mod
 
 
 def factorization(n):
@@ -22,7 +49,6 @@ def factorization(n):
     
     if temp != 1:
         arr.append([temp, 1])
-    
     if not arr:
         arr.append([n, 1])
     
@@ -54,18 +80,18 @@ def make_divisors(n):
 
 
 class UnionFind:
-    def __init__(self, n):
+    def __init__(self, n: int):
         self.n = n
         self.parents = [-1] * n
     
-    def find(self, x):
+    def find(self, x: int):
         if self.parents[x] < 0:
             return x
         else:
             self.parents[x] = self.find(self.parents[x])
             return self.parents[x]
     
-    def union(self, x, y):
+    def union(self, x: int, y: int):
         x = self.find(x)
         y = self.find(y)
         
@@ -77,13 +103,13 @@ class UnionFind:
         self.parents[x] += self.parents[y]
         self.parents[y] = x
     
-    def size(self, x):
+    def size(self, x: int):
         return -self.parents[self.find(x)]
     
-    def same(self, x, y):
+    def same(self, x: int, y: int):
         return self.find(x) == self.find(y)
     
-    def members(self, x):
+    def members(self, x: int):
         root = self.find(x)
         return [i for i in range(self.n) if self.find(i) == root]
     
