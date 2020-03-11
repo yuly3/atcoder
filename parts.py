@@ -79,6 +79,18 @@ def make_divisors(n):
     return divisors
 
 
+def popcount(x):
+    x = x - ((x >> 1) & 0x5555555555555555)
+    
+    x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333)
+    
+    x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0f
+    x = x + (x >> 8)
+    x = x + (x >> 16)
+    x = x + (x >> 32)
+    return x & 0x0000007f
+
+
 class UnionFind:
     def __init__(self, n: int):
         self.n = n
@@ -149,6 +161,7 @@ class SegmentTree:
         q = _q
         if q <= p:
             return self.ide_ele
+        
         p += self.num - 1
         q += self.num - 2
         res = self.ide_ele
