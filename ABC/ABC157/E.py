@@ -1,20 +1,21 @@
 class SegmentTree:
-    def __init__(self, n, init_value, ide_ele):
-        self.num = 2 ** (n - 1).bit_length()
+    def __init__(self, n, init_value, segfunc, ide_ele):
+        self.N0 = 2 ** (n - 1).bit_length()
         self.ide_ele = ide_ele
-        self.seg = [ide_ele] * 2 * self.num
+        self.data = [ide_ele] * (2 * self.N0)
+        self.segfunc = segfunc
         
         for i in range(n):
-            self.seg[i + self.num - 1] = init_value[i]
-        for i in range(self.num - 2, -1, -1):
-            self.seg[i] = self.segfunc(self.seg[2 * i + 1], self.seg[2 * i + 2])
+            self.data[i + self.N0 - 1] = init_value[i]
+        for i in range(self.N0 - 2, -1, -1):
+            self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
     
     def update(self, _k, x):
-        k = _k + self.num - 1
-        self.seg[k] = x
+        k = _k + self.N0 - 1
+        self.data[k] = x
         while k:
             k = (k - 1) // 2
-            self.seg[k] = self.segfunc(self.seg[k * 2 + 1], self.seg[k * 2 + 2])
+            self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
     
     def query(self, _p, _q):
         p = _p
@@ -22,26 +23,22 @@ class SegmentTree:
         if q <= p:
             return self.ide_ele
         
-        p += self.num - 1
-        q += self.num - 2
+        p += self.N0 - 1
+        q += self.N0 - 2
         res = self.ide_ele
         while 1 < q - p:
             if p & 1 == 0:
-                res = self.segfunc(res, self.seg[p])
+                res = self.segfunc(res, self.data[p])
             if q & 1 == 1:
-                res = self.segfunc(res, self.seg[q])
+                res = self.segfunc(res, self.data[q])
                 q -= 1
             p = p // 2
             q = (q - 1) // 2
         if p == q:
-            res = self.segfunc(res, self.seg[p])
+            res = self.segfunc(res, self.data[p])
         else:
-            res = self.segfunc(self.segfunc(res, self.seg[p]), self.seg[q])
+            res = self.segfunc(self.segfunc(res, self.data[p]), self.data[q])
         return res
-    
-    @staticmethod
-    def segfunc(a, b):
-        return a | b
 
 
 def popcount(x):
@@ -62,7 +59,11 @@ def solve():
     Q = int(input())
     
     init_val = [1 << ord(S[i]) - ord('a') for i in range(N)]
-    seg_tree = SegmentTree(N, init_val, 0)
+    
+    def segfunc(a, b):
+        return a | b
+    
+    seg_tree = SegmentTree(N, init_val, segfunc, 0)
     
     for _ in range(Q):
         cmd, *query = input().split()

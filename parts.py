@@ -139,22 +139,23 @@ class UnionFind:
 
 
 class SegmentTree:
-    def __init__(self, n, init_value, ide_ele):
-        self.num = 2 ** (n - 1).bit_length()
+    def __init__(self, n, init_value, segfunc, ide_ele):
+        self.N0 = 2 ** (n - 1).bit_length()
         self.ide_ele = ide_ele
-        self.seg = [ide_ele] * 2 * self.num
+        self.data = [ide_ele] * (2 * self.N0)
+        self.segfunc = segfunc
         
         for i in range(n):
-            self.seg[i + self.num - 1] = init_value[i]
-        for i in range(self.num - 2, -1, -1):
-            self.seg[i] = self.segfunc(self.seg[2 * i + 1], self.seg[2 * i + 2])
+            self.data[i + self.N0 - 1] = init_value[i]
+        for i in range(self.N0 - 2, -1, -1):
+            self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
 
     def update(self, _k, x):
-        k = _k + self.num - 1
-        self.seg[k] = x
+        k = _k + self.N0 - 1
+        self.data[k] = x
         while k:
             k = (k - 1) // 2
-            self.seg[k] = self.segfunc(self.seg[k * 2 + 1], self.seg[k * 2 + 2])
+            self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
     
     def query(self, _p, _q):
         p = _p
@@ -162,23 +163,105 @@ class SegmentTree:
         if q <= p:
             return self.ide_ele
         
-        p += self.num - 1
-        q += self.num - 2
+        p += self.N0 - 1
+        q += self.N0 - 2
         res = self.ide_ele
         while 1 < q - p:
             if p & 1 == 0:
-                res = self.segfunc(res, self.seg[p])
+                res = self.segfunc(res, self.data[p])
             if q & 1 == 1:
-                res = self.segfunc(res, self.seg[q])
+                res = self.segfunc(res, self.data[q])
                 q -= 1
             p = p // 2
             q = (q - 1) // 2
         if p == q:
-            res = self.segfunc(res, self.seg[p])
+            res = self.segfunc(res, self.data[p])
         else:
-            res = self.segfunc(self.segfunc(res, self.seg[p]), self.seg[q])
+            res = self.segfunc(self.segfunc(res, self.data[p]), self.data[q])
         return res
+
+
+class LazySegmentTree:
+    def __init__(self, ls: list, segfunc, identity_element=0, lazy_ide=0):
+        self.ide_ele = identity_element
+        self.lazy_ide_ele = lazy_ide
+        self.segfunc = segfunc
+        n = len(ls)
+        self.N0 = 2 ** (n - 1).bit_length()
+        self.data = [self.ide_ele] * (2 * self.N0)
+        self.lazy = [self.lazy_ide_ele] * (2 * self.N0)
+        
+        for i, x in enumerate(ls):
+            self.data[i + self.N0 - 1] = x
+        for i in range(self.N0 - 2, -1, -1):
+            self.data[i] = segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
     
-    @staticmethod
-    def segfunc(a, b):
-        return min(a, b)
+    def gindex(self, left, right):
+        L = left + self.N0
+        R = right + self.N0
+        lm = (L // (L & -L)) >> 1
+        rm = (R // (R & -R)) >> 1
+        while L < R:
+            if R <= rm:
+                yield R
+            if L <= lm:
+                yield L
+            L >>= 1
+            R >>= 1
+        while L:
+            yield L
+            L >>= 1
+    
+    def propagates(self, *ids):
+        for i in reversed(ids):
+            idx = i - 1
+            v = self.lazy[idx]
+            if v == self.lazy_ide_ele:
+                continue
+            ################################################################
+            self.data[2 * idx + 1] += v >> 1
+            self.data[2 * idx + 2] += v >> 1
+            self.lazy[2 * idx + 1] += v >> 1
+            self.lazy[2 * idx + 2] += v >> 1
+            ################################################################
+            self.lazy[idx] = self.lazy_ide_ele
+    
+    def update(self, left, right, _x):
+        L = self.N0 + left
+        R = self.N0 + right
+        x = _x
+        
+        while L < R:
+            if R & 1:
+                R -= 1
+                self.lazy[R - 1] += x
+                self.data[R - 1] += x
+            if L & 1:
+                self.lazy[L - 1] += x
+                self.data[L - 1] += x
+                L += 1
+            L >>= 1
+            R >>= 1
+            ################################################################
+            x <<= 1
+            ################################################################
+        for i in self.gindex(left, right):
+            idx = i - 1
+            self.data[idx] = self.segfunc(self.data[2 * idx + 1], self.data[2 * idx + 2]) + self.lazy[idx]
+    
+    def query(self, left, right):
+        self.propagates(*self.gindex(left, right))
+        L = self.N0 + left
+        R = self.N0 + right
+        
+        res = self.ide_ele
+        while L < R:
+            if R & 1:
+                R -= 1
+                res = self.segfunc(res, self.data[R - 1])
+            if L & 1:
+                res = self.segfunc(res, self.data[L - 1])
+                L += 1
+            L >>= 1
+            R >>= 1
+        return res
