@@ -37,7 +37,7 @@ class SegmentTree:
                 b.append(R - 1)
             L >>= 1
             R >>= 1
-        for i in a + (b[::-1]):
+        for i in a + b[::-1]:
             res = self.segfunc(res, self.data[i])
         
         return res
