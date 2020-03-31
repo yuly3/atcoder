@@ -149,7 +149,7 @@ class SegmentTree:
             self.data[i + self.N0 - 1] = init_value[i]
         for i in range(self.N0 - 2, -1, -1):
             self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
-
+    
     def update(self, _k, x):
         k = _k + self.N0 - 1
         self.data[k] = x
@@ -157,27 +157,24 @@ class SegmentTree:
             k = (k - 1) // 2
             self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
     
-    def query(self, _p, _q):
-        p = _p
-        q = _q
-        if q <= p:
-            return self.ide_ele
-        
-        p += self.N0 - 1
-        q += self.N0 - 2
+    def query(self, left, right):
+        L = left + self.N0
+        R = right + self.N0
         res = self.ide_ele
-        while 1 < q - p:
-            if p & 1 == 0:
-                res = self.segfunc(res, self.data[p])
-            if q & 1 == 1:
-                res = self.segfunc(res, self.data[q])
-                q -= 1
-            p = p // 2
-            q = (q - 1) // 2
-        if p == q:
-            res = self.segfunc(res, self.data[p])
-        else:
-            res = self.segfunc(self.segfunc(res, self.data[p]), self.data[q])
+        a, b = [], []
+        
+        while L < R:
+            if L & 1:
+                a.append(L - 1)
+                L += 1
+            if R & 1:
+                R -= 1
+                b.append(R - 1)
+            L >>= 1
+            R >>= 1
+        for i in a + (b[::-1]):
+            res = self.segfunc(res, self.data[i])
+        
         return res
 
 
