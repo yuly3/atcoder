@@ -315,3 +315,7 @@ class LowestCommonAncestor:
                 u = self.parent[k][u]
                 v = self.parent[k][v]
         return self.parent[0][v]
+    
+    def get_dist(self, u, v):
+        ancestor = self.query(u, v)
+        return self.depth[u] - self.depth[ancestor] + self.depth[v] - self.depth[ancestor]
