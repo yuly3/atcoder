@@ -151,7 +151,7 @@ class UnionFind:
 class SegmentTree:
     def __init__(self, init_value: list, segfunc, ide_ele):
         n = len(init_value)
-        self.N0 = 2 ** (n - 1).bit_length()
+        self.N0 = 1 << (n - 1).bit_length()
         self.ide_ele = ide_ele
         self.data = [ide_ele] * (2 * self.N0)
         self.segfunc = segfunc
@@ -172,8 +172,8 @@ class SegmentTree:
         L = left + self.N0
         R = right + self.N0
         res = self.ide_ele
+        ################################################################
         a, b = [], []
-        
         while L < R:
             if L & 1:
                 a.append(L - 1)
@@ -185,7 +185,7 @@ class SegmentTree:
             R >>= 1
         for i in a + b[::-1]:
             res = self.segfunc(res, self.data[i])
-        
+        ################################################################
         return res
 
 
@@ -195,7 +195,7 @@ class LazySegmentTree:
         self.lazy_ide_ele = lazy_ide
         self.segfunc = segfunc
         n = len(init_value)
-        self.N0 = 2 ** (n - 1).bit_length()
+        self.N0 = 1 << (n - 1).bit_length()
         self.data = [self.ide_ele] * (2 * self.N0)
         self.lazy = [self.lazy_ide_ele] * (2 * self.N0)
         
@@ -262,8 +262,8 @@ class LazySegmentTree:
         L = left + self.N0
         R = right + self.N0
         res = self.ide_ele
+        ################################################################
         a, b = [], []
-
         while L < R:
             if L & 1:
                 a.append(L - 1)
@@ -275,7 +275,7 @@ class LazySegmentTree:
             R >>= 1
         for i in a + b[::-1]:
             res = self.segfunc(res, self.data[i])
-
+        ################################################################
         return res
 
 
