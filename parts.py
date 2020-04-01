@@ -16,6 +16,10 @@ def cmb_replace(n, r, mod=10 ** 9 + 7):
     return cmb(n + r - 1, n - 1, mod)
 
 
+def mod_div(x, y, mod=10 ** 9 + 7):
+    return x * pow(y, mod - 2, mod) % mod
+
+
 class Combination:
     def __init__(self, n: int, mod: int):
         self.mod = mod
