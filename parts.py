@@ -13,12 +13,11 @@ def cmb(n, r, mod=10 ** 9 + 7):
 
 
 def cmb_replace(n, r, mod=10 ** 9 + 7):
-    return cmb(n + r - 1, r, mod)
+    return cmb(n + r - 1, n - 1, mod)
 
 
-class COM:
+class Combination:
     def __init__(self, n: int, mod: int):
-        self.n = n
         self.mod = mod
         self.fact = [0] * (n + 1)
         self.factinv = [0] * (n + 1)
@@ -32,11 +31,19 @@ class COM:
             self.inv[i] = (-self.inv[mod % i] * (mod // i)) % mod
             self.factinv[i] = (self.factinv[i - 1] * self.inv[i]) % mod
     
-    def get_cmb(self, n: int, k: int):
-        if (k < 0) or (n < k):
+    def ncr(self, n: int, r: int):
+        if r < 0 or n < r:
             return 0
-        k = min(k, n - k)
-        return self.fact[n] * self.factinv[k] % self.mod * self.factinv[n - k] % self.mod
+        r = min(r, n - r)
+        return self.fact[n] * self.factinv[r] % self.mod * self.factinv[n - r] % self.mod
+    
+    def nhr(self, n: int, r: int):
+        return self.ncr(n + r - 1, n - 1)
+    
+    def npr(self, n: int, r: int):
+        if r < 0 or n < r:
+            return 0
+        return self.fact[n] * self.factinv[n - r] % self.mod
 
 
 def factorization(n):
@@ -142,14 +149,15 @@ class UnionFind:
 
 
 class SegmentTree:
-    def __init__(self, n, init_value, segfunc, ide_ele):
+    def __init__(self, init_value: list, segfunc, ide_ele):
+        n = len(init_value)
         self.N0 = 2 ** (n - 1).bit_length()
         self.ide_ele = ide_ele
         self.data = [ide_ele] * (2 * self.N0)
         self.segfunc = segfunc
         
-        for i in range(n):
-            self.data[i + self.N0 - 1] = init_value[i]
+        for i, x in enumerate(init_value):
+            self.data[i + self.N0 - 1] = x
         for i in range(self.N0 - 2, -1, -1):
             self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
     
@@ -182,16 +190,16 @@ class SegmentTree:
 
 
 class LazySegmentTree:
-    def __init__(self, ls: list, segfunc, identity_element=0, lazy_ide=0):
+    def __init__(self, init_value: list, segfunc, identity_element=0, lazy_ide=0):
         self.ide_ele = identity_element
         self.lazy_ide_ele = lazy_ide
         self.segfunc = segfunc
-        n = len(ls)
+        n = len(init_value)
         self.N0 = 2 ** (n - 1).bit_length()
         self.data = [self.ide_ele] * (2 * self.N0)
         self.lazy = [self.lazy_ide_ele] * (2 * self.N0)
         
-        for i, x in enumerate(ls):
+        for i, x in enumerate(init_value):
             self.data[i + self.N0 - 1] = x
         for i in range(self.N0 - 2, -1, -1):
             self.data[i] = segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
@@ -251,19 +259,23 @@ class LazySegmentTree:
     
     def query(self, left, right):
         self.propagates(*self.gindex(left, right))
-        L = self.N0 + left
-        R = self.N0 + right
-        
+        L = left + self.N0
+        R = right + self.N0
         res = self.ide_ele
+        a, b = [], []
+
         while L < R:
+            if L & 1:
+                a.append(L - 1)
+                L += 1
             if R & 1:
                 R -= 1
-                res = self.segfunc(res, self.data[R - 1])
-            if L & 1:
-                res = self.segfunc(res, self.data[L - 1])
-                L += 1
+                b.append(R - 1)
             L >>= 1
             R >>= 1
+        for i in a + b[::-1]:
+            res = self.segfunc(res, self.data[i])
+
         return res
 
 
@@ -288,7 +300,7 @@ class LowestCommonAncestor:
             for v in range(self.n):
                 self.parent[k][v] = self.parent[k - 1][self.parent[k - 1][v]]
     
-    def lca(self, _u, _v):
+    def query(self, _u, _v):
         u, v = _u, _v
         if self.depth[v] < self.depth[u]:
             u, v = v, u

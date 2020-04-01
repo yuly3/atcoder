@@ -67,22 +67,26 @@ class LazySegmentTree:
         for i in self.gindex(left, right):
             idx = i - 1
             self.data[idx] = self.segfunc(self.data[2 * idx + 1], self.data[2 * idx + 2]) + self.lazy[idx]
-    
+
     def query(self, left, right):
         self.propagates(*self.gindex(left, right))
-        L = self.N0 + left
-        R = self.N0 + right
-        
+        L = left + self.N0
+        R = right + self.N0
         res = self.ide_ele
+        a, b = [], []
+    
         while L < R:
+            if L & 1:
+                a.append(L - 1)
+                L += 1
             if R & 1:
                 R -= 1
-                res = self.segfunc(res, self.data[R - 1])
-            if L & 1:
-                res = self.segfunc(res, self.data[L - 1])
-                L += 1
+                b.append(R - 1)
             L >>= 1
             R >>= 1
+        for i in a + b[::-1]:
+            res = self.segfunc(res, self.data[i])
+    
         return res
 
 
