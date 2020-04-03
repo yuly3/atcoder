@@ -194,9 +194,9 @@ class SegmentTree:
 
 
 class LazySegmentTree:
-    def __init__(self, init_value: list, segfunc, identity_element=0, lazy_ide=0):
-        self.ide_ele = identity_element
-        self.lazy_ide_ele = lazy_ide
+    def __init__(self, init_value: list, segfunc, ide_ele=0, lazy_ide_ele=0):
+        self.ide_ele = ide_ele
+        self.lazy_ide_ele = lazy_ide_ele
         self.segfunc = segfunc
         n = len(init_value)
         self.N0 = 1 << (n - 1).bit_length()

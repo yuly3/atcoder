@@ -1,31 +1,34 @@
 import sys
-sys.setrecursionlimit(10**7)
+from collections import deque
 
-N = int(input())
-edges = [[] for _ in range(N+1)]
-for _ in range(N-1):
-    u, v, w = map(int, input().split())
-    edges[u].append([v, w])
-    edges[v].append([u, w])
-ans = [-1 for _ in range(N)]
-
-
-def dfs(edge, pd):
-    for child, d in edges[edge]:
-        if ans[child-1] != -1:
-            continue
-        cd = pd + d
-        if cd % 2 == 0:
-            ans[child-1] = 0
-        else:
-            ans[child-1] = 1
-        dfs(child, cd)
+rl = sys.stdin.readline
 
 
 def solve():
-    dfs(1, 0)
-    for i in range(N):
-        print(ans[i])
+    N = int(rl())
+    graph = [[] for _ in range(N)]
+    for _ in range(N - 1):
+        u, v, w = map(int, rl().split())
+        u -= 1
+        v -= 1
+        graph[u].append([v, w])
+        graph[v].append([u, w])
+    
+    ans = [-1] * N
+    stack = deque([[0, 0]])
+    while stack:
+        node, dist = stack.pop()
+        for child, weight in graph[node]:
+            if ans[child] != -1:
+                continue
+            nd = dist + weight
+            if nd % 2 == 0:
+                ans[child] = 0
+            else:
+                ans[child] = 1
+            stack.append([child, nd])
+    
+    print('\n'.join(map(str, ans)))
 
 
 if __name__ == '__main__':
