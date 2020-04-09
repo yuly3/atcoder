@@ -105,6 +105,24 @@ def popcount(x):
     return x & 0x0000007f
 
 
+class RollingHash:
+    def __init__(self, s: str, base, mod):
+        self.mod = mod
+        length = len(s)
+        self.pw = [1] * (length + 1)
+        self.h = [0] * (length + 1)
+        
+        v = 0
+        for i in range(length):
+            self.h[i + 1] = v = (v * base + ord(s[i])) % mod
+        v = 1
+        for i in range(length):
+            self.pw[i + 1] = v = v * base % mod
+    
+    def query(self, left, right):
+        return (self.h[right] - self.h[left] * self.pw[right - left]) % self.mod
+
+
 class UnionFind:
     def __init__(self, n: int):
         self.n = n
