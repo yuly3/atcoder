@@ -106,7 +106,7 @@ def popcount(x):
 
 
 class RollingHash:
-    def __init__(self, s: str, base, mod):
+    def __init__(self, s: str, base=1007, mod=10 ** 9 + 7):
         self.mod = mod
         length = len(s)
         self.pw = [1] * (length + 1)
@@ -185,7 +185,9 @@ class SegmentTree:
     
     def update(self, _k, x):
         k = _k + self.N0 - 1
+        ################################################################
         self.data[k] = x
+        ################################################################
         while k:
             k = (k - 1) // 2
             self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
