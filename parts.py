@@ -259,6 +259,10 @@ class LazySegmentTree:
             self.lazy[idx] = self.lazy_ide_ele
     
     def update(self, left, right, _x):
+        ids = tuple(self.gindex(left, right))
+        ################################################################
+        self.propagates(*ids)
+        ################################################################
         L = self.N0 + left
         R = self.N0 + right
         x = _x
@@ -266,18 +270,22 @@ class LazySegmentTree:
         while L < R:
             if R & 1:
                 R -= 1
+                ################################################################
                 self.lazy[R - 1] += x
                 self.data[R - 1] += x
+                ################################################################
             if L & 1:
+                ################################################################
                 self.lazy[L - 1] += x
                 self.data[L - 1] += x
+                ################################################################
                 L += 1
             L >>= 1
             R >>= 1
             ################################################################
             x <<= 1
             ################################################################
-        for i in self.gindex(left, right):
+        for i in ids:
             idx = i - 1
             self.data[idx] = self.segfunc(self.data[2 * idx + 1], self.data[2 * idx + 2]) + self.lazy[idx]
     
