@@ -170,6 +170,40 @@ class UnionFind:
         return '\n'.join('{}: {}'.format(r, self.members(r)) for r in self.roots())
 
 
+class BinaryIndexedTree:
+    # 1-indexed
+    def __init__(self, n):
+        self.n = n
+        self.data = [0] * (n + 1)
+    
+    def add(self, _i, x):
+        i = _i
+        while i <= self.n:
+            self.data[i] += x
+            i += i & -i
+    
+    def sum(self, _i):
+        i = _i
+        res = 0
+        while i:
+            res += self.data[i]
+            i -= i & -i
+        return res
+    
+    def bisect_left(self, _w):
+        w = _w
+        if w <= 0:
+            return 0
+        i = 0
+        k = 1 << (self.n.bit_length() - 1)
+        while 0 < k:
+            if i + k <= self.n and self.data[i + k] < w:
+                w -= self.data[i + k]
+                i += k
+            k = k >> 1
+        return i + 1
+
+
 class SegmentTree:
     def __init__(self, init_value: list, segfunc, ide_ele):
         n = len(init_value)
