@@ -188,22 +188,19 @@ class BinaryIndexedTree:
         self.n = n
         self.data = [0] * (n + 1)
     
-    def add(self, _i, x):
-        i = _i
+    def add(self, i, x):
         while i <= self.n:
             self.data[i] += x
             i += i & -i
     
-    def sum(self, _i):
-        i = _i
+    def sum(self, i):
         res = 0
         while i:
             res += self.data[i]
             i -= i & -i
         return res
     
-    def bisect_left(self, _w):
-        w = _w
+    def bisect_left(self, w):
         if w <= 0:
             return 0
         i = 0
@@ -212,7 +209,7 @@ class BinaryIndexedTree:
             if i + k <= self.n and self.data[i + k] < w:
                 w -= self.data[i + k]
                 i += k
-            k = k >> 1
+            k >>= 1
         return i + 1
 
 
@@ -229,8 +226,8 @@ class SegmentTree:
         for i in range(self.N0 - 2, -1, -1):
             self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
     
-    def update(self, _k, x):
-        k = _k + self.N0 - 1
+    def update(self, k, x):
+        k += self.N0 - 1
         ################################################################
         self.data[k] = x
         ################################################################
@@ -304,14 +301,13 @@ class LazySegmentTree:
             ################################################################
             self.lazy[idx] = self.lazy_ide_ele
     
-    def update(self, left, right, _x):
+    def update(self, left, right, x):
         ids = tuple(self.gindex(left, right))
         ################################################################
         self.propagates(*ids)
         ################################################################
         L = self.N0 + left
         R = self.N0 + right
-        x = _x
         
         while L < R:
             if R & 1:
@@ -378,8 +374,7 @@ class LowestCommonAncestor:
             for v in range(self.n):
                 self.parent[k][v] = self.parent[k - 1][self.parent[k - 1][v]]
     
-    def query(self, _u, _v):
-        u, v = _u, _v
+    def query(self, u, v):
         if self.depth[v] < self.depth[u]:
             u, v = v, u
         for k in range(self.log_size):
