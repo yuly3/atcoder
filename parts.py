@@ -13,7 +13,7 @@ def cmb(n, r, mod=10 ** 9 + 7):
 
 
 def cmb_replace(n, r, mod=10 ** 9 + 7):
-    return cmb(n + r - 1, n - 1, mod)
+    return cmb(n + r - 1, r, mod)
 
 
 def mod_div(x, y, mod=10 ** 9 + 7):
@@ -42,7 +42,7 @@ class Combination:
         return self.fact[n] * self.factinv[r] % self.mod * self.factinv[n - r] % self.mod
     
     def nhr(self, n: int, r: int):
-        return self.ncr(n + r - 1, n - 1)
+        return self.ncr(n + r - 1, r)
     
     def npr(self, n: int, r: int):
         if r < 0 or n < r:
