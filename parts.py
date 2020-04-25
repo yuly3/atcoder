@@ -50,6 +50,33 @@ class Combination:
         return self.fact[n] * self.factinv[n - r] % self.mod
 
 
+def matmul(a, b, mod):
+    N0 = len(a)
+    N1 = len(b[0])
+    N2 = len(a[0])
+    res = [[0] * N1 for _ in range(N0)]
+    for i in range(N0):
+        for j in range(N1):
+            tmp = 0
+            for k in range(N2):
+                tmp = (tmp + a[i][k] * b[k][j]) % mod
+            res[i][j] = tmp
+    return res
+
+
+def matpow(a, k, mod):
+    N = len(a)
+    res = [[0] * N for _ in range(N)]
+    for i in range(N):
+        res[i][i] = 1
+    while k:
+        if k & 1:
+            res = matmul(res, a, mod)
+        a = matmul(a, a, mod)
+        k >>= 1
+    return res
+
+
 def factorization(n):
     arr = []
     temp = n
