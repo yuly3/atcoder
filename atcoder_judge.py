@@ -49,33 +49,31 @@ def read_file(test_cases_path, file_name):
     test_case = {}
     mode = ''
     target_path = os.path.join(test_cases_path, file_name)
-    with open(target_path, "r") as f:
+    with open(target_path, 'r') as f:
         while 1:
-            st = f.readline().rstrip('\r\n')
-            if 'test case' in st:
+            line = f.readline().rstrip('\r\n')
+            if 'test case' in line:
                 test_case = {}
                 continue
-            if 'input' in st:
-                mode = "input"
-                test_case[mode] = ""
+            if 'input' in line:
+                mode = 'input'
+                test_case[mode] = ''
                 continue
-            if 'output' in st:
-                mode = "output"
-                test_case[mode] = ""
+            if 'output' in line:
+                mode = 'output'
+                test_case[mode] = ''
                 continue
-            if '--end--' in st:
+            if '--end--' in line:
                 test_cases.append(test_case)
                 continue
-            if not st:
+            if not line:
                 break
-            test_case[mode] += st + "\n"
+            test_case[mode] += line + '\n'
     return test_cases
 
 
 class ManageTestCases:
     def __init__(self, contest_name, contest_num, user_name, password):
-        self.contest_name = contest_name
-        self.contest_num = contest_num
         self.contest = contest_name + contest_num
         self.user_name = user_name
         self.password = password
@@ -104,9 +102,9 @@ class ManageTestCases:
         page = BeautifulSoup(res.text, 'lxml')
         csrf_token = page.find(attrs={'name': 'csrf_token'}).get('value')
         login_info = {
-            "csrf_token": csrf_token,
-            "username": self.user_name,
-            "password": self.password,
+            'csrf_token': csrf_token,
+            'username': self.user_name,
+            'password': self.password,
         }
         session.post(LOGIN_URL + self.contest, data=login_info)
 
@@ -114,7 +112,6 @@ class ManageTestCases:
 class ExecuteTestCases:
     def __init__(self, contest_name, contest_num, question_name, test_cases):
         self.contest_name = contest_name
-        self.contest_num = contest_num
         self.contest = contest_name + contest_num
         self.question_name = question_name
         self.test_cases = test_cases
