@@ -145,7 +145,7 @@ def is_bipartite(n, graph):
 
 
 class RollingHash:
-    def __init__(self, s: str, base=1007, mod=10 ** 9 + 7):
+    def __init__(self, s: str, base=10007, mod=(1 << 61) - 1):
         self.mod = mod
         length = len(s)
         self.pw = [1] * (length + 1)
@@ -158,8 +158,11 @@ class RollingHash:
         for i in range(length):
             self.pw[i + 1] = v = v * base % mod
     
-    def query(self, left, right):
+    def slice(self, left, right):
         return (self.h[right] - self.h[left] * self.pw[right - left]) % self.mod
+    
+    def concatenate(self, left0, right0, left1, right1):
+        return (self.slice(left0, right0) * self.pw[right1 - left1] + self.slice(left1, right1)) % self.mod
 
 
 class UnionFind:
