@@ -5,8 +5,7 @@ rl = sys.stdin.readline
 
 
 def solve():
-    n = int(rl())
-    print(n)
+    print('Hello! AtCoder!')
 
 
 if __name__ == '__main__':

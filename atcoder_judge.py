@@ -112,6 +112,7 @@ class ManageTestCases:
 class ExecuteTestCases:
     def __init__(self, contest_name, contest_num, question_name, test_cases):
         self.contest_name = contest_name
+        self.contest_num = contest_num
         self.contest = contest_name + contest_num
         self.question_name = question_name
         self.test_cases = test_cases
@@ -121,7 +122,7 @@ class ExecuteTestCases:
         self.__run()
     
     def __run(self):
-        contest_dir = self.contest_name.upper() + '/' + self.contest.upper()
+        contest_dir = self.__make_contest_dir_name()
         cmd = 'python ./' + contest_dir + '/' + self.question_name.upper() + '.py'
         for i, test_case in enumerate(self.test_cases):
             print('test case' + str(i + 1) + ': ', end='')
@@ -142,10 +143,23 @@ class ExecuteTestCases:
             except:
                 print('TLE')
                 proc.terminate()
+    
+    def __make_contest_dir_name(self):
+        if self.contest_num == '':
+            contest_dir = 'other/' + self.contest
+        else:
+            contest_dir = self.contest_name.upper() + '/' + self.contest.upper()
+        return contest_dir
 
 
 if __name__ == '__main__':
-    g_contest_name, g_contest_num, g_question_name = sys.argv[1:]
+    exe_arg = sys.argv[1:]
+    g_contest_name, g_contest_num, g_question_name = '', '', ''
+    if len(exe_arg) == 3:
+        g_contest_name, g_contest_num, g_question_name = exe_arg
+    elif len(exe_arg) == 2:
+        g_contest_name, g_question_name = exe_arg
+    
     g_user_name, g_password = os.environ['ATCODER_USER_NAME'], os.environ['ATCODER_PASSWORD']
     test_cases_manager = ManageTestCases(g_contest_name, g_contest_num, g_user_name, g_password)
     test_cases_data = test_cases_manager.get_test_cases(g_question_name)
