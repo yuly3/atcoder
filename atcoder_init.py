@@ -9,13 +9,13 @@ def path_check(directory_name):
 
 def make_contest_dir(contest_name, contest_num):
     if contest_num != '':
-        new_contest = 'ABC/ABC' + contest_num
+        new_contest = contest_name.upper() + '/' + contest_name.upper() + contest_num
     else:
         new_contest = 'other/' + contest_name
     if path_check(new_contest):
         print('This contest is already there.')
         return
-    print('Making ' + new_contest + '.')
+    print('Making ' + new_contest)
     os.mkdir(new_contest)
     for i in range(6):
         new_problem = chr(ord('A') + i) + '.py'
