@@ -32,6 +32,6 @@ if __name__ == '__main__':
     elif len(exe_arg) == 1:
         g_contest_name = exe_arg[0]
     if g_contest_num != '':
-        g_contest_num.zfill(3)
+        g_contest_num = g_contest_num.zfill(3)
     
     make_contest_dir(g_contest_name, g_contest_num)

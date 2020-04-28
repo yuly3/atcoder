@@ -172,6 +172,6 @@ if __name__ == '__main__':
     elif len(exe_arg) == 2:
         g_contest_name, g_question_name = exe_arg
     if g_contest_num != '':
-        g_contest_num.zfill(3)
+        g_contest_num = g_contest_num.zfill(3)
     
     judge(g_contest_name, g_contest_num, g_question_name)
