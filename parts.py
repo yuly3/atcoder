@@ -219,11 +219,14 @@ class BinaryIndexedTree:
         self.data = [0] * (n + 1)
     
     def add(self, i, x):
+        # Accessed by 0-indexed
+        i += 1
         while i <= self.n:
             self.data[i] += x
             i += i & -i
     
     def sum(self, i):
+        # [0, i)
         res = 0
         while i:
             res += self.data[i]
