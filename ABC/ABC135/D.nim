@@ -1,14 +1,16 @@
 import math
 
+var dp: array[10^5+1, array[13, int64]]
+
 
 proc solve(): void =
-    var
-        MOD : int64 = 10^9+7
+    const MOD : int64 = 10^9+7
+    let
         S = stdin.readLine
         N = S.len
-        dp : array[10^5+1, array[13, int64]]
+
     dp[0][0] = 1
-    
+
     for i, ch in S:
         if ch == '?':
             for j in 0..9:
@@ -24,4 +26,5 @@ proc solve(): void =
     echo dp[N][5] mod MOD
     return
 
-solve()
+when is_main_module:
+    solve()

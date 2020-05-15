@@ -1,31 +1,33 @@
+import sys
 from collections import deque
+
+sys.setrecursionlimit(10 ** 7)
+rl = sys.stdin.readline
 
 
 def solve():
-    H, W = map(int, input().split())
-    grid = [['' for _ in range(W)] for _ in range(H)]
+    H, W = map(int, rl().split())
+    grid = [[] for _ in range(H)]
     que = deque()
     for i in range(H):
-        grid[i] = list(input())
+        grid[i] = list(rl().rstrip())
         for j in range(W):
             if grid[i][j] == '#':
-                que.append([i, j])
+                que.append((i, j))
     
-    xy = [[0, -1], [1, 0], [0, 1], [-1, 0]]
-    ans = 0
+    ans = -1
     while que:
         n = len(que)
         for _ in range(n):
-            y, x = que.popleft()
-            for i in range(4):
-                xi = x - xy[i][0]
-                yi = y - xy[i][1]
-                if 0 <= xi <= W-1 and 0 <= yi <= H-1:
-                    if grid[yi][xi] == '.':
-                        grid[yi][xi] = '#'
-                        que.append([yi, xi])
+            cy, cx = que.popleft()
+            for dy, dx in ((-1, 0), (0, 1), (1, 0), (0, -1)):
+                ny, nx = cy + dy, cx + dx
+                if 0 <= nx < W and 0 <= ny < H:
+                    if grid[ny][nx] == '.':
+                        grid[ny][nx] = '#'
+                        que.append((ny, nx))
         ans += 1
-    print(ans-1)
+    print(ans)
 
 
 if __name__ == '__main__':

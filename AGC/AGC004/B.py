@@ -1,5 +1,6 @@
 import sys
 
+sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
 
 

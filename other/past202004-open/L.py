@@ -1,5 +1,4 @@
 import sys
-from operator import add
 
 sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
@@ -32,40 +31,41 @@ class SegmentTree:
         R = right + self.N0
         res = self.ide_ele
         ################################################################
-        
+        a, b = [], []
         while L < R:
             if L & 1:
-                res = self.segfunc(res, self.data[L - 1])
+                a.append(L - 1)
                 L += 1
             if R & 1:
                 R -= 1
-                res = self.segfunc(res, self.data[R - 1])
+                b.append(R - 1)
             L >>= 1
             R >>= 1
-        
+        for i in a + b[::-1]:
+            res = self.segfunc(res, self.data[i])
         ################################################################
         return res
 
 
 def solve():
-    Q = int(rl())
-    N = 200001
-    seg_tree = SegmentTree([0] * N, add, 0)
+    N, K, D = map(int, rl().split())
+    A = list(map(int, rl().split()))
     
-    for _ in range(Q):
-        t, x = map(int, rl().split())
-        if t == 1:
-            seg_tree.update(x, 1)
-        else:
-            ok, ng = N, 0
-            while 1 < ok - ng:
-                mid = (ok + ng) // 2
-                if x <= seg_tree.query(1, mid + 1):
-                    ok = mid
-                else:
-                    ng = mid
-            seg_tree.update(ok, 0)
-            print(ok)
+    if N < 1 + (K - 1) * D:
+        print(-1)
+        return
+    
+    init_val = [(ai, idx) for idx, ai in enumerate(A)]
+    f = lambda a, b: a if a[0] <= b[0] else b
+    seg_tree = SegmentTree(init_val, f, (10 ** 10, -1))
+    
+    s, t = 0, N - (K - 1) * D
+    ans = []
+    for _ in range(K):
+        tmp, s = seg_tree.query(s, t)
+        ans.append(tmp)
+        s, t = s + D, t + D
+    print(*ans)
 
 
 if __name__ == '__main__':

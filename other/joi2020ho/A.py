@@ -1,5 +1,5 @@
 import sys
-from operator import add
+from operator import itemgetter
 
 sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
@@ -48,24 +48,26 @@ class SegmentTree:
 
 
 def solve():
-    Q = int(rl())
-    N = 200001
-    seg_tree = SegmentTree([0] * N, add, 0)
+    N = int(rl())
+    A = list(map(int, rl().split()))
+    B = list(map(int, rl().split()))
     
-    for _ in range(Q):
-        t, x = map(int, rl().split())
-        if t == 1:
-            seg_tree.update(x, 1)
-        else:
-            ok, ng = N, 0
-            while 1 < ok - ng:
-                mid = (ok + ng) // 2
-                if x <= seg_tree.query(1, mid + 1):
-                    ok = mid
-                else:
-                    ng = mid
-            seg_tree.update(ok, 0)
-            print(ok)
+    A = [(ai, i) for i, ai in enumerate(A)]
+    A.sort(key=itemgetter(0))
+    B.sort()
+    init_val = [0] * (N + 1)
+    for i in range(N):
+        init_val[i] = max(A[i][0] - B[i], 0)
+    seg_tree = SegmentTree(init_val, max, 0)
+    
+    ans = [0] * (N + 1)
+    ans[A[-1][1]] = seg_tree.data[0]
+    
+    for i in range(N - 1, -1, -1):
+        seg_tree.update(i, 0)
+        seg_tree.update(i + 1, max(A[i + 1][0] - B[i], 0))
+        ans[A[i][1]] = seg_tree.data[0]
+    print(*ans)
 
 
 if __name__ == '__main__':

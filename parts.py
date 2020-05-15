@@ -130,6 +130,15 @@ def popcount(x):
     return x & 0x0000007f
 
 
+def reachable_nodes(s, edges):
+    cur = {s}
+    reachable = set()
+    while cur:
+        reachable |= cur
+        cur = set().union(*(edges[node] for node in cur)) - reachable
+    return reachable
+
+
 def is_bipartite(n, graph):
     colors = [0] * n
     stack = [(0, 1)]

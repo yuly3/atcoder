@@ -1,23 +1,27 @@
 import sys
 
+sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
 
 
 class SegmentTree:
-    def __init__(self, n, init_value, segfunc, ide_ele):
-        self.N0 = 2 ** (n - 1).bit_length()
+    def __init__(self, init_value: list, segfunc, ide_ele):
+        n = len(init_value)
+        self.N0 = 1 << (n - 1).bit_length()
         self.ide_ele = ide_ele
         self.data = [ide_ele] * (2 * self.N0)
         self.segfunc = segfunc
         
-        for i in range(n):
-            self.data[i + self.N0 - 1] = init_value[i]
+        for i, x in enumerate(init_value):
+            self.data[i + self.N0 - 1] = x
         for i in range(self.N0 - 2, -1, -1):
             self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
     
-    def update(self, _k, x):
-        k = _k + self.N0 - 1
+    def update(self, k, x):
+        k += self.N0 - 1
+        ################################################################
         self.data[k] = x
+        ################################################################
         while k:
             k = (k - 1) // 2
             self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
@@ -26,8 +30,8 @@ class SegmentTree:
         L = left + self.N0
         R = right + self.N0
         res = self.ide_ele
+        ################################################################
         a, b = [], []
-        
         while L < R:
             if L & 1:
                 a.append(L - 1)
@@ -39,7 +43,7 @@ class SegmentTree:
             R >>= 1
         for i in a + b[::-1]:
             res = self.segfunc(res, self.data[i])
-        
+        ################################################################
         return res
 
 
@@ -51,16 +55,13 @@ def solve():
     ide_ele = (1., 0.)
     N = len(p_to_idx.keys())
     init_val = [ide_ele] * N
-    
-    def segfunc(x, y):
-        return x[0] * y[0], x[1] * y[0] + y[1]
-    
-    seg_tree = SegmentTree(N, init_val, segfunc, ide_ele)
+    f = lambda x, y: (x[0] * y[0], x[1] * y[0] + y[1])
+    seg_tree = SegmentTree(init_val, f, ide_ele)
     
     ans_min, ans_max = 1., 1.
     for p, a, b in pab:
         seg_tree.update(p_to_idx[p], (a, b))
-        tmp = sum(seg_tree.query(0, N))
+        tmp = sum(seg_tree.data[0])
         ans_min = min(ans_min, tmp)
         ans_max = max(ans_max, tmp)
     print(ans_min)

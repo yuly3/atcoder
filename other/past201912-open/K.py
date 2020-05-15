@@ -1,6 +1,7 @@
 import sys
 from collections import deque
 
+sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
 
 
@@ -25,8 +26,7 @@ class LowestCommonAncestor:
             for v in range(self.n):
                 self.parent[k][v] = self.parent[k - 1][self.parent[k - 1][v]]
     
-    def lca(self, _u, _v):
-        u, v = _u, _v
+    def query(self, u, v):
         if self.depth[v] < self.depth[u]:
             u, v = v, u
         for k in range(self.log_size):
@@ -40,6 +40,10 @@ class LowestCommonAncestor:
                 u = self.parent[k][u]
                 v = self.parent[k][v]
         return self.parent[0][v]
+    
+    def get_dist(self, u, v):
+        ancestor = self.query(u, v)
+        return self.depth[u] - self.depth[ancestor] + self.depth[v] - self.depth[ancestor]
 
 
 def solve():
@@ -56,12 +60,14 @@ def solve():
     
     doubling = LowestCommonAncestor(tree, root)
     Q = int(rl())
+    ans = []
     for _ in range(Q):
         a, b = map(lambda x: int(x) - 1, rl().split())
-        if doubling.lca(a, b) == b:
-            print('Yes')
+        if doubling.query(a, b) == b:
+            ans.append('Yes')
         else:
-            print('No')
+            ans.append('No')
+    print(*ans, sep='\n')
 
 
 if __name__ == '__main__':
