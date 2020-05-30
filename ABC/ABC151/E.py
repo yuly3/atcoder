@@ -1,29 +1,51 @@
-MOD = 10 ** 9 + 7
-N, K, *A = map(int, open(0).read().split())
-A.sort()
+import sys
 
-fact = [1, 1]
-fact_inv = [1, 1]
-inv = [0, 1]
-for i in range(2, N + 1):
-    fact.append((fact[-1] * i) % MOD)
-    inv.append((-inv[MOD % i] * (MOD // i)) % MOD)
-    fact_inv.append((fact_inv[-1] * inv[-1]) % MOD)
+sys.setrecursionlimit(10 ** 7)
+rl = sys.stdin.readline
 
 
-def cmb(n, r):
-    if r < 0 or n < r:
-        return 0
-    r = min(r, n - r)
-    return fact[n] * fact_inv[r] * fact_inv[n - r] % MOD
+class Combination:
+    def __init__(self, n: int, mod: int):
+        self.mod = mod
+        self.fact = [0] * (n + 1)
+        self.factinv = [0] * (n + 1)
+        self.inv = [0] * (n + 1)
+        
+        self.fact[0] = self.fact[1] = 1
+        self.factinv[0] = self.factinv[1] = 1
+        self.inv[1] = 1
+        for i in range(2, n + 1):
+            self.fact[i] = (self.fact[i - 1] * i) % mod
+            self.inv[i] = (-self.inv[mod % i] * (mod // i)) % mod
+            self.factinv[i] = (self.factinv[i - 1] * self.inv[i]) % mod
+    
+    def ncr(self, n: int, r: int):
+        if r < 0 or n < r:
+            return 0
+        r = min(r, n - r)
+        return self.fact[n] * self.factinv[r] % self.mod * self.factinv[n - r] % self.mod
+    
+    def nhr(self, n: int, r: int):
+        return self.ncr(n + r - 1, r)
+    
+    def npr(self, n: int, r: int):
+        if r < 0 or n < r:
+            return 0
+        return self.fact[n] * self.factinv[n - r] % self.mod
 
 
 def solve():
+    N, K = map(int, rl().split())
+    A = list(map(int, rl().split()))
+    MOD = 10 ** 9 + 7
+    
+    A.sort()
+    com = Combination(N, MOD)
+    
     ans = 0
-    for j in range(N):
-        num = cmb(j, K - 1) % MOD
-        ans += num * A[j] % MOD
-        ans -= num * A[N - j - 1] % MOD
+    for i in range(N):
+        ans += com.ncr(i, K - 1) * A[i] % MOD
+        ans -= com.ncr(N - i - 1, K - 1) * A[i] % MOD
         ans %= MOD
     print(ans)
 
