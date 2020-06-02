@@ -1,6 +1,4 @@
-import decimal
 import sys
-from decimal import Decimal
 
 sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
@@ -8,8 +6,10 @@ rl = sys.stdin.readline
 
 def solve():
     A, B = rl().split()
-    ans = Decimal(A) * Decimal(B)
-    ans = ans.quantize(Decimal('0'), rounding=decimal.ROUND_FLOOR)
+    A = int(A)
+    B = B.split('.')
+    B = int(B[0] + B[1])
+    ans = A * B // 100
     print(ans)
 
 
