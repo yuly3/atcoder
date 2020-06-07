@@ -268,7 +268,7 @@ class SegmentTree:
         for i in range(self.N0 - 2, -1, -1):
             self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
     
-    def update(self, k, x):
+    def update(self, k: int, x):
         k += self.N0 - 1
         ################################################################
         self.data[k] = x
@@ -277,7 +277,7 @@ class SegmentTree:
             k = (k - 1) // 2
             self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
     
-    def query(self, left, right):
+    def query(self, left: int, right: int):
         L = left + self.N0
         R = right + self.N0
         res = self.ide_ele
@@ -343,7 +343,7 @@ class LazySegmentTree:
             ################################################################
             self.lazy[idx] = self.lazy_ide_ele
     
-    def update(self, left, right, x):
+    def update(self, left: int, right: int, x):
         ids = tuple(self.gindex(left, right))
         ################################################################
         self.propagates(*ids)
@@ -373,7 +373,7 @@ class LazySegmentTree:
             idx = i - 1
             self.data[idx] = self.segfunc(self.data[2 * idx + 1], self.data[2 * idx + 2]) + self.lazy[idx]
     
-    def query(self, left, right):
+    def query(self, left: int, right: int):
         self.propagates(*self.gindex(left, right))
         L = left + self.N0
         R = right + self.N0
@@ -393,6 +393,60 @@ class LazySegmentTree:
             res = self.segfunc(res, self.data[i])
         ################################################################
         return res
+
+
+class DualSegmentTree:
+    def __init__(self, size: int, segfunc, lazy_ide_ele=0):
+        self.lazy_ide_ele = lazy_ide_ele
+        self.segfunc = segfunc
+        self.N0 = 1 << (size - 1).bit_length()
+        self.lazy = [self.lazy_ide_ele] * (2 * self.N0)
+    
+    def gindex(self, left, right):
+        L = left + self.N0
+        R = right + self.N0
+        lm = (L // (L & -L)) >> 1
+        rm = (R // (R & -R)) >> 1
+        while L < R:
+            if R <= rm:
+                yield R
+            if L <= lm:
+                yield L
+            L >>= 1
+            R >>= 1
+        while L:
+            yield L
+            L >>= 1
+    
+    def propagates(self, *ids):
+        for i in reversed(ids):
+            idx = i - 1
+            v = self.lazy[idx]
+            if v == self.lazy_ide_ele:
+                continue
+            self.lazy[2 * idx + 1] = self.segfunc(self.lazy[2 * idx + 1], v)
+            self.lazy[2 * idx + 2] = self.segfunc(self.lazy[2 * idx + 2], v)
+            self.lazy[idx] = self.lazy_ide_ele
+    
+    def update(self, left: int, right: int, x):
+        ids = tuple(self.gindex(left, right))
+        self.propagates(*ids)
+        L = self.N0 + left
+        R = self.N0 + right
+        
+        while L < R:
+            if R & 1:
+                R -= 1
+                self.lazy[R - 1] = self.segfunc(self.lazy[R - 1], x)
+            if L & 1:
+                self.lazy[L - 1] = self.segfunc(self.lazy[L - 1], x)
+                L += 1
+            L >>= 1
+            R >>= 1
+    
+    def query(self, k: int):
+        self.propagates(*self.gindex(k, k + 1))
+        return self.lazy[k + self.N0 - 1]
 
 
 class LowestCommonAncestor:
