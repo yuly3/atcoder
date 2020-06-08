@@ -346,7 +346,7 @@ class LazySegmentTree:
     def update(self, left: int, right: int, x):
         ids = tuple(self.gindex(left, right))
         ################################################################
-        self.propagates(*ids)
+        # self.propagates(*ids)
         ################################################################
         L = self.N0 + left
         R = self.N0 + right
@@ -429,8 +429,6 @@ class DualSegmentTree:
             self.lazy[idx] = self.lazy_ide_ele
     
     def update(self, left: int, right: int, x):
-        ids = tuple(self.gindex(left, right))
-        self.propagates(*ids)
         L = self.N0 + left
         R = self.N0 + right
         

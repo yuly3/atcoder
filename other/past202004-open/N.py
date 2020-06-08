@@ -6,11 +6,10 @@ rl = sys.stdin.readline
 
 
 class DualSegmentTree:
-    def __init__(self, init_value: list, segfunc, lazy_ide_ele=0):
+    def __init__(self, size: int, segfunc, lazy_ide_ele=0):
         self.lazy_ide_ele = lazy_ide_ele
         self.segfunc = segfunc
-        n = len(init_value)
-        self.N0 = 1 << (n - 1).bit_length()
+        self.N0 = 1 << (size - 1).bit_length()
         self.lazy = [self.lazy_ide_ele] * (2 * self.N0)
     
     def gindex(self, left, right):
@@ -39,9 +38,7 @@ class DualSegmentTree:
             self.lazy[2 * idx + 2] = self.segfunc(self.lazy[2 * idx + 2], v)
             self.lazy[idx] = self.lazy_ide_ele
     
-    def update(self, left, right, x):
-        ids = tuple(self.gindex(left, right))
-        self.propagates(*ids)
+    def update(self, left: int, right: int, x):
         L = self.N0 + left
         R = self.N0 + right
         
@@ -55,35 +52,30 @@ class DualSegmentTree:
             L >>= 1
             R >>= 1
     
-    def query(self, k):
+    def query(self, k: int):
         self.propagates(*self.gindex(k, k + 1))
         return self.lazy[k + self.N0 - 1]
 
 
 def solve():
     N, Q = map(int, rl().split())
-    xmin, ymin, D, C = [0] * N, [0] * N, [0] * N, [0] * N
-    for i in range(N):
-        xmin[i], ymin[i], D[i], C[i] = map(int, rl().split())
-    A, B = [0] * Q, [0] * Q
-    for i in range(Q):
-        A[i], B[i] = map(int, rl().split())
-    
     events = []
     y = set()
-    for i in range(N):
-        events.append((0, xmin[i], ymin[i], ymin[i] + D[i], C[i]))
-        events.append((2, xmin[i] + D[i], ymin[i], ymin[i] + D[i], C[i]))
-        y.add(ymin[i])
-        y.add(ymin[i] + D[i])
+    for _ in range(N):
+        xmin, ymin, d, c = map(int, rl().split())
+        events.append((0, xmin, ymin, ymin + d, c))
+        events.append((2, xmin + d, ymin, ymin + d, c))
+        y.add(ymin)
+        y.add(ymin + d)
     for i in range(Q):
-        events.append((1, A[i], B[i], i))
-        y.add(B[i])
+        a, b = map(int, rl().split())
+        events.append((1, a, b, i))
+        y.add(b)
     
     events.sort(key=itemgetter(1, 0))
     y_to_idx = {val: idx for idx, val in enumerate(sorted(y))}
     
-    dual_seg_tree = DualSegmentTree([0] * len(y), add)
+    dual_seg_tree = DualSegmentTree(len(y), add)
     ans = [0] * Q
     for com, *event in events:
         if com == 0:
