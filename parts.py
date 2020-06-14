@@ -87,12 +87,10 @@ def factorization(n):
                 cnt += 1
                 temp //= i
             arr.append([i, cnt])
-    
     if temp != 1:
         arr.append([temp, 1])
     if not arr:
         arr.append([n, 1])
-    
     return arr
 
 
