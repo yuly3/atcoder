@@ -73,12 +73,13 @@ def solve():
         c, d = map(lambda x: int(x) - 1, rl().split())
         p_idx = infant_to_idx[c]
         infant_to_idx[c] = d
-        while hq_arr[p_idx]:
-            if infant_to_idx[hq_arr[p_idx][0][1]] == p_idx:
+        hq = hq_arr[p_idx]
+        while hq:
+            if infant_to_idx[hq[0][1]] == p_idx:
                 break
-            heappop(hq_arr[p_idx])
-        if hq_arr[p_idx]:
-            seg_tree.update(p_idx, -hq_arr[p_idx][0][0])
+            heappop(hq)
+        if hq:
+            seg_tree.update(p_idx, -hq[0][0])
         else:
             seg_tree.update(p_idx, ide_ele)
         
