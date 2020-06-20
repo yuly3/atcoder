@@ -62,14 +62,15 @@ def solve():
         heappush(hq_arr[b], (-a, i))
     
     ide_ele = 10 ** 10
-    seg_tree = SegmentTree([ide_ele] * M, min, ide_ele)
+    init_val = [ide_ele] * M
     for i, hq in enumerate(hq_arr):
         if not hq:
             continue
-        seg_tree.update(i, -hq[0][0])
+        init_val[i] = -hq[0][0]
+    seg_tree = SegmentTree(init_val, min, ide_ele)
     
-    ans = []
-    for _ in range(Q):
+    ans = [0] * Q
+    for i in range(Q):
         c, d = map(lambda x: int(x) - 1, rl().split())
         p_idx = infant_to_idx[c]
         infant_to_idx[c] = d
@@ -85,7 +86,7 @@ def solve():
         
         heappush(hq_arr[d], (-infant_to_rate[c], c))
         seg_tree.update(d, -hq_arr[d][0][0])
-        ans.append(seg_tree.data[0])
+        ans[i] = seg_tree.data[0]
     print(*ans, sep='\n')
 
 

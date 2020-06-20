@@ -15,7 +15,8 @@ type
         data: seq[int]
 
 proc initSegmntTree*(init_value: seq[int], ide_ele: int): SegmentTree =
-    return SegmentTree(N0: 1 shl bit_length(init_value.len - 1), ide_ele: ide_ele, data: newSeqWith(2 * (1 shl bit_length(init_value.len - 1)), ide_ele))
+    let N0 = 1 shl bit_length(init_value.len - 1)
+    return SegmentTree(N0: N0, ide_ele: ide_ele, data: newSeqWith(2 * N0, ide_ele))
 
 proc update(self: var SegmentTree, idx, x: int) =
     var k = self.N0 - 1 + idx
@@ -55,8 +56,9 @@ proc solve() =
             continue
         seg_tree.update(i, -hq[0].priority)
     
-    var ans = newSeq[int]()
-    var c, d: int
+    var
+        ans = newSeq[int]()
+        c, d: int
     for _ in 0..<Q:
         (c, d) = stdin.readLine.split.map(parseInt)
         c -= 1

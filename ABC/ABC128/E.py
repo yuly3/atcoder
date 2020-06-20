@@ -1,5 +1,5 @@
 import sys
-import heapq as hq
+from heapq import heappush, heappop
 from operator import itemgetter
 
 sys.setrecursionlimit(10 ** 7)
@@ -8,29 +8,29 @@ rl = sys.stdin.readline
 
 def solve():
     N, Q = map(int, rl().split())
-    event = []
+    events = []
     for _ in range(N):
         s, t, x = map(int, rl().split())
-        event.append((t - x, 0, x))
-        event.append((s - x, 1, x))
+        events.append((t - x, 0, x))
+        events.append((s - x, 1, x))
     for _ in range(Q):
         d = int(rl())
-        event.append((d, 2, -1))
-    event.sort(key=itemgetter(0, 1))
+        events.append((d, 2, -1))
+    events.sort(key=itemgetter(0, 1))
     
     pos_set = set()
     pos_hq = []
     ans = []
-    for _, com, pos in event:
+    for _, com, pos in events:
         if com == 0:
             pos_set.remove(pos)
         elif com == 1:
             pos_set.add(pos)
-            hq.heappush(pos_hq, pos)
+            heappush(pos_hq, pos)
         else:
             while pos_hq:
                 if pos_hq[0] not in pos_set:
-                    hq.heappop(pos_hq)
+                    heappop(pos_hq)
                 else:
                     break
             ans.append(pos_hq[0] if pos_hq else -1)
