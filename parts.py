@@ -1,4 +1,5 @@
 from collections import deque
+from math import ceil
 
 
 def cmb(n, r, mod=10 ** 9 + 7):
@@ -613,3 +614,136 @@ class HopcroftKarp:
     
     def matching(self):
         return [cap for _, cap, _ in self.backwards]
+
+
+class VanEmdeBoasTree:
+    def __init__(self, size):
+        self.universe_size = 1 << size.bit_length()
+        self.minimum = -1
+        self.maximum = -1
+        self.summary = None
+        self.cluster = {}
+    
+    def __high(self, x):
+        return x // ceil(self.universe_size ** 0.5)
+    
+    def __low(self, x):
+        return x % ceil(self.universe_size ** 0.5)
+    
+    def __generate_index(self, x, y):
+        return x * ceil(self.universe_size ** 0.5) + y
+    
+    def __empinsert(self, key):
+        self.minimum = self.maximum = key
+    
+    def insert(self, key):
+        if self.minimum == -1:
+            self.minimum = self.maximum = key
+        else:
+            if key < self.minimum:
+                self.minimum, key = key, self.minimum
+            if 2 < self.universe_size:
+                if self.__high(key) not in self.cluster:
+                    self.cluster[self.__high(key)] = VanEmdeBoasTree(ceil(self.universe_size ** 0.5))
+                    if self.summary is None:
+                        self.summary = VanEmdeBoasTree(ceil(self.universe_size ** 0.5))
+                    self.summary.insert(self.__high(key))
+                    self.cluster[self.__high(key)].__empinsert(self.__low(key))
+                else:
+                    self.cluster[self.__high(key)].insert(self.__low(key))
+            if self.maximum < key:
+                self.maximum = key
+    
+    def is_member(self, key):
+        if self.minimum == key or self.maximum == key:
+            return True
+        elif self.universe_size == 2:
+            return False
+        else:
+            if self.__high(key) in self.cluster:
+                return self.cluster[self.__high(key)].is_member(self.__low(key))
+            else:
+                return False
+    
+    def successor(self, key):
+        # バグらせてるっぽい
+        if self.universe_size == 2:
+            if key == 0 and self.maximum == 1:
+                return 1
+            else:
+                return -1
+        elif self.minimum != -1 and key < self.minimum:
+            return self.minimum
+        else:
+            max_incluster = -1
+            if self.__high(key) in self.cluster:
+                max_incluster = self.cluster[self.__high(key)].maximum
+            if max_incluster != -1 and self.__low(key) < max_incluster:
+                offset = self.cluster[self.__high(key)].successor(self.__low(key))
+                return self.__generate_index(self.__high(key), offset)
+            else:
+                succ_cluster = -1
+                if self.summary.successor is not None:
+                    succ_cluster = self.summary.successor(self.__high(key))
+                if succ_cluster == -1:
+                    return -1
+                else:
+                    offset = self.cluster[succ_cluster].minimum
+                    return self.__generate_index(succ_cluster, offset)
+    
+    def predecessor(self, key):
+        if self.universe_size == 2:
+            if key == 1 and self.minimum == 0:
+                return 0
+            else:
+                return -1
+        elif self.maximum != -1 and self.maximum < key:
+            return self.maximum
+        else:
+            min_incluster = -1
+            if self.__high(key) in self.cluster:
+                min_incluster = self.cluster[self.__high(key)].minimum
+            if min_incluster != -1 and min_incluster < self.__low(key):
+                offset = self.cluster[self.__high(key)].predecessor(self.__low(key))
+                return self.__generate_index(self.__high(key), offset)
+            else:
+                pred_cluster = -1
+                if self.summary is not None:
+                    pred_cluster = self.summary.predecessor(self.__high(key))
+                if pred_cluster == -1:
+                    if self.minimum != -1 and self.minimum < key:
+                        return self.minimum
+                    else:
+                        return -1
+                else:
+                    offset = self.cluster[pred_cluster].maximum
+                    return self.__generate_index(pred_cluster, offset)
+    
+    def delete(self, key):
+        if self.minimum == self.maximum:
+            self.minimum = self.maximum = -1
+            return True
+        elif self.universe_size == 2:
+            if key == 0:
+                self.minimum = 1
+            else:
+                self.minimum = 0
+            self.maximum = self.minimum
+            return False
+        else:
+            if key == self.minimum:
+                first_cluster = self.summary.minimum
+                key = self.__generate_index(first_cluster, self.cluster[first_cluster].minimum)
+                self.minimum = key
+            flg0 = self.cluster[self.__high(key)].delete(self.__low(key))
+            if flg0:
+                del self.cluster[self.__high(key)]
+                flg1 = self.summary.delete(self.__high(key))
+                if key == self.maximum:
+                    if flg1:
+                        self.maximum = self.minimum
+                    else:
+                        max_insummary = self.summary.maximum
+                        self.maximum = self.__generate_index(max_insummary, self.cluster[max_insummary].maximum)
+            elif key == self.maximum:
+                self.maximum = self.__generate_index(self.__high(key), self.cluster[self.__high(key)].maximum)
