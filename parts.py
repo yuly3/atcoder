@@ -172,6 +172,24 @@ class RollingHash:
         return (self.slice(left0, right0) * self.pw[right1 - left1] + self.slice(left1, right1)) % self.mod
 
 
+class TreeDP:
+    def __init__(self, graph, merge, add_root, ide_ele):
+        self.graph = graph
+        self.merge = merge
+        self.add_root = add_root
+        self.ide_ele = ide_ele
+        self.dp = [ide_ele] * len(graph)
+    
+    def dfs(self, cur, parent=-1):
+        dp_cum = self.ide_ele
+        for child in self.graph[cur]:
+            if child == parent:
+                continue
+            dp_cum = self.merge(dp_cum, self.dfs(child, cur))
+        self.dp[cur] = self.add_root(dp_cum)
+        return self.dp[cur]
+
+
 class UnionFind:
     def __init__(self, n: int):
         self.n = n
