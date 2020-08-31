@@ -16,8 +16,8 @@ type
         segfunc: proc (a, b: T): T
 
 proc initSegmntTree*[T](size: Natural, ide_ele: T, f: proc (a, b: T): T): SegmentTree[T] =
-    var n = 1 shl bit_length(size - 1)
-    return SegmentTree[T](N0: 1 shl n, ide_ele: ide_ele, data: newSeqWith(2 * (1 shl n), ide_ele), segfunc: f)
+    var N0 = 1 shl bit_length(size - 1)
+    return SegmentTree[T](N0: N0, ide_ele: ide_ele, data: newSeqWith(2 * N0, ide_ele), segfunc: f)
 
 proc update*[T](self: var SegmentTree[T], idx: int, x: T) =
     var k = self.N0 - 1 + idx
