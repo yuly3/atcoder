@@ -53,52 +53,28 @@ def solve():
     for _ in range(N):
         _, *ti = map(int, rl().split())
         T.append(deque(ti))
-    _ = rl()
+    M = int(rl())
     a = tuple(map(int, rl().split()))
     
     ide_ele = (0, -1)
     init_arr0, init_arr1 = [], []
     for i in range(N):
-        tij = T[i].popleft()
-        init_arr0.append((tij, i))
-        if T[i]:
-            tij = T[i].popleft()
-            init_arr1.append((tij, i))
-        else:
-            init_arr1.append(ide_ele)
+        init_arr0.append((T[i].popleft(), i))
+        init_arr1.append((T[i].popleft() if T[i] else 0, i))
     
     f = lambda A, B: A if B[0] < A[0] else B
     seg_tree0 = SegmentTree(init_arr0, f, ide_ele)
     seg_tree1 = SegmentTree(init_arr1, f, ide_ele)
     
-    ans = []
-    for ai in a:
-        if ai == 1:
-            v, idx = seg_tree0.data[0]
-            ans.append(v)
-            vv = seg_tree1.data[idx + seg_tree1.N0 - 1][0]
-            seg_tree0.update(idx, (vv, idx))
-            if T[idx]:
-                seg_tree1.update(idx, (T[idx].popleft(), idx))
-            else:
-                seg_tree1.update(idx, ide_ele)
+    ans = [0] * M
+    for i, ai in enumerate(a):
+        if ai == 1 or seg_tree1.data[0][0] < seg_tree0.data[0][0]:
+            ans[i], idx = seg_tree0.data[0]
+            seg_tree0.update(idx, seg_tree1.data[idx + seg_tree1.N0 - 1])
+            seg_tree1.update(idx, (T[idx].popleft() if T[idx] else 0, idx))
         else:
-            v0, idx0 = seg_tree0.data[0]
-            v1, idx1 = seg_tree1.data[0]
-            if v1 < v0:
-                ans.append(v0)
-                vv = seg_tree1.data[idx0 + seg_tree1.N0 - 1][0]
-                seg_tree0.update(idx0, (vv, idx0))
-                if T[idx0]:
-                    seg_tree1.update(idx0, (T[idx0].popleft(), idx0))
-                else:
-                    seg_tree1.update(idx0, ide_ele)
-            else:
-                ans.append(v1)
-                if T[idx1]:
-                    seg_tree1.update(idx1, (T[idx1].popleft(), idx1))
-                else:
-                    seg_tree1.update(idx1, ide_ele)
+            ans[i], idx = seg_tree1.data[0]
+            seg_tree1.update(idx, (T[idx].popleft() if T[idx] else 0, idx))
     print(*ans, sep='\n')
 
 
