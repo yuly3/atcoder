@@ -15,7 +15,7 @@ type
         data: seq[T]
         segfunc: proc (a, b: T): T
 
-proc initSegmntTree*[T](size: Natural, ide_ele: T, f: proc (a, b: T): T): SegmentTree[T] =
+proc initSegmentTree*[T](size: Natural, ide_ele: T, f: proc (a, b: T): T): SegmentTree[T] =
     var N0 = 1 shl bit_length(size - 1)
     return SegmentTree[T](N0: N0, ide_ele: ide_ele, data: newSeqWith(2 * N0, ide_ele), segfunc: f)
 
@@ -46,25 +46,23 @@ proc query*[T](self: var SegmentTree[T], left, right: int): T =
 
 var
     T: array[10^5, Deque[int]]
-    kiti, a, ans: seq[int]
+    ti, a, ans: seq[int]
     seg_tree0, seg_tree1: SegmentTree[(int, int)]
 
 
 proc solve() =
     let N = stdin.readLine.parseInt
-    var ki: int
     for i in 0..<N:
-        kiti = stdin.readLine.split.map(parseInt)
-        ki = kiti[0]
+        ti = stdin.readLine.split[1..^1].map(parseInt)
         T[i] = initDeque[int]()
-        for j in 1..ki:
-            T[i].addLast(kiti[j])
+        for tij in ti:
+            T[i].addLast(tij)
     let M = stdin.readLine.parseInt
     a = stdin.readLine.split.map(parseInt)
 
     let ide_ele = (0, -1)
-    seg_tree0 = initSegmntTree(N, ide_ele, (x, y) => (if x[0] < y[0]: y else: x))
-    seg_tree1 = initSegmntTree(N, ide_ele, (x, y) => (if x[0] < y[0]: y else: x))
+    seg_tree0 = initSegmentTree(N, ide_ele, (x, y) => (if x[0] < y[0]: y else: x))
+    seg_tree1 = initSegmentTree(N, ide_ele, (x, y) => (if x[0] < y[0]: y else: x))
     for i in 0..<N:
         seg_tree0.update(i, (T[i].popFirst, i))
         seg_tree1.update(i, ((if T[i].len != 0: T[i].popFirst else: 0), i))
