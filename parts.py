@@ -411,7 +411,7 @@ class LazySegmentTree:
         return res
 
 
-class DualSegmentTree:
+class DuelSegmentTree:
     def __init__(self, size: int, segfunc, lazy_ide_ele=0):
         self.lazy_ide_ele = lazy_ide_ele
         self.segfunc = segfunc
