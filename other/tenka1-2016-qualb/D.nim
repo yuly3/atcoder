@@ -1,18 +1,18 @@
 import algorithm, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
 
-proc input(): string =
+proc input*(): string =
     return stdin.readLine
 proc chmax*[T: SomeNumber](num0: var T, num1: T) =
     num0 = max(num0, num1)
 proc chmin*[T: SomeNumber](num0: var T, num1: T) =
     num0 = min(num0, num1)
 
-
 proc bit_length(n: Natural): Natural =
+    const BIT_SIZE = 60
     if n == 0:
       return 0
-    let s = toBin(n, 60)
-    return 60 - s.find('1')
+    let s = toBin(n, BIT_SIZE)
+    return BIT_SIZE - s.find('1')
 
 
 type
@@ -115,30 +115,47 @@ proc query*[T](self: var LazySegmentTree[T], left, right: Natural): T =
 
 
 var
+    a, X, ans: seq[int]
+    li_to_idx, ri_to_idx: seq[seq[int]]
     lazy_seg_tree: LazySegmentTree[int]
-    st: array[10^5, array[2, int]]
-    ans: seq[int]
-
+    STK: seq[(int, int, int, int)]
 
 proc solve() =
-    var N, M, si, ti: int
-    (N, M) = input().split.map(parseInt)
-    lazy_seg_tree = toLazySegmentTree(newSeq[int](N), 10^6, 0, (a, b) => min(a, b))
-    for i in 0..<M:
-        (si, ti) = input().split.map(parseInt)
-        dec si
-        st[i] = [si, ti]
-        lazy_seg_tree.update(si, ti, 1)
+    let N = input().parseInt
+    a = concat(@[0], input().split.map(parseInt))
 
-    ans = newSeq[int]()
-    for i, (si, ti) in st[0..<M]:
-        if 1 < lazy_seg_tree.query(si, ti):
-            ans.add(i + 1)
+    li_to_idx = newSeqWith(N + 1, newSeq[int]())
+    ri_to_idx = newSeqWith(N + 1, newSeq[int]())
+    let A = input().parseInt
+    lazy_seg_tree = toLazySegmentTree(newSeq[int](A + 1), 10^12, 0, (a, b) => min(a, b))
+    X = newSeq[int](A + 1)
+    var li, ri, xi: int
+    for i in 0..<A:
+        (li, ri, xi) = input().split.map(parseInt)
+        li_to_idx[li].add(i + 1)
+        ri_to_idx[ri].add(i + 1)
+        X[i + 1] = xi
     
-    echo ans.len
-    if ans.len != 0:
-        echo ans.join("\n")
+    let B = input().parseInt
+    var si, ti, ki: int
+    for i in 0..<B:
+        (si, ti, ki) = input().split.map(parseInt)
+        dec si; inc ti
+        STK.add((si, ti, ki, i))
+    STK = STK.sortedByIt(it[2])
 
+    ans = newSeq[int](B)
+    var prev_ki = 0
+    for (si, ti, ki, i) in STK:
+        lazy_seg_tree.update(0, A + 1, a[ki] - a[prev_ki])
+        for j in prev_ki..<ki:
+            for idx in li_to_idx[j + 1]:
+                lazy_seg_tree.update(idx, A + 1, X[idx])
+            for idx in ri_to_idx[j]:
+                lazy_seg_tree.update(idx, A + 1, -X[idx])
+        ans[i] = lazy_seg_tree.query(si, ti)
+        prev_ki = ki
+    echo ans.join("\n")
 
 when is_main_module:
     solve()
