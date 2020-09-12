@@ -8,7 +8,7 @@ proc chmin*[T: SomeNumber](num0: var T, num1: T) =
     num0 = min(num0, num1)
 
 proc bit_length(n: Natural): Natural =
-    const BIT_SIZE = 60
+    const BIT_SIZE = 24
     if n == 0:
       return 0
     let s = toBin(n, BIT_SIZE)
