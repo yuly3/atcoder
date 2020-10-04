@@ -1,9 +1,13 @@
-import algorithm, sequtils, strutils, sugar
+import algorithm, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
 
-proc chmax*[T: SomeNumber](num0: var T, num1: T) =
-    num0 = max(num0, num1)
-proc chmin*[T: SomeNumber](num0: var T, num1: T) =
-    num0 = min(num0, num1)
+proc make_divisors*(n: Positive): seq[int] =
+    var divisors = newSeq[int]()
+    for i in 1..int(pow(float(n), 0.5)):
+        if n mod i == 0:
+            divisors.add(i)
+            if i != n div i:
+                divisors.add(n div i)
+    return divisors
 
 
 type
@@ -59,36 +63,36 @@ proc bit_length(n: Natural): Natural =
 
 
 type
-    SegmentTree*[T] = ref object
+    SegmentTree*[T, K] = ref object
         N0: Positive
         ide_ele: T
         data: seq[T]
-        fold, eval: proc (a, b: T): T
+        fold: proc (a, b: T): T
+        eval: proc (a: T, b: K): T
 
-proc initSegmentTree*[T](size: Positive, ide_ele: T, fold, eval: proc (a, b: T): T): SegmentTree[T] =
-    var
+proc initSegmentTree*[T, K](size: Positive, ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
+    let
         N0 = 1 shl bit_length(size - 1)
         data = newSeqWith(2*N0, ide_ele)
-    return SegmentTree[T](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval: eval)
+    return SegmentTree[T, K](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval: eval)
 
-proc toSegmentTree*[T](init_value: openArray[T], ide_ele: T, fold, eval: proc (a, b: T): T): SegmentTree[T] =
-    var
-        N0 = 1 shl bit_length(init_value.len - 1)
-        data = newSeqWith(2*N0, ide_ele)
+proc toSegmentTree*[T, K](init_value: openArray[T], ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
+    let N0 = 1 shl bit_length(init_value.len - 1)
+    var data = newSeqWith(2*N0, ide_ele)
     for i, x in init_value:
         data[i + N0 - 1] = x
     for i in countdown(N0 - 2, 0):
         data[i] = fold(data[2*i + 1], data[2*i + 2])
-    return SegmentTree[T](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval)
+    return SegmentTree[T, K](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval: eval)
 
-proc update*[T](self: var SegmentTree[T], idx: Natural, x: T) =
+proc update*[T, K](self: var SegmentTree[T, K], idx: Natural, x: K) =
     var k = self.N0 - 1 + idx
     self.data[k] = self.eval(self.data[k], x)
     while k != 0:
         k = (k - 1) div 2
         self.data[k] = self.fold(self.data[2*k + 1], self.data[2*k + 2])
 
-proc query*[T](self: var SegmentTree[T], left, right: Natural): T =
+proc query*[T, K](self: var SegmentTree[T, K], left, right: Natural): T =
     var
         L = left + self.N0
         R = right + self.N0
@@ -117,26 +121,27 @@ type
         fold: proc (a, b: T): T
         eval: proc (a: T, b: K): T
         merge: proc (a, b: K): K
+        propagates_when_updating: bool
 
-proc initLazySegmentTree*[T, K](size: Positive, ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K): LazySegmentTree[T, K] =
-    var
+proc initLazySegmentTree*[T, K](size: Positive, ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K, propagates_when_updating=false): LazySegmentTree[T, K] =
+    let
         LV = bit_length(size - 1)
         N0 = 1 shl LV
         data = newSeqWith(2*N0, ide_ele)
         lazy_data = newSeqWith(2*N0, lazy_ide_ele)
-    return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge)
+    return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge, propagates_when_updating: propagates_when_updating)
 
-proc toLazySegmentTree*[T, K](init_value: openArray[T], ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K): LazySegmentTree[T, K] =
-    var
+proc toLazySegmentTree*[T, K](init_value: openArray[T], ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K, propagates_when_updating=false): LazySegmentTree[T, K] =
+    let
         LV = bit_length(init_value.len - 1)
         N0 = 1 shl LV
-        data = newSeqWith(2*N0, ide_ele)
         lazy_data = newSeqWith(2*N0, lazy_ide_ele)
+    var data = newSeqWith(2*N0, ide_ele)
     for i, x in init_value:
         data[i + N0 - 1] = x
     for i in countdown(N0 - 2, 0):
         data[i] = fold(data[2*i + 1], data[2*i + 2])
-    return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge)
+    return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge, propagates_when_updating: propagates_when_updating)
 
 iterator gindex*[T, K](self: var LazySegmentTree[T, K], left, right: Natural): Natural =
     var
@@ -170,7 +175,8 @@ proc propagates*[T, K](self: var LazySegmentTree[T, K], ids: seq[Natural]) =
 
 proc update*[T, K](self: var LazySegmentTree[T, K], left, right: Natural, x: K) =
     let ids = toSeq(self.gindex(left, right))
-    # self.propagates(ids)
+    if self.propagates_when_updating:
+        self.propagates(ids)
     var
         L = left + self.N0
         R = right + self.N0
@@ -191,7 +197,9 @@ proc update*[T, K](self: var LazySegmentTree[T, K], left, right: Natural, x: K) 
     var idx: Natural
     for id in ids:
         idx = id - 1
-        self.data[idx] = self.eval(self.fold(self.data[2*idx + 1], self.data[2*idx + 2]), self.lazy_data[idx])
+        self.data[idx] = self.fold(self.data[2*idx + 1], self.data[2*idx + 2])
+        if self.lazy_data[idx] != self.lazy_ide_ele:
+            self.data[idx] = self.eval(self.data[idx], self.lazy_data[idx])
 
 proc query*[T, K](self: var LazySegmentTree[T, K], left, right: Natural): T =
     self.propagates(toSeq(self.gindex(left, right)))
@@ -219,13 +227,23 @@ type
         lazy_ide_ele: T
         lazy_data: seq[T]
         merge: proc (a, b: T): T
+        propagates_when_updating: bool
 
-proc initDuelSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T): DuelSegmentTree[T] =
-    var
+proc initDuelSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DuelSegmentTree[T] =
+    let
         LV = bit_length(size - 1)
         N0 = 1 shl LV
-        lazy_data = newSeqWith(2 * N0, lazy_ide_ele)
-    return DuelSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge)
+        lazy_data = newSeqWith(2*N0, lazy_ide_ele)
+    return DuelSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+
+proc toDuelSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DuelSegmentTree[T] =
+    let
+        LV = bit_length(init_value.len - 1)
+        N0 = 1 shl LV
+    var lazy_data = newSeqWith(2*N0, lazy_ide_ele)
+    for i, x in init_value:
+        lazy_data[i + N0 - 1] = x
+    return DuelSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
 
 iterator gindex*[T](self: var DuelSegmentTree[T], left, right: Natural): Natural =
     var
@@ -255,7 +273,8 @@ proc propagates*[T](self: var DuelSegmentTree[T], ids: seq[Natural]) =
         self.lazy_data[idx] = self.lazy_ide_ele
 
 proc update*[T](self: var DuelSegmentTree[T], left, right: Natural, x: T) =
-    # self.propagates(toSeq(self.gindex(left, right)))
+    if self.propagates_when_updating:
+        self.propagates(toSeq(self.gindex(left, right)))
     var
         L = left + self.N0
         R = right + self.N0
@@ -273,6 +292,62 @@ proc update*[T](self: var DuelSegmentTree[T], left, right: Natural, x: T) =
 proc query*[T](self: var DuelSegmentTree[T], k: Natural): T =
     self.propagates(toSeq(self.gindex(k, k + 1)))
     return self.lazy_data[k + self.N0 - 1]
+
+
+type
+    LowestCommonAncestor* = ref object
+        size: Positive
+        LV: Natural
+        depth: seq[int]
+        tree, parent: seq[seq[int]]
+
+proc initLowestCommonAncestor*(tree: seq[seq[int]]): LowestCommonAncestor =
+    let
+        size = tree.len
+        LV = bit_length(size)
+        depth = newSeq[int](size)
+        parent = newSeqWith(LV, newSeqWith(size, -1))
+    return LowestCommonAncestor(size: size, LV: LV, depth: depth, tree: tree, parent: parent)
+
+proc build*(self: var LowestCommonAncestor, root: Natural) =
+    var que = initDeque[(int, int, int)]()
+    que.addLast((root, -1, 0))
+
+    var cur, par, dist: int
+    while que.len != 0:
+        (cur, par, dist) = que.popFirst()
+        self.parent[0][cur] = par
+        self.depth[cur] = dist
+        for child in self.tree[cur]:
+            if child != par:
+                self.depth[child] = dist + 1
+                que.addLast((child, cur, dist + 1))
+    
+    for i in 1..<self.LV:
+        for j in 0..<self.size:
+            let k = self.parent[i - 1][j]
+            if k != -1:
+                self.parent[i][j] = self.parent[i - 1][k]
+
+proc query*(self: var LowestCommonAncestor, u, v: Natural): int =
+    var (u, v) = (u, v)
+    if self.depth[v] < self.depth[u]:
+        (u, v) = (v, u)
+    for i in 0..<self.LV:
+        if (((self.depth[v] - self.depth[u]) shr i) and 1) == 1:
+            v = self.parent[i][v]
+    if u == v:
+        return u
+    
+    for i in countdown(self.LV - 1, 0):
+        if self.parent[i][u] != self.parent[i][v]:
+            u = self.parent[i][u]
+            v = self.parent[i][v]
+    return self.parent[0][v]
+
+proc dist*(self: var LowestCommonAncestor, u, v: Natural): int =
+    let ancestor = self.query(u, v)
+    return self.depth[u] + self.depth[v] - 2*self.depth[ancestor]
 
 
 type
