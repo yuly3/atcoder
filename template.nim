@@ -1,4 +1,4 @@
-import algorithm, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
+import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
 
 proc input*(): string =
     return stdin.readLine

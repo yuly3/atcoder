@@ -26,7 +26,7 @@ def solve():
     
     roop_cnt, rem = divmod(N - roop_start, roop_size)
     ans = sum(A[:roop_start])
-    ans += roop_cnt * sum(A[roop_start:roop_start + roop_size])
+    ans += roop_cnt * sum(A[roop_start:])
     ans += sum(A[roop_start:roop_start + rem])
     print(ans)
 
