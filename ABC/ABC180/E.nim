@@ -28,9 +28,9 @@ proc solve() =
         for i in 0..<N:
             (xi, yi, zi) = XYZ[i]
             for j, (xj, yj, zj) in XYZ:
-                if bitand((s shr j), 1) == 1:
+                if bitand(s shr j, 1) == 1:
                     continue
-                let ns = bitor(s, (1 shl j))
+                let ns = bitor(s, 1 shl j)
                 dp[j][ns].chmin(dp[i][s] + abs(xj - xi) + abs(yj - yi) + max(0, zj - zi))
     echo dp[0][(1 shl N) - 1]
 
