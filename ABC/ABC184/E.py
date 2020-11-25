@@ -12,11 +12,11 @@ def solve():
     ord_a = ord('a')
     sy, sx = 0, 0
     gy, gx = 0, 0
-    telepoter = [[] for _ in range(26)]
+    teleporter = [[] for _ in range(26)]
     for i in range(H):
         for j in range(W):
             if maze[i][j].islower():
-                telepoter[ord(maze[i][j]) - ord_a].append((i, j))
+                teleporter[ord(maze[i][j]) - ord_a].append((i, j))
             elif maze[i][j] == 'S':
                 sy, sx = i, j
             elif maze[i][j] == 'G':
@@ -31,7 +31,7 @@ def solve():
         cy, cx, alpha = que.popleft()
         if alpha:
             ncost = cost_alpha[cx]
-            for ny, nx in telepoter[cx]:
+            for ny, nx in teleporter[cx]:
                 if ncost < cost[ny][nx]:
                     cost[ny][nx] = ncost
                     que.appendleft((ny, nx, False))
