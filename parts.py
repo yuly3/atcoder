@@ -95,17 +95,20 @@ def factorization(n):
 
 
 def eratosthenes(n):
-    prime = [2]
     if n == 2:
-        return prime
-    limit = int(n ** 0.5)
-    data = [i + 1 for i in range(2, n, 2)]
-    while True:
-        p = data[0]
-        if limit <= p:
-            return prime + data
-        prime.append(p)
-        data = [e for e in data if e % p != 0]
+        return [2]
+    
+    primes = []
+    is_prime = [True] * (n + 1)
+    is_prime[0] = is_prime[1] = False
+    
+    for p in range(n + 1):
+        if not is_prime[p]:
+            continue
+        primes.append(p)
+        for i in range(2 * p, n + 1, p):
+            is_prime[i] = False
+    return primes
 
 
 def make_divisors(n):
