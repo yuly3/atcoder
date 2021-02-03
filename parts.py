@@ -95,9 +95,6 @@ def factorization(n):
 
 
 def eratosthenes(n):
-    if n == 2:
-        return [2]
-    
     primes = []
     is_prime = [True] * (n + 1)
     is_prime[0] = is_prime[1] = False
