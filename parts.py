@@ -108,6 +108,50 @@ def eratosthenes(n):
     return primes
 
 
+def sieve_of_atkin(n):
+    is_prime = [False] * (n + 1)
+    sqrt_n = int(-(-n ** 0.5 // 1))
+    for i in (1, 5):
+        for j in range(i, sqrt_n + 1, 6):
+            for k in range(1, sqrt_n + 1):
+                x = 4 * k * k + j * j
+                if n < x:
+                    break
+                is_prime[x] = ~is_prime[x]
+            for k in range(j + 1, sqrt_n + 1, 2):
+                x = 3 * k * k - j * j
+                if n < x:
+                    break
+                is_prime[x] = ~is_prime[x]
+    for i in (2, 4):
+        for j in range(i, sqrt_n + 1, 6):
+            for k in range(1, sqrt_n + 1, 2):
+                x = 3 * k * k + j * j
+                if n < x:
+                    break
+                is_prime[x] = ~is_prime[x]
+            for k in range(j + 1, sqrt_n + 1, 2):
+                x = 3 * k * k - j * j
+                if n < x:
+                    break
+                is_prime[x] = ~is_prime[x]
+    for i in range(3, sqrt_n + 1, 6):
+        for j in (1, 2):
+            for k in range(j, sqrt_n + 1, 3):
+                x = 4 * k * k + i * i
+                if n < x:
+                    break
+                is_prime[x] = ~is_prime[x]
+    for i in range(5, sqrt_n + 1):
+        if is_prime[i]:
+            for j in range(i * i, n + 1, i * i):
+                is_prime[j] = False
+    is_prime[2] = is_prime[3] = True
+    
+    primes = [i for i, b in enumerate(is_prime) if b]
+    return primes
+
+
 def make_divisors(n):
     divisors = []
     for i in range(1, int(n ** 0.5) + 1):
