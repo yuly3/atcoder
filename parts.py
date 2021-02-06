@@ -32,12 +32,12 @@ def crt(r, m):
             m0, m1 = m1, m0
         if m0 % m1 == 0:
             if r0 % m1 != r1:
-                return [0, 0]
+                return 0, 0
             continue
         
         g, im = inv_gcd(m0, m1)
         if (r1 - r0) % g:
-            return [0, 0]
+            return 0, 0
         
         u1 = m0 * m1 // g
         r0 += (r1 - r0) // g * m0 * im % u1
