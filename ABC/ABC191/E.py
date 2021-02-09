@@ -28,9 +28,15 @@ def solve():
             if t != 0 and cur == s:
                 ans.append(t)
                 break
+            if searched[cur] < t:
+                if not que:
+                    ans.append(-1)
+                    break
+                else:
+                    continue
             for child, cost in graph[cur]:
                 nt = t + cost
-                if searched[child] < nt:
+                if searched[child] <= nt:
                     continue
                 searched[child] = nt
                 heappush(que, (nt, child))
