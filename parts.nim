@@ -374,7 +374,7 @@ proc add*[T](self: var SquareSkipList[T], x: T) =
   y = y xor ((y and 0x7ffffff) shl 5)
   self.rand_y = y
 
-  if y mod self.square == 0:
+  if floorMod(y, self.square) == 0:
     let idx1 = self.layer1.upperBound(x, self.cmp_func)
     self.layer1.insert(@[x], idx1)
     let idx0 = self.layer0[idx1].upperBound(x, self.cmp_func)
@@ -396,6 +396,30 @@ proc remove*[T](self: var SquareSkipList[T], x: T) =
     self.layer0.delete(idx1 + 1, idx1 + 1)
   else:
     self.layer0[idx1].delete(idx0, idx0)
+
+proc next_equal*[T](self: var SquareSkipList[T], x: T): T =
+  let
+    idx1 = self.layer1.lowerBound(x, self.cmp_func)
+    idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
+  if idx0 == len(self.layer0[idx1]):
+    return self.layer1[idx1]
+  return self.layer0[idx1][idx0]
+
+proc next*[T](self: var SquareSkipList[T], x: T): T =
+  let
+    idx1 = self.layer1.upperBound(x, self.cmp_func)
+    idx0 = self.layer0[idx1].upperBound(x, self.cmp_func)
+  if idx0 == len(self.layer0[idx1]):
+    return self.layer1[idx1]
+  return self.layer0[idx1][idx0]
+
+proc prev*[T](self: var SquareSkipList[T], x: T): T =
+  let
+    idx1 = self.layer1.lowerBound(x, self.cmp_func)
+    idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
+  if idx0 == 0:
+    return self.layer1[idx1 - 1]
+  return self.layer0[idx1][idx0 - 1]
 
 proc contains*[T](self: var SquareSkipList[T], x: T): bool =
   let
@@ -436,6 +460,19 @@ proc pop_max*[T](self: var SquareSkipList[T]): T =
     return res
   else:
     assert(False, "This is empty")
+
+proc `[]`*[T](self: var SquareSkipList[T], k: Natural): T =
+  var
+    s = -1
+    ii = 0
+  for i, l0 in self.layer0:
+    s += l0.len + 1
+    ii = i
+    if k <= s:
+      break
+  if s == k:
+    return self.layer1[ii]
+  return self.layer0[ii][k - s]
 
 proc min*[T](self: var SquareSkipList[T]): T =
   return if self.layer0[0].len != 0: self.layer0[0][0] else: self.layer1[0]

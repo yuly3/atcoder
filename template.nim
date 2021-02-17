@@ -7,7 +7,7 @@ proc chmax*[T: SomeNumber](num0: var T, num1: T) =
 proc chmin*[T: SomeNumber](num0: var T, num1: T) =
   num0 = min(num0, num1)
 proc `%=`*[T: SomeInteger](num0: var T, num1: T) =
-  num0 = num0 mod num1
+  num0 = floorMod(num0, num1)
 
 proc solve() =
   echo "Hello, Atcoder!!"
