@@ -109,6 +109,9 @@ proc query*[T, K](self: var SegmentTree[T, K], left, right: Natural): T =
     R = R shr 1
   return res
 
+proc `[]`*[T, K](self: var SegmentTree[T, K], k: int): T =
+  return self.data[k + self.N0 - 1]
+
 
 type
   LazySegmentTree*[T, K] = ref object

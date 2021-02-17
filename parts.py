@@ -360,26 +360,25 @@ class BinaryIndexedTree:
 
 
 class SegmentTree:
-    def __init__(self, init_value: list, segfunc, ide_ele):
-        n = len(init_value)
-        self.N0 = 1 << (n - 1).bit_length()
+    def __init__(self, size, fold, evaluate, ide_ele):
+        self.N0 = 1 << (size - 1).bit_length()
         self.ide_ele = ide_ele
         self.data = [ide_ele] * (2 * self.N0)
-        self.segfunc = segfunc
-        
-        for i, x in enumerate(init_value):
+        self.fold = fold
+        self.evaluate = evaluate
+    
+    def build(self, values):
+        for i, x in enumerate(values):
             self.data[i + self.N0 - 1] = x
         for i in range(self.N0 - 2, -1, -1):
-            self.data[i] = self.segfunc(self.data[2 * i + 1], self.data[2 * i + 2])
+            self.data[i] = self.fold(self.data[2 * i + 1], self.data[2 * i + 2])
     
     def update(self, k: int, x):
         k += self.N0 - 1
-        ################################################################
-        self.data[k] = x
-        ################################################################
+        self.data[k] = self.evaluate(self.data[k], x)
         while k:
             k = (k - 1) // 2
-            self.data[k] = self.segfunc(self.data[k * 2 + 1], self.data[k * 2 + 2])
+            self.data[k] = self.fold(self.data[k * 2 + 1], self.data[k * 2 + 2])
     
     def query(self, left: int, right: int):
         L = left + self.N0
@@ -397,9 +396,12 @@ class SegmentTree:
             L >>= 1
             R >>= 1
         for i in a + b[::-1]:
-            res = self.segfunc(res, self.data[i])
+            res = self.fold(res, self.data[i])
         ################################################################
         return res
+    
+    def __getitem__(self, k):
+        return self.data[k + self.N0 - 1]
 
 
 class LazySegmentTree:
