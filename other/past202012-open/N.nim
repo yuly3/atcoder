@@ -118,15 +118,15 @@ proc solve() =
     events.add((ai, 2, bi, i))
   events.sort()
   
-  seg_tree = toSegmentTree(newSeqWith(N + 1, 0), 1, (a, b) => min(a, b), (a, b: int) => b)
-  ans = newSeq[int](Q)
+  seg_tree = toSegmentTree(newSeq[int](N + 1), 1, (a, b) => min(a, b), (a, b: int) => b)
+  ans = newSeqWith(Q, 1)
   for (age, cmd, pos, idx) in events:
     if cmd == 0:
       seg_tree.update(pos, 0)
     elif cmd == 1:
       seg_tree.update(pos, 1)
     else:
-      var right_end, left_end, ok, ng, mid: int
+      var right_end, left_end: int
       if seg_tree[pos] == 0:
         right_end = -1
       else:
@@ -140,7 +140,6 @@ proc solve() =
         ans[idx] += right_end - pos
       if left_end != -1:
         ans[idx] += pos - left_end
-      inc ans[idx]
   echo ans.join("\n")
 
 when is_main_module:
