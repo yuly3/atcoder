@@ -320,7 +320,7 @@ proc update*[T](self: var DuelSegmentTree[T], left, right: Natural, x: T) =
     L = L shr 1
     R = R shr 1
 
-proc query*[T](self: var DuelSegmentTree[T], k: Natural): T =
+proc `[]`*[T](self: var DuelSegmentTree[T], k: Natural): T =
   self.propagates(toSeq(self.gindex(k, k + 1)))
   return self.lazy_data[k + self.N0 - 1]
 
