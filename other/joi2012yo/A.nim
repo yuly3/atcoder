@@ -1,4 +1,4 @@
-import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strformat, strutils, sugar, tables
+import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
 
 proc input*(): string = stdin.readLine
 proc inputs*(): seq[string] = stdin.readLine.split
@@ -9,7 +9,10 @@ proc chmin*[T: SomeNumber](num0: var T, num1: T) = num0 = min(num0, num1)
 proc `%=`*[T: SomeInteger](num0: var T, num1: T) = num0 = floorMod(num0, num1)
 
 proc solve() =
-  echo "Hello, Atcoder!!"
+  let
+    p = min(newSeqWith(3, inputInt()))
+    j = min(newSeqWith(2, inputInt()))
+  echo p + j - 50
 
 when is_main_module:
   solve()
