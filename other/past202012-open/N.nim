@@ -1,13 +1,12 @@
-import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
+import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strformat, strutils, sugar, tables
 
-proc input*(): string =
-  return stdin.readLine
-proc chmax*[T: SomeNumber](num0: var T, num1: T) =
-  num0 = max(num0, num1)
-proc chmin*[T: SomeNumber](num0: var T, num1: T) =
-  num0 = min(num0, num1)
-proc `%=`*[T: SomeInteger](num0: var T, num1: T) =
-  num0 = num0 mod num1
+proc input*(): string {.inline.} = stdin.readLine
+proc inputs*(): seq[string] {.inline.} = stdin.readLine.split
+proc inputInt*(): int {.inline.} = stdin.readLine.parseInt
+proc inputInts*(): seq[int] {.inline.} = stdin.readLine.split.map(parseInt)
+proc chmax*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = max(num0, num1)
+proc chmin*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = min(num0, num1)
+proc `%=`*[T: SomeInteger](num0: var T, num1: T) {.inline.} = num0 = floorMod(num0, num1)
 
 proc bit_length(n: Natural): Natural =
   const BIT_SIZE = 24
@@ -67,80 +66,61 @@ proc query*[T, K](self: var SegmentTree[T, K], left, right: Natural): T =
 proc `[]`*[T, K](self: var SegmentTree[T, K], k: int): T =
   return self.data[k + self.N0 - 1]
 
-proc binary_search_right*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
-  return self.binary_search_right_sub(left, right, x, 0, 0, self.N0)
+proc binarySearchRight*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
+  return self.binarySearchRightSub(left, right, x, 0, 0, self.N0)
 
-proc binary_search_right_sub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
+proc binarySearchRightSub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
   if x < self.data[k] or right <= a or b <= left:
     return a - 1
   if self.N0 - 1 <= k:
     return k - self.N0 + 1
-  let vr = self.binary_search_right_sub(a, b, x, 2*k + 2, (left + right) div 2, right)
+  let vr = self.binarySearchRightSub(a, b, x, 2*k + 2, (left + right) div 2, right)
   if vr != a - 1:
     return vr
-  return self.binary_search_right_sub(a, b, x, 2*k + 1, left, (left + right) div 2)
+  return self.binarySearchRightSub(a, b, x, 2*k + 1, left, (left + right) div 2)
 
-proc binary_search_left*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
-  return self.binary_search_left_sub(left, right, x, 0, 0, self.N0)
+proc binarySearchLeft*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
+  return self.binarySearchLeftSub(left, right, x, 0, 0, self.N0)
 
-proc binary_search_left_sub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
+proc binarySearchLeftSub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
   if x < self.data[k] or right <= a or b <= left:
     return b
   if self.N0 - 1 <= k:
     return k - self.N0 + 1
-  let vl = self.binary_search_left_sub(a, b, x, 2*k + 1, left, (left + right) div 2)
+  let vl = self.binarySearchLeftSub(a, b, x, 2*k + 1, left, (left + right) div 2)
   if vl != b:
     return vl
-  return self.binary_search_left_sub(a, b, x, 2*k + 2, (left + right) div 2, right)
+  return self.binarySearchLeftSub(a, b, x, 2*k + 2, (left + right) div 2, right)
 
-
-var
-  L, R, A, B, ans: seq[int]
-  events: seq[(int, int, int, int)]
-  seg_tree: SegmentTree[int, int]
-
-proc solve() =
-  var N, Q: int
-  (N, Q) = input().split.map(parseInt)
-  (L, R) = (newSeq[int](N - 1), newSeq[int](N - 1))
-  for i in 0..<N - 1:
-    (L[i], R[i]) = input().split.map(parseInt)
-  (A, B) = (newSeq[int](Q), newSeq[int](Q))
-  for i in 0..<Q:
-    (A[i], B[i]) = input().split.map(parseInt)
-
-  events = newSeq[(int, int, int, int)]()
-  for i, li in L:
-    events.add((li, 1, i + 1, 0))
-  for i, ri in R:
-    events.add((ri + 1, 0, i + 1, 0))
-  for i, (ai, bi) in zip(A, B):
-    events.add((ai, 2, bi, i))
-  events.sort()
-  
-  seg_tree = toSegmentTree(newSeq[int](N + 1), 1, (a, b) => min(a, b), (a, b: int) => b)
-  ans = newSeqWith(Q, 1)
-  for (age, cmd, pos, idx) in events:
-    if cmd == 0:
-      seg_tree.update(pos, 0)
-    elif cmd == 1:
-      seg_tree.update(pos, 1)
-    else:
-      var right_end, left_end: int
-      if seg_tree[pos] == 0:
-        right_end = -1
-      else:
-        right_end = seg_tree.binary_search_left(pos, N, 0)
-      if seg_tree[pos - 1] == 0:
-        left_end = -1
-      else:
-        left_end = seg_tree.binary_search_right(0, pos, 0) + 1
-      
-      if right_end != -1:
-        ans[idx] += right_end - pos
-      if left_end != -1:
-        ans[idx] += pos - left_end
-  echo ans.join("\n")
 
 when is_main_module:
-  solve()
+  var N, Q: int
+  (N, Q) = inputInts()
+  var
+    events = newSeq[(int, int, int, int)]()
+    L, R, A, B: int
+  for i in 0..<N - 1:
+    (L, R) = inputInts()
+    events.add((L, 1, i + 1, 0))
+    events.add((R + 1, 0, i + 1, 0))
+  for i in 0..<Q:
+    (A, B) = inputInts()
+    events.add((A, 2, B, i))
+  events.sort()
+
+  var
+    segTree = toSegmentTree(newSeq[int](N + 1), 1, (a, b) => min(a, b), (a, b: int) => b)
+    ans = newSeqWith(Q, 1)
+  for (age, cmd, pos, idx) in events:
+    if cmd == 0:
+      segTree.update(pos, 0)
+    elif cmd == 1:
+      segTree.update(pos, 1)
+    else:
+      if segTree[pos] != 0:
+        let rightEnd = segTree.binarySearchLeft(pos, N, 0)
+        ans[idx] += rightEnd - pos
+      if segTree[pos - 1] != 0:
+        let leftEnd = segTree.binarySearchRight(0, pos, 0) + 1
+        ans[idx] += pos - leftEnd
+  echo ans.join("\n")

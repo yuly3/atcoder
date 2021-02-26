@@ -112,33 +112,31 @@ proc query*[T, K](self: var SegmentTree[T, K], left, right: Natural): T =
 proc `[]`*[T, K](self: var SegmentTree[T, K], k: int): T =
   return self.data[k + self.N0 - 1]
 
-proc binary_search_right*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
-  # RMQでしか使えない
-  return self.binary_search_right_sub(left, right, x, 0, 0, self.N0)
+proc binarySearchRight*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
+  return self.binarySearchRightSub(left, right, x, 0, 0, self.N0)
 
-proc binary_search_right_sub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
+proc binarySearchRightSub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
   if x < self.data[k] or right <= a or b <= left:
     return a - 1
   if self.N0 - 1 <= k:
     return k - self.N0 + 1
-  let vr = self.binary_search_right_sub(a, b, x, 2*k + 2, (left + right) div 2, right)
+  let vr = self.binarySearchRightSub(a, b, x, 2*k + 2, (left + right) div 2, right)
   if vr != a - 1:
     return vr
-  return self.binary_search_right_sub(a, b, x, 2*k + 1, left, (left + right) div 2)
+  return self.binarySearchRightSub(a, b, x, 2*k + 1, left, (left + right) div 2)
 
-proc binary_search_left*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
-  # RMQでしか使えない
-  return self.binary_search_left_sub(left, right, x, 0, 0, self.N0)
+proc binarySearchLeft*[T, K](self: var SegmentTree[T, K], left, right: Natural, x: T): int =
+  return self.binarySearchLeftSub(left, right, x, 0, 0, self.N0)
 
-proc binary_search_left_sub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
+proc binarySearchLeftSub*[T, K](self: var SegmentTree[T, K], a, b: Natural, x: T, k, left, right: Natural): int =
   if x < self.data[k] or right <= a or b <= left:
     return b
   if self.N0 - 1 <= k:
     return k - self.N0 + 1
-  let vl = self.binary_search_left_sub(a, b, x, 2*k + 1, left, (left + right) div 2)
+  let vl = self.binarySearchLeftSub(a, b, x, 2*k + 1, left, (left + right) div 2)
   if vl != b:
     return vl
-  return self.binary_search_left_sub(a, b, x, 2*k + 2, (left + right) div 2, right)
+  return self.binarySearchLeftSub(a, b, x, 2*k + 2, (left + right) div 2, right)
 
 
 type
