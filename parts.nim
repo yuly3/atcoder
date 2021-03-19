@@ -50,11 +50,11 @@ proc members*(self: var UnionFind, x: Natural): seq[int] =
 proc roots*(self: var UnionFind): seq[int] =
   return toSeq(0..<int(self.n)).filterIt(self.parents[it] < 0)
 
-proc group_count*(self: var UnionFind): Positive =
+proc groupCount*(self: var UnionFind): Positive =
   return self.roots.len
 
 
-proc bit_length(n: Natural): Natural =
+proc bitLength(n: Natural): Natural =
   const BIT_SIZE = 24
   if n == 0:
     return 0
@@ -72,12 +72,12 @@ type
 
 proc initSegmentTree*[T, K](size: Positive, ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
   let
-    N0 = 1 shl bit_length(size - 1)
+    N0 = 1 shl bitLength(size - 1)
     data = newSeqWith(2*N0, ide_ele)
   return SegmentTree[T, K](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval: eval)
 
 proc toSegmentTree*[T, K](init_value: openArray[T], ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
-  let N0 = 1 shl bit_length(init_value.len - 1)
+  let N0 = 1 shl bitLength(init_value.len - 1)
   var data = newSeqWith(2*N0, ide_ele)
   for i, x in init_value:
     data[i + N0 - 1] = x
@@ -154,7 +154,7 @@ type
 
 proc initLazySegmentTree*[T, K](size: Positive, ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K, propagates_when_updating=false): LazySegmentTree[T, K] =
   let
-    LV = bit_length(size - 1)
+    LV = bitLength(size - 1)
     N0 = 1 shl LV
     data = newSeqWith(2*N0, ide_ele)
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
@@ -162,7 +162,7 @@ proc initLazySegmentTree*[T, K](size: Positive, ide_ele: T, lazy_ide_ele: K, fol
 
 proc toLazySegmentTree*[T, K](init_value: openArray[T], ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K, propagates_when_updating=false): LazySegmentTree[T, K] =
   let
-    LV = bit_length(init_value.len - 1)
+    LV = bitLength(init_value.len - 1)
     N0 = 1 shl LV
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
   var data = newSeqWith(2*N0, ide_ele)
@@ -176,8 +176,8 @@ iterator gindex*[T, K](self: var LazySegmentTree[T, K], left, right: Natural): N
   var
     L = (left + self.N0) shr 1
     R = (right + self.N0) shr 1
-    lc = if (left and 1) == 1: 0 else: bit_length(L and -L)
-    rc = if (right and 1) == 1: 0 else: bit_length(R and -R)
+    lc = if (left and 1) == 1: 0 else: bitLength(L and -L)
+    rc = if (right and 1) == 1: 0 else: bitLength(R and -R)
   for i in 0..<self.LV:
     if rc <= i:
       yield R
@@ -260,14 +260,14 @@ type
 
 proc initDuelSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DuelSegmentTree[T] =
   let
-    LV = bit_length(size - 1)
+    LV = bitLength(size - 1)
     N0 = 1 shl LV
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
   return DuelSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
 
 proc toDuelSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DuelSegmentTree[T] =
   let
-    LV = bit_length(init_value.len - 1)
+    LV = bitLength(init_value.len - 1)
     N0 = 1 shl LV
   var lazy_data = newSeqWith(2*N0, lazy_ide_ele)
   for i, x in init_value:
@@ -278,8 +278,8 @@ iterator gindex*[T](self: var DuelSegmentTree[T], left, right: Natural): Natural
   var
     L = (left + self.N0) shr 1
     R = (right + self.N0) shr 1
-    lc = if (left and 1) == 1: 0 else: bit_length(L and -L)
-    rc = if (right and 1) == 1: 0 else: bit_length(R and -R)
+    lc = if (left and 1) == 1: 0 else: bitLength(L and -L)
+    rc = if (right and 1) == 1: 0 else: bitLength(R and -R)
   for i in 0..<self.LV:
     if rc <= i:
       yield R
@@ -333,7 +333,7 @@ type
 proc initLowestCommonAncestor*(tree: seq[seq[int]]): LowestCommonAncestor =
   let
     size = tree.len
-    LV = bit_length(size)
+    LV = bitLength(size)
     depth = newSeq[int](size)
     parent = newSeqWith(LV, newSeqWith(size, -1))
   return LowestCommonAncestor(size: size, LV: LV, depth: depth, tree: tree, parent: parent)
@@ -423,7 +423,7 @@ proc remove*[T](self: var SquareSkipList[T], x: T) =
   else:
     self.layer0[idx1].delete(idx0, idx0)
 
-proc next_equal*[T](self: var SquareSkipList[T], x: T): T =
+proc nextEqual*[T](self: var SquareSkipList[T], x: T): T =
   let
     idx1 = self.layer1.lowerBound(x, self.cmp_func)
     idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
@@ -476,7 +476,7 @@ proc pop*[T](self: var SquareSkipList[T], idx: Natural): T =
     self.layer0[i].delete(idx - s, idx - s)
     return res
 
-proc pop_max*[T](self: var SquareSkipList[T]): T =
+proc popMax*[T](self: var SquareSkipList[T]): T =
   if self.layer0[^1].len != 0:
     return self.layer0[^1].pop()
   elif 1 < self.layer1.len:
@@ -510,15 +510,15 @@ proc max*[T](self: var SquareSkipList[T]): T =
 type
   HeavyLightDecomposition* = ref object
     graph: seq[seq[Natural]]
-    path_root, path_parent, left, right: seq[Natural]
+    pathRoot, pathParent, left, right: seq[Natural]
 
-proc initHeavyLightdecomposition*(size: Positive): HeavyLightDecomposition =
+proc initHeavyLightDecomposition*(size: Positive): HeavyLightDecomposition =
   var
     graph = newSeqWith(size, newSeq[Natural]())
-    empty_seq = newSeq[Natural]()
-  return HeavyLightDecomposition(graph: graph, path_root: empty_seq, path_parent: empty_seq, left: empty_seq, right: empty_seq)
+    emptySeq = newSeq[Natural]()
+  return HeavyLightDecomposition(graph: graph, pathRoot: emptySeq, pathParent: emptySeq, left: emptySeq, right: emptySeq)
 
-proc add_edge*(self: var HeavyLightDecomposition, a, b: Natural) =
+proc addEdge*(self: var HeavyLightDecomposition, a, b: Natural) =
   self.graph[a].add(b)
   self.graph[b].add(a)
 
@@ -547,8 +547,8 @@ proc build*(self: var HeavyLightDecomposition, root: Natural) =
       if size[self.graph[v][0]] < size[to]:
         (self.graph[v][0], self.graph[v][i]) = (self.graph[v][i], self.graph[v][0])
   
-  self.path_root = newSeqWith(n, root)
-  self.path_parent = newSeqWith(n, root)
+  self.pathRoot = newSeqWith(n, root)
+  self.pathParent = newSeqWith(n, root)
   self.left = newSeq[Natural](n)
   self.right = newSeq[Natural](n)
   var
@@ -566,32 +566,38 @@ proc build*(self: var HeavyLightDecomposition, root: Natural) =
     stack1.add((v, 1))
     if 1 < self.graph[v].len:
       for i, to in self.graph[v][1..^1]:
-        self.path_root[to] = to
-        self.path_parent[to] = v
+        self.pathRoot[to] = to
+        self.pathParent[to] = v
         stack1.add((to, 0))
     if self.graph[v].len != 0:
       to = self.graph[v][0]
-      self.path_root[to] = self.path_root[v]
-      self.path_parent[to] = self.path_parent[v]
+      self.pathRoot[to] = self.pathRoot[v]
+      self.pathParent[to] = self.pathParent[v]
       stack1.add((to, 0))
 
-proc sub_tree*(self: var HeavyLightDecomposition, v: Natural): (Natural, Natural) =
+proc subTree*(self: var HeavyLightDecomposition, v: Natural): (Natural, Natural) =
   return (self.left[v], self.right[v])
 
-proc path*(self: var HeavyLightDecomposition, v, u: Natural): seq[(Natural, int)] =
+proc path*(self: var HeavyLightDecomposition, v, u: Natural, edgeFlg: bool=false): seq[(int, int)] =
   var
     x = v
     y = u
-    res = newSeq[(Natural, int)]()
+    res = newSeq[(int, int)]()
     p: Natural
-  while self.path_root[x] != self.path_root[y]:
+  while self.pathRoot[x] != self.pathRoot[y]:
     if self.left[x] < self.left[y]:
-      p = self.path_root[y]
+      p = self.pathRoot[y]
       res.add((self.left[p], self.left[y] + 1))
-      y = self.path_parent[y]
+      y = self.pathParent[y]
     else:
-      p = self.path_root[x]
+      p = self.pathRoot[x]
       res.add((self.left[p], self.left[x] + 1))
-      x = self.path_parent[x]
-  res.add((min(self.left[x], self.left[y]), max(self.left[x], self.left[y]) + 1))
+      x = self.pathParent[x]
+  if edgeFlg:
+    res.add((min(self.left[x], self.left[y]) + 1, max(self.left[x], self.left[y]) + 1))
+  else:
+    res.add((min(self.left[x], self.left[y]), max(self.left[x], self.left[y]) + 1))
   return res
+
+proc id*(self: var HeavyLightDecomposition, v: Natural): Natural =
+  return self.left[v]
