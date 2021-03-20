@@ -250,7 +250,7 @@ proc query*[T, K](self: var LazySegmentTree[T, K], left, right: Natural): T =
 
 
 type
-  DuelSegmentTree*[T] = ref object
+  DualSegmentTree*[T] = ref object
     LV: Natural
     N0: Positive
     lazy_ide_ele: T
@@ -258,23 +258,23 @@ type
     merge: proc (a, b: T): T
     propagates_when_updating: bool
 
-proc initDuelSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DuelSegmentTree[T] =
+proc initDualSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DualSegmentTree[T] =
   let
     LV = bitLength(size - 1)
     N0 = 1 shl LV
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
-  return DuelSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
 
-proc toDuelSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DuelSegmentTree[T] =
+proc toDualSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DualSegmentTree[T] =
   let
     LV = bitLength(init_value.len - 1)
     N0 = 1 shl LV
   var lazy_data = newSeqWith(2*N0, lazy_ide_ele)
   for i, x in init_value:
     lazy_data[i + N0 - 1] = x
-  return DuelSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
 
-iterator gindex*[T](self: var DuelSegmentTree[T], left, right: Natural): Natural =
+iterator gindex*[T](self: var DualSegmentTree[T], left, right: Natural): Natural =
   var
     L = (left + self.N0) shr 1
     R = (right + self.N0) shr 1
@@ -288,7 +288,7 @@ iterator gindex*[T](self: var DuelSegmentTree[T], left, right: Natural): Natural
     L = L shr 1
     R = R shr 1
 
-proc propagates*[T](self: var DuelSegmentTree[T], ids: seq[Natural]) =
+proc propagates*[T](self: var DualSegmentTree[T], ids: seq[Natural]) =
   var
     idx: Natural
     v: T
@@ -301,7 +301,7 @@ proc propagates*[T](self: var DuelSegmentTree[T], ids: seq[Natural]) =
     self.lazy_data[2*idx + 2] = self.merge(self.lazy_data[2*idx + 2], v)
     self.lazy_data[idx] = self.lazy_ide_ele
 
-proc update*[T](self: var DuelSegmentTree[T], left, right: Natural, x: T) =
+proc update*[T](self: var DualSegmentTree[T], left, right: Natural, x: T) =
   if self.propagates_when_updating:
     self.propagates(toSeq(self.gindex(left, right)))
   var
@@ -318,7 +318,7 @@ proc update*[T](self: var DuelSegmentTree[T], left, right: Natural, x: T) =
     L = L shr 1
     R = R shr 1
 
-proc `[]`*[T](self: var DuelSegmentTree[T], k: Natural): T =
+proc `[]`*[T](self: var DualSegmentTree[T], k: Natural): T =
   self.propagates(toSeq(self.gindex(k, k + 1)))
   return self.lazy_data[k + self.N0 - 1]
 
