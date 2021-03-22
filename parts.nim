@@ -67,16 +67,16 @@ type
     N0: Positive
     ide_ele: T
     data: seq[T]
-    fold: proc (a, b: T): T
-    eval: proc (a: T, b: K): T
+    fold: (T, T) -> T
+    eval: (T, K) -> T
 
-proc initSegmentTree*[T, K](size: Positive, ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
+proc initSegmentTree*[T, K](size: Positive, ide_ele: T, fold: (T, T) -> T, eval: (T, K) -> T): SegmentTree[T, K] =
   let
     N0 = 1 shl bitLength(size - 1)
     data = newSeqWith(2*N0, ide_ele)
   return SegmentTree[T, K](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval: eval)
 
-proc toSegmentTree*[T, K](init_value: openArray[T], ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
+proc toSegmentTree*[T, K](init_value: openArray[T], ide_ele: T, fold: (T, T) -> T, eval: (T, K) -> T): SegmentTree[T, K] =
   let N0 = 1 shl bitLength(init_value.len - 1)
   var data = newSeqWith(2*N0, ide_ele)
   for i, x in init_value:
@@ -147,20 +147,20 @@ type
     lazy_ide_ele: K
     data: seq[T]
     lazy_data: seq[K]
-    fold: proc (a, b: T): T
-    eval: proc (a: T, b: K): T
-    merge: proc (a, b: K): K
-    propagates_when_updating: bool
+    fold: (T, T) -> T
+    eval: (T, K) -> T
+    merge: (K, K) -> K
+    propagatesWhenUpdating: bool
 
-proc initLazySegmentTree*[T, K](size: Positive, ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K, propagates_when_updating=false): LazySegmentTree[T, K] =
+proc initLazySegmentTree*[T, K](size: Positive, ide_ele: T, lazy_ide_ele: K, fold: (T, T) -> T, eval: (T, K) -> T, merge: (K, K) -> K, propagatesWhenUpdating=false): LazySegmentTree[T, K] =
   let
     LV = bitLength(size - 1)
     N0 = 1 shl LV
     data = newSeqWith(2*N0, ide_ele)
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
-  return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge, propagates_when_updating: propagates_when_updating)
+  return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
 
-proc toLazySegmentTree*[T, K](init_value: openArray[T], ide_ele: T, lazy_ide_ele: K, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T, merge: proc (a, b: K): K, propagates_when_updating=false): LazySegmentTree[T, K] =
+proc toLazySegmentTree*[T, K](init_value: openArray[T], ide_ele: T, lazy_ide_ele: K, fold: (T, T) -> T, eval: (T, K) -> T, merge: (K, K) -> K, propagatesWhenUpdating=false): LazySegmentTree[T, K] =
   let
     LV = bitLength(init_value.len - 1)
     N0 = 1 shl LV
@@ -170,7 +170,7 @@ proc toLazySegmentTree*[T, K](init_value: openArray[T], ide_ele: T, lazy_ide_ele
     data[i + N0 - 1] = x
   for i in countdown(N0 - 2, 0):
     data[i] = fold(data[2*i + 1], data[2*i + 2])
-  return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge, propagates_when_updating: propagates_when_updating)
+  return LazySegmentTree[T, K](LV: LV, N0: N0, ide_ele: ide_ele, lazy_ide_ele: lazy_ide_ele, data: data, lazy_data: lazy_data, fold: fold, eval: eval, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
 
 iterator gindex*[T, K](self: var LazySegmentTree[T, K], left, right: Natural): Natural =
   var
@@ -204,7 +204,7 @@ proc propagates*[T, K](self: var LazySegmentTree[T, K], ids: seq[Natural]) =
 
 proc update*[T, K](self: var LazySegmentTree[T, K], left, right: Natural, x: K) =
   let ids = toSeq(self.gindex(left, right))
-  if self.propagates_when_updating:
+  if self.propagatesWhenUpdating:
     self.propagates(ids)
   var
     L = left + self.N0
@@ -255,24 +255,24 @@ type
     N0: Positive
     lazy_ide_ele: T
     lazy_data: seq[T]
-    merge: proc (a, b: T): T
-    propagates_when_updating: bool
+    merge: (T, T) -> T
+    propagatesWhenUpdating: bool
 
-proc initDualSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DualSegmentTree[T] =
+proc initDualSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: (T, T) -> T, propagatesWhenUpdating=false): DualSegmentTree[T] =
   let
     LV = bitLength(size - 1)
     N0 = 1 shl LV
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
-  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
 
-proc toDualSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DualSegmentTree[T] =
+proc toDualSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: (T, T) -> T, propagatesWhenUpdating=false): DualSegmentTree[T] =
   let
     LV = bitLength(init_value.len - 1)
     N0 = 1 shl LV
   var lazy_data = newSeqWith(2*N0, lazy_ide_ele)
   for i, x in init_value:
     lazy_data[i + N0 - 1] = x
-  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
 
 iterator gindex*[T](self: var DualSegmentTree[T], left, right: Natural): Natural =
   var
@@ -302,7 +302,7 @@ proc propagates*[T](self: var DualSegmentTree[T], ids: seq[Natural]) =
     self.lazy_data[idx] = self.lazy_ide_ele
 
 proc update*[T](self: var DualSegmentTree[T], left, right: Natural, x: T) =
-  if self.propagates_when_updating:
+  if self.propagatesWhenUpdating:
     self.propagates(toSeq(self.gindex(left, right)))
   var
     L = left + self.N0
@@ -385,13 +385,13 @@ type
     rand_y: int
     layer1: seq[T]
     layer0: seq[seq[T]]
-    cmp_func: proc (a, b: T): int
+    cmpFunc: (T, T) -> int
 
-proc initSquareSkipList*[T](inf: T, cmp_func: proc (a, b: T): int, square=1000, rand_y=42): SquareSkipList[T] =
+proc initSquareSkipList*[T](inf: T, cmpFunc: (T, T) -> int, square=1000, rand_y=42): SquareSkipList[T] =
   var
     layer1 = @[inf]
     layer0 = newSeqWith(1, newSeq[T]())
-  return SquareSkipList[T](square: square, rand_y: rand_y, layer1: layer1, layer0: layer0, cmp_func: cmp_func)
+  return SquareSkipList[T](square: square, rand_y: rand_y, layer1: layer1, layer0: layer0, cmpFunc: cmpFunc)
 
 proc add*[T](self: var SquareSkipList[T], x: T) =
   var y = self.rand_y
@@ -401,21 +401,21 @@ proc add*[T](self: var SquareSkipList[T], x: T) =
   self.rand_y = y
 
   if floorMod(y, self.square) == 0:
-    let idx1 = self.layer1.upperBound(x, self.cmp_func)
+    let idx1 = self.layer1.upperBound(x, self.cmpFunc)
     self.layer1.insert(@[x], idx1)
-    let idx0 = self.layer0[idx1].upperBound(x, self.cmp_func)
+    let idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
     self.layer0.insert(self.layer0[idx1][idx0..^1], idx1 + 1)
     self.layer0[idx1].delete(idx0, self.layer0[idx1].len)
   else:
     let
-      idx1 = self.layer1.upperBound(x, self.cmp_func)
-      idx0 = self.layer0[idx1].upperBound(x, self.cmp_func)
+      idx1 = self.layer1.upperBound(x, self.cmpFunc)
+      idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
     self.layer0[idx1].insert(@[x], idx0)
 
 proc remove*[T](self: var SquareSkipList[T], x: T) =
   let
-    idx1 = self.layer1.lowerBound(x, self.cmp_func)
-    idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
+    idx1 = self.layer1.lowerBound(x, self.cmpFunc)
+    idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
   if idx0 == self.layer0[idx1].len:
     self.layer1.delete(idx1, idx1)
     self.layer0[idx1] = concat(self.layer0[idx1], self.layer0[idx1 + 1])
@@ -425,32 +425,32 @@ proc remove*[T](self: var SquareSkipList[T], x: T) =
 
 proc nextEqual*[T](self: var SquareSkipList[T], x: T): T =
   let
-    idx1 = self.layer1.lowerBound(x, self.cmp_func)
-    idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
+    idx1 = self.layer1.lowerBound(x, self.cmpFunc)
+    idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
   if idx0 == len(self.layer0[idx1]):
     return self.layer1[idx1]
   return self.layer0[idx1][idx0]
 
 proc next*[T](self: var SquareSkipList[T], x: T): T =
   let
-    idx1 = self.layer1.upperBound(x, self.cmp_func)
-    idx0 = self.layer0[idx1].upperBound(x, self.cmp_func)
+    idx1 = self.layer1.upperBound(x, self.cmpFunc)
+    idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
   if idx0 == len(self.layer0[idx1]):
     return self.layer1[idx1]
   return self.layer0[idx1][idx0]
 
 proc prev*[T](self: var SquareSkipList[T], x: T): T =
   let
-    idx1 = self.layer1.lowerBound(x, self.cmp_func)
-    idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
+    idx1 = self.layer1.lowerBound(x, self.cmpFunc)
+    idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
   if idx0 == 0:
     return self.layer1[idx1 - 1]
   return self.layer0[idx1][idx0 - 1]
 
 proc contains*[T](self: var SquareSkipList[T], x: T): bool =
   let
-    idx1 = self.layer1.lowerBound(x, self.cmp_func)
-    idx0 = self.layer0[idx1].lowerBound(x, self.cmp_func)
+    idx1 = self.layer1.lowerBound(x, self.cmpFunc)
+    idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
   if idx0 == self.layer0[idx1].len:
     return self.layer1[idx1] == x
   else:

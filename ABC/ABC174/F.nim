@@ -22,16 +22,16 @@ type
     N0: Positive
     ide_ele: T
     data: seq[T]
-    fold: proc (a, b: T): T
-    eval: proc (a: T, b: K): T
+    fold: (T, T) -> T
+    eval: (T, K) -> T
 
-proc initSegmentTree*[T, K](size: Positive, ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
+proc initSegmentTree*[T, K](size: Positive, ide_ele: T, fold: (T, T) -> T, eval: (T, K) -> T): SegmentTree[T, K] =
   let
     N0 = 1 shl bitLength(size - 1)
     data = newSeqWith(2*N0, ide_ele)
   return SegmentTree[T, K](N0: N0, ide_ele: ide_ele, data: data, fold: fold, eval: eval)
 
-proc toSegmentTree*[T, K](init_value: openArray[T], ide_ele: T, fold: proc (a, b: T): T, eval: proc (a: T, b: K): T): SegmentTree[T, K] =
+proc toSegmentTree*[T, K](init_value: openArray[T], ide_ele: T, fold: (T, T) -> T, eval: (T, K) -> T): SegmentTree[T, K] =
   let N0 = 1 shl bitLength(init_value.len - 1)
   var data = newSeqWith(2*N0, ide_ele)
   for i, x in init_value:
