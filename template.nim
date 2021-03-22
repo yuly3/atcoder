@@ -8,5 +8,5 @@ proc chmax*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = max(num0, n
 proc chmin*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = min(num0, num1)
 proc `%=`*[T: SomeInteger](num0: var T, num1: T) {.inline.} = num0 = floorMod(num0, num1)
 
-when is_main_module:
+when isMainModule:
   echo "Hello, AtCoder!!"
