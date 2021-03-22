@@ -80,7 +80,7 @@ when is_main_module:
   for i in 0..<Q:
     (left, right) = inputInts()
     queries.add((i, left - 1, right))
-  queries.sort do (x, y: (int, int, int)) -> int: result = cmp(x[2], y[2])
+  queries.sort((a, b) => cmp(a[2], b[2]))
 
   var
     cToIdx: array[5*10^5, int]
