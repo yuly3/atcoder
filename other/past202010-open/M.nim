@@ -119,24 +119,24 @@ type
     N0: Positive
     lazy_ide_ele: T
     lazy_data: seq[T]
-    merge: proc (a, b: T): T
-    propagates_when_updating: bool
+    merge: (T, T) -> T
+    propagatesWhenUpdating: bool
 
-proc initDualSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DualSegmentTree[T] =
+proc initDualSegmentTree*[T](size: Positive, lazy_ide_ele: T, merge: (T, T) -> T, propagatesWhenUpdating=false): DualSegmentTree[T] =
   let
     LV = bitLength(size - 1)
     N0 = 1 shl LV
     lazy_data = newSeqWith(2*N0, lazy_ide_ele)
-  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
 
-proc toDualSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: proc (a, b: T): T, propagates_when_updating=false): DualSegmentTree[T] =
+proc toDualSegmentTree*[T](init_value: openArray[T], lazy_ide_ele: T, merge: (T, T) -> T, propagatesWhenUpdating=false): DualSegmentTree[T] =
   let
     LV = bitLength(init_value.len - 1)
     N0 = 1 shl LV
   var lazy_data = newSeqWith(2*N0, lazy_ide_ele)
   for i, x in init_value:
     lazy_data[i + N0 - 1] = x
-  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagates_when_updating: propagates_when_updating)
+  return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
 
 iterator gindex*[T](self: var DualSegmentTree[T], left, right: Natural): Natural =
   var
@@ -166,7 +166,7 @@ proc propagates*[T](self: var DualSegmentTree[T], ids: seq[Natural]) =
     self.lazy_data[idx] = self.lazy_ide_ele
 
 proc update*[T](self: var DualSegmentTree[T], left, right: Natural, x: T) =
-  if self.propagates_when_updating:
+  if self.propagatesWhenUpdating:
     self.propagates(toSeq(self.gindex(left, right)))
   var
     L = left + self.N0
