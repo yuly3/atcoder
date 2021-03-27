@@ -1,6 +1,3 @@
-from collections import deque
-
-
 def inv_gcd(a, b):
     a %= b
     if a == 0:
@@ -566,6 +563,7 @@ class DuelSegmentTree:
 
 class LowestCommonAncestor:
     def __init__(self, tree, root):
+        from collections import deque
         self.n = len(tree)
         self.depth = [0] * self.n
         self.log_size = self.n.bit_length()
@@ -625,6 +623,7 @@ class Dinic:
         self.graph[v2].append(edge2)
     
     def bfs(self, s, t):
+        from collections import deque
         self.level = level = [-1] * self.n
         deq = deque([s])
         level[s] = 0
@@ -693,6 +692,7 @@ class HopcroftKarp:
         self.graph[v1].append(backward)
     
     def bfs(self):
+        from collections import deque
         graph = self.graph
         level = [-1] * self.N
         deq = deque([0])
