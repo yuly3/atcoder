@@ -1,5 +1,7 @@
 from collections import deque
 
+import numpy as np
+
 
 def inv_gcd(a, b):
     a %= b
@@ -237,6 +239,16 @@ def is_bipartite(n, graph):
             if colors[child] == 0:
                 stack.append((child, -color))
     return True
+
+
+def rotation(xy, r_axis, t, deg=False):
+    if deg:
+        t = np.deg2rad(t)
+    xy = np.array(xy)
+    r_axis = np.array(r_axis)
+    R = np.array([[np.cos(t), -np.sin(t)],
+                  [np.sin(t),  np.cos(t)]])
+    return np.dot(R, xy - r_axis) + r_axis
 
 
 class RollingHash:
