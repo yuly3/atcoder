@@ -1,26 +1,26 @@
-import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
+import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strformat, strutils, sugar, tables
 
-proc input*(): string =
-  return stdin.readLine
-proc chmax*[T: SomeNumber](num0: var T, num1: T) =
-  num0 = max(num0, num1)
-proc chmin*[T: SomeNumber](num0: var T, num1: T) =
-  num0 = min(num0, num1)
-proc `%=`*[T: SomeInteger](num0: var T, num1: T) =
-  num0 = floorMod(num0, num1)
+proc input*(): string {.inline.} = stdin.readLine
+proc inputs*(): seq[string] {.inline.} = stdin.readLine.split
+proc inputInt*(): int {.inline.} = stdin.readLine.parseInt
+proc inputInts*(): seq[int] {.inline.} = stdin.readLine.split.map(parseInt)
+proc chmax*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = max(num0, num1)
+proc chmin*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = min(num0, num1)
+proc `%=`*[T: SomeInteger](num0: var T, num1: T) {.inline.} = num0 = floorMod(num0, num1)
 
-var
-  dp: seq[seq[seq[int]]]
-
-proc solve() =
+when isMainModule:
   var N, X: int
-  (N, X) = input().split.map(parseInt)
-  let A = input().split.map(parseInt)
+  (N, X) = inputInts()
+  let A = inputInts()
 
   const INF = 10^18
-  var ans = INF
+  var
+    dp: array[101, array[101, array[100, int]]]
+    ans = INF
   for cnt in 1..N:
-    dp = newSeqWith(N + 1, newSeqWith(cnt + 1, newSeqWith(cnt, -INF)))
+    for i in 0..N:
+      for j in 0..cnt:
+        dp[i][j].fill(-INF)
     dp[0][0][0] = 0
     for i in 0..<N:
       for j in 0..cnt:
@@ -33,6 +33,3 @@ proc solve() =
       continue
     ans.chmin((X - v) div cnt)
   echo ans
-
-when is_main_module:
-  solve()
