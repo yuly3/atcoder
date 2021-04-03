@@ -1,37 +1,30 @@
-import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
+import algorithm, bitops, deques, heapqueue, math, sets, sequtils, strformat, strutils, sugar, tables
 
-proc input*(): string =
-  return stdin.readLine
-proc chmax*[T: SomeNumber](num0: var T, num1: T) =
-  num0 = max(num0, num1)
-proc chmin*[T: SomeNumber](num0: var T, num1: T) =
-  num0 = min(num0, num1)
-proc `%=`*[T: SomeInteger](num0: var T, num1: T) =
-  num0 = num0 mod num1
+proc input*(): string {.inline.} = stdin.readLine
+proc inputs*(): seq[string] {.inline.} = stdin.readLine.split
+proc inputInt*(): int {.inline.} = stdin.readLine.parseInt
+proc inputInts*(): seq[int] {.inline.} = stdin.readLine.split.map(parseInt)
+proc chmax*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = max(num0, num1)
+proc chmin*[T: SomeNumber](num0: var T, num1: T) {.inline.} = num0 = min(num0, num1)
+proc `%=`*[T: SomeInteger](num0: var T, num1: T) {.inline.} = num0 = floorMod(num0, num1)
 
-var
-  A, B: seq[int]
-  dp: array[1010, array[1010, int]]
-
-proc solve() =
+when isMainModule:
   var N, M: int
-  (N, M) = input().split.map(parseInt)
-  A = input().split.map(parseInt)
-  B = input().split.map(parseInt)
-
-  for i in 0..N:
-    for j in 0..M:
-      if i == 0:
-        dp[i][j] = j
-        continue
-      if j == 0:
-        dp[i][j] = i
-        continue
-      if A[i - 1] != B[j - 1]:
-        dp[i][j] = min([dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + 1])
-      else:
+  (N, M) = inputInts()
+  let
+    A = inputInts()
+    B = inputInts()
+  
+  var dp: array[1010, array[1010, int]]
+  for i in 1..N:
+    dp[i][0] = i
+  for j in 1..M:
+    dp[0][j] = j
+  
+  for i in 1..N:
+    for j in 1..M:
+      if A[i - 1] == B[j - 1]:
         dp[i][j] = min([dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1]])
+      else:
+        dp[i][j] = min([dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]]) + 1
   echo dp[N][M]
-
-when is_main_module:
-  solve()
