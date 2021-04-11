@@ -19,7 +19,6 @@ class RollingHash:
             self.pw[i + 1] = v = v * base % mod
     
     def slice(self, left, right):
-        # [left, right)
         return (self.h[right] - self.h[left] * self.pw[right - left]) % self.mod
     
     def concatenate(self, left0, right0, left1, right1):
