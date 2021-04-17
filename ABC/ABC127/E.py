@@ -19,14 +19,18 @@ def solve():
     N, M, K = map(int, rl().split())
     MOD = 10 ** 9 + 7
     
+    comb = cmb(N * M - 2, K - 2)
     ans = 0
-    for i in range(N):
-        for j in range(M):
-            tmp = (N - i) * (M - j) * (i + j) % MOD
-            if i != 0 and j != 0:
-                tmp *= 2
-            ans = (ans + tmp) % MOD
-    ans = ans * cmb(N * M - 2, K - 2) % MOD
+    for d in range(1, N):
+        cnt = d * (N - d) * M ** 2 % MOD
+        cnt *= comb
+        ans += cnt % MOD
+        ans %= MOD
+    for d in range(1, M):
+        cnt = d * (M - d) * N ** 2 % MOD
+        cnt *= comb
+        ans += cnt % MOD
+        ans %= MOD
     print(ans)
 
 
