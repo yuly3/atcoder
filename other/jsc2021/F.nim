@@ -80,7 +80,8 @@ when isMainModule:
   abSet.incl(0)
   for (ti, xi, yi) in TXY:
     abSet.incl(yi)
-  let ab = toSeq(sorted(toSeq(abSet.items)))
+  var ab = toSeq(abSet)
+  ab.sort()
 
   var abToIdx = initTable[int, int]()
   for i, abi in ab:
