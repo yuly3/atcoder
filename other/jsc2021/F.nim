@@ -66,6 +66,7 @@ proc query*[T, K](self: var SegmentTree[T, K], left, right: Natural): T =
 proc `[]`*[T, K](self: var SegmentTree[T, K], k: int): T =
   return self.data[k + self.N0 - 1]
 
+
 when isMainModule:
   var N, M, Q: int
   (N, M, Q) = inputInts()
