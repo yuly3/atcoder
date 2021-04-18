@@ -485,7 +485,7 @@ proc popMax*[T](self: var SquareSkipList[T]): T =
     self.layer1.delete(self.layer1.len - 2, self.layer1.len - 2)
     return res
   else:
-    assert(False, "This is empty")
+    assert(false, "This is empty")
 
 proc `[]`*[T](self: var SquareSkipList[T], k: Natural): T =
   var
