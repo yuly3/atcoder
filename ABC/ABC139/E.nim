@@ -25,21 +25,24 @@ when isMainModule:
       graph[cur].add(to)
       cur = to
   
-  var dist, stat: array[10^6, int]
+  var
+    dist: array[10^6, int]
+    stat: array[10^6, bool]
 
   proc dfs(cur: int): int =
-    if stat[cur] == 2:
+    if dist[cur] != -1:
       return dist[cur]
 
     var maxDist = 0
-    stat[cur] = 1
+    stat[cur] = true
     for to in graph[cur]:
-      if stat[to] == 1:
+      if stat[to]:
         echo -1
         quit()
       maxDist.chmax(dfs(to) + 1)
-    stat[cur] = 2
+    stat[cur] = false
     dist[cur] = maxDist
     return maxDist
   
+  dist.fill(-1)
   echo dfs(0)
