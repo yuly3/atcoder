@@ -43,7 +43,7 @@ when isMainModule:
     cur = sv
   while ans.len != dist[sv][sv]:
     for to in graph[cur]:
-      if dist[cur][to] == 1 and dist[sv][to] + dist[to][sv] == dist[sv][sv]:
+      if dist[sv][to] + dist[to][sv] == dist[sv][sv]:
         cur = to
         ans.add(to + 1)
         break
