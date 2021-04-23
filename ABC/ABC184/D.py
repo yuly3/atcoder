@@ -1,5 +1,4 @@
 import sys
-from functools import lru_cache
 
 sys.setrecursionlimit(10 ** 7)
 rl = sys.stdin.readline
@@ -7,15 +6,23 @@ rl = sys.stdin.readline
 
 def solve():
     A, B, C = map(int, rl().split())
-    
-    @lru_cache(maxsize=None)
+
+    dp = [[[0.] * 101 for _ in range(101)] for _ in range(101)]
+
     def f(x, y, z):
-        if x == 100 or y == 100 or z == 100:
+        if 100 in (x, y, z):
             return 0
-        
+        if dp[x][y][z] != 0.:
+            return dp[x][y][z]
+
+        inc_x = f(x + 1, y, z) + 1
+        inc_y = f(x, y + 1, z) + 1
+        inc_z = f(x, y, z + 1) + 1
         den = x + y + z
-        return x / den * (f(x + 1, y, z) + 1) + y / den * (f(x, y + 1, z) + 1) + z / den * (f(x, y, z + 1) + 1)
-    
+        res = (x * inc_x + y * inc_y + z * inc_z) / den
+        dp[x][y][z] = res
+        return res
+
     print(f(A, B, C))
 
 
