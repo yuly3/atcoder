@@ -1,13 +1,79 @@
 import algorithm, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
 
-proc make_divisors*(n: Positive): seq[int] =
-  var divisors = newSeq[int]()
-  for i in 1..int(pow(float(n), 0.5)):
+proc makeDivisors*(n: Positive): seq[int] =
+  let limit = n.float.sqrt.ceil.int
+  for i in 1..limit:
     if n mod i == 0:
-      divisors.add(i)
+      result.add(i)
       if i != n div i:
-        divisors.add(n div i)
-  return divisors
+        result.add(n div i)
+
+proc factorization*(n: Positive): seq[tuple[x: int, exp: int]] =
+  var tmp = n
+  let limit = n.float.sqrt.ceil.int
+  for i in 2..limit:
+    if floorMod(tmp, i) == 0:
+      var exp: int
+      while floorMod(tmp, i) == 0:
+        inc exp
+        tmp = floorDiv(tmp, i)
+      result.add((i, exp))
+  if tmp != 1:
+    result.add((tmp, 1))
+  if result.len == 0:
+    result.add((n, 1))
+
+proc eratosthenes*(n: Positive): seq[int] =
+  var isPrime = newSeqWith(n + 1, true)
+  isPrime[0] = false; isPrime[1] = false
+  for p in 2..n:
+    if not isPrime[p]:
+      continue
+    result.add(p)
+    for i in countup(2*p, n, p):
+      isPrime[i] = false
+
+proc invGcd*(a, b: int): (int, int) =
+  let a = floorMod(a, b)
+  if a == 0:
+    return (b, 0)
+
+  var
+    (s, t) = (b, a)
+    (m0, m1) = (0, 1)
+  while t != 0:
+    let
+      u = floorDiv(s, t)
+    s -= t * u
+    m0 -= m1 * u
+    (s, t) = (t, s)
+    (m0, m1) = (m1, m0)
+  
+  if m0 < 0:
+    m0 += floorDiv(b, s)
+  return (s, m0)
+
+proc crt*(r, m: openArray[int]): (int, int) =
+  var (r0, m0) = (0, 1)
+  for i in 0..<r.len:
+    var (r1, m1) = (floorMod(r[i], m[i]), m[i])
+    if m0 < m1:
+      (r0, r1) = (r1, r0)
+      (m0, m1) = (m1, m0)
+    if floorMod(m0, m1) == 0:
+      if floorMod(r0, m1) != r1:
+        return (0, 0)
+      continue
+
+    let (g, im) = invGcd(m0, m1)
+    if floorMod(r1 - r0, g) != 0:
+      return (0, 0)
+
+    let u1 = floorDiv(m0*m1, g)
+    r0 += floorMod(floorDiv(r1 - r0, g)*m0*im, u1)
+    m0 = u1
+  return (r0, m0)
+
 
 when not declared ATCODER_UNIONFIND_HPP:
   const ATCODER_UNIONFIND_HPP* = 1
