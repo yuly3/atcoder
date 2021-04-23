@@ -39,14 +39,14 @@ when isMainModule:
   
   let sv = vertexes[0]
   var
-    ans = @[sv]
+    ans = @[sv + 1]
     cur = sv
   while ans.len != dist[sv][sv]:
-    for u in 0..<N:
-      if dist[cur][u] == 1 and dist[sv][u] + dist[u][sv] == dist[sv][sv]:
-        cur = u
-        ans.add(u)
+    for to in graph[cur]:
+      if dist[cur][to] == 1 and dist[sv][to] + dist[to][sv] == dist[sv][sv]:
+        cur = to
+        ans.add(to + 1)
         break
   
   echo ans.len
-  echo ans.mapIt(it + 1).join("\n")
+  echo ans.join("\n")
