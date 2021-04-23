@@ -43,13 +43,10 @@ when isMainModule:
     cur = sv
   while ans.len != dist[sv][sv]:
     for u in 0..<N:
-      if dist[cur][u] == 1:
-        if dist[sv][u] + dist[u][sv] == dist[sv][sv]:
-          cur = u
-          ans.add(u)
-          break
-        if u == sv:
-          break
+      if dist[cur][u] == 1 and dist[sv][u] + dist[u][sv] == dist[sv][sv]:
+        cur = u
+        ans.add(u)
+        break
   
   echo ans.len
   echo ans.mapIt(it + 1).join("\n")
