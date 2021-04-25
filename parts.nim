@@ -1,4 +1,6 @@
-import algorithm, deques, heapqueue, math, sets, sequtils, strutils, sugar, tables
+import
+  algorithm, bitops, deques, heapqueue, math, macros, sets, sequtils,
+  strformat, strutils, sugar, tables
 
 proc makeDivisors*(n: Positive): seq[int] =
   let limit = n.float.sqrt.ceil.int
@@ -74,6 +76,51 @@ proc crt*(r, m: openArray[int]): (int, int) =
     m0 = u1
   return (r0, m0)
 
+proc modPow*(a, k: int, MOD=10^9 + 7): int =
+  var
+    a = a
+    k = k
+  result = 1
+  while k > 0:
+    if bitand(k, 1) == 1:
+      result = floorMod(result*a, MOD)
+    a = floorMod(a*a, MOD)
+    k = k shr 1
+
+proc modInv*(a: int, MOD=10^9 + 7): int =
+  return modPow(a, MOD - 2, MOD)
+
+proc matVecMul*(A: seq[seq[int]], B: seq[int], MOD=10^9 + 7): seq[int] =
+  let N = B.len
+  result = newSeq[int](N)
+  for i in 0..<N:
+    for j in 0..<N:
+      result[i] = floorMod(result[i] + floorMod(A[i][j]*B[j], MOD), MOD)
+
+proc matMul*(A, B: seq[seq[int]], MOD=10^9 + 7): seq[seq[int]] =
+  let
+    N0 = A.len
+    N1 = B[0].len
+    N2 = A[0].len
+  result = newSeqWith(N0, newSeq[int](N1))
+  for i in 0..<N0:
+    for j in 0..<N1:
+      for k in 0..<N2:
+        result[i][j] = floorMod(result[i][j] + A[i][k]*B[k][j], MOD)
+
+proc matPow*(A: seq[seq[int]], K: int, MOD=10^9 + 7): seq[seq[int]] =
+  let N = len(A)
+  var
+    A = A
+    K = K
+  result = newSeqWith(N, newSeq[int](N))
+  for i in 0..<N:
+    result[i][i] = 1
+  while K > 0:
+    if bitand(K, 1) == 1:
+      result = matMul(result, A, MOD)
+    A = matMul(A, A, MOD)
+    K = K shr 1
 
 when not declared ATCODER_UNIONFIND_HPP:
   const ATCODER_UNIONFIND_HPP* = 1
