@@ -168,14 +168,12 @@ when not declared ATCODER_UNIONFIND_HPP:
   proc groupCount*(self: var UnionFind): Positive =
     return self.roots.len
 
-
 proc bitLength(n: Natural): Natural =
   const BIT_SIZE = 24
   if n == 0:
     return 0
   let s = toBin(n, BIT_SIZE)
   return BIT_SIZE - s.find('1')
-
 
 when not declared ATCODER_SEGMENTTREE_HPP:
   const ATCODER_SEGMENTTREE_HPP* = 1
@@ -214,18 +212,17 @@ when not declared ATCODER_SEGMENTTREE_HPP:
     var
       L = left + self.N0
       R = right + self.N0
-      res = self.ide_ele
+    result = self.ide_ele
     
     while L < R:
       if (L and 1) == 1:
-        res = self.fold(res, self.data[L - 1])
+        result = self.fold(result, self.data[L - 1])
         inc L
       if (R and 1) == 1:
         dec R
-        res = self.fold(res, self.data[R - 1])
+        result = self.fold(result, self.data[R - 1])
       L = L shr 1
       R = R shr 1
-    return res
 
   proc `[]`*[T, K](self: var SegmentTree[T, K], k: int): T =
     return self.data[k + self.N0 - 1]
@@ -315,7 +312,6 @@ when not declared ATCODER_LAZYSEGTREE_HPP:
       v = self.lazy_data[idx]
       if v == self.lazy_ide_ele:
         continue
-      # v = v shr 1
       self.data[2*idx + 1] = self.eval(self.data[2*idx + 1], v)
       self.data[2*idx + 2] = self.eval(self.data[2*idx + 2], v)
       self.lazy_data[2*idx + 1] = self.merge(self.lazy_data[2*idx + 1], v)
@@ -329,7 +325,6 @@ when not declared ATCODER_LAZYSEGTREE_HPP:
     var
       L = left + self.N0
       R = right + self.N0
-      # x = x
     
     while L < R:
       if (L and 1) == 1:
@@ -342,7 +337,7 @@ when not declared ATCODER_LAZYSEGTREE_HPP:
         self.data[R - 1] = self.eval(self.data[R - 1], x)
       L = L shr 1
       R = R shr 1
-      # x = x shl 1
+    
     var idx: Natural
     for id in ids:
       idx = id - 1
@@ -355,18 +350,17 @@ when not declared ATCODER_LAZYSEGTREE_HPP:
     var
       L = left + self.N0
       R = right + self.N0
-      res = self.ide_ele
+    result = self.ide_ele
     
     while L < R:
       if (L and 1) == 1:
-        res = self.fold(res, self.data[L - 1])
+        result = self.fold(result, self.data[L - 1])
         inc L
       if (R and 1) == 1:
         dec R
-        res = self.fold(res, self.data[R - 1])
+        result = self.fold(result, self.data[R - 1])
       L = L shr 1
       R = R shr 1
-    return res
 
 when not declared ATCODER_DUALSEGTREE_HPP:
   const ATCODER_DUALSEGTREE_HPP* = 1
