@@ -168,6 +168,42 @@ when not declared ATCODER_UNIONFIND_HPP:
   proc groupCount*(self: var UnionFind): Positive =
     return self.roots.len
 
+when not declared ATCODER_COMBINATION_HPP:
+  const ATCODER_COMBINATION_HPP* = 1
+
+  type
+    Combination* = ref object
+      MOD: int
+      fact, factInv, inv: seq[int]
+  
+  proc initCombination*(n: int, MOD=10^9 + 7): Combination =
+    var
+      fact = newSeq[int](n + 1)
+      factInv = newSeq[int](n + 1)
+      inv = newSeq[int](n + 1)
+    fact[0] = 1; fact[1] = 1
+    factInv[0] = 1; factInv[1] = 1
+    inv[1] = 1
+    for i in 2..n:
+      fact[i] = floorMod(fact[i - 1]*i, MOD)
+      inv[i] = floorMod(-inv[MOD mod i]*(MOD div i), MOD)
+      factInv[i] = floorMod(factInv[i - 1]*inv[i], MOD)
+    return Combination(MOD: MOD, fact: fact, factInv: factInv, inv: inv)
+
+  proc nCr*(self: var Combination, n, r: int): int =
+    if r < 0 or n < r:
+      return 0
+    let r = min(r, n - r)
+    return (self.fact[n]*self.factInv[r] mod self.MOD)*self.factInv[n - r] mod self.MOD
+
+  proc nHr*(self: var Combination, n, r: int): int =
+    return self.nCr(n + r - 1, r)
+
+  proc nPr*(self: var Combination, n, r: int): int =
+    if r < 0 or n < r:
+      return 0
+    return self.fact[n]*self.factInv[n - r] mod self.MOD
+
 proc bitLength(n: Natural): Natural =
   const BIT_SIZE = 24
   if n == 0:
