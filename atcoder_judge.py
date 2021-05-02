@@ -188,7 +188,6 @@ def judge(contest_name, contest_num, question_name, extention):
                                            test_cases_data)
     test_cases_executer.execute()
     print('Done')
-    return
 
 
 def get_args():
@@ -196,7 +195,7 @@ def get_args():
     parser.add_argument('contest_name')
     parser.add_argument('-n', '--contest_num', default='')
     parser.add_argument('question_name')
-    parser.add_argument('-e', '--extention', default='py')
+    parser.add_argument('-e', '--extention', default='nim')
     
     return parser.parse_args()
 

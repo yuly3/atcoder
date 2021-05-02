@@ -1,5 +1,5 @@
+import argparse
 import os
-import sys
 from shutil import copyfile
 
 
@@ -7,7 +7,7 @@ def path_check(directory_name):
     return os.path.exists('./' + directory_name)
 
 
-def make_contest_dir(contest_name, contest_num):
+def make_contest_dir(contest_name, contest_num, extention):
     if contest_num != '':
         new_contest = contest_name.upper() + '/' + contest_name.upper() + contest_num
     else:
@@ -18,20 +18,25 @@ def make_contest_dir(contest_name, contest_num):
     print('Making ' + new_contest)
     os.mkdir(new_contest)
     for i in range(6):
-        new_problem = chr(ord('A') + i) + '.py'
-        copyfile('./template.py', './' + new_contest + '/' + new_problem)
+        new_problem = chr(ord('A') + i) + '.' + extention
+        copyfile('./template.' + extention, './' + new_contest + '/' + new_problem)
     print('Done')
-    return
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('contest_name')
+    parser.add_argument('-n', '--contest_num', default='')
+    parser.add_argument('-e', '--extention', default='nim')
+    
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
-    g_contest_name, g_contest_num = '', ''
-    exe_arg = sys.argv[1:]
-    if len(exe_arg) == 2:
-        g_contest_name, g_contest_num = exe_arg
-    elif len(exe_arg) == 1:
-        g_contest_name = exe_arg[0]
+    exe_args = get_args()
+    
+    g_contest_num = exe_args.contest_num
     if g_contest_num != '':
         g_contest_num = g_contest_num.zfill(3)
     
-    make_contest_dir(g_contest_name, g_contest_num)
+    make_contest_dir(exe_args.contest_name, g_contest_num, exe_args.extention)
