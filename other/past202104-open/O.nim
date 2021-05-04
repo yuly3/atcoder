@@ -205,7 +205,7 @@ when isMainModule:
   
   var
     tree = newSeqWith(N, newSeq[int]())
-    graph = newSeqWith(N, newSeq[int]())
+    graph: array[100001, seq[int]]
     node: seq[int]
     uf = initUnionFind(N)
   for (ai, bi) in edges:
@@ -240,7 +240,7 @@ when isMainModule:
     que.push((0, ui))
     while que.len > 0:
       let (c, cur) = que.pop
-      if dist[cur] < c:
+      if dist[cur] < c or ans[i] < c:
         continue
       if cur == vi:
         ans[i].chmin(c)
@@ -249,10 +249,14 @@ when isMainModule:
       for to in graph[cur]:
         if dist.getOrDefault(to, INF) <= c:
           continue
+        if ans[i] < c + 1:
+          continue
         dist[to] = c + 1
         que.push((c + 1, to))
       for j, to in node:
         if dist.getOrDefault(to, INF) <= c:
+          continue
+        if ans[i] < c + lcaDist[cur][j]:
           continue
         dist[to] = c + lcaDist[cur][j]
         que.push((c + lcaDist[cur][j], to))
