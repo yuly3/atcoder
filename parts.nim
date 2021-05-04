@@ -448,7 +448,7 @@ when not declared ATCODER_DUALSEGTREE_HPP:
       idx = id - 1
       v = self.lazy_data[idx]
       if v == self.lazy_ide_ele:
-          continue
+        continue
       self.lazy_data[2*idx + 1] = self.merge(self.lazy_data[2*idx + 1], v)
       self.lazy_data[2*idx + 2] = self.merge(self.lazy_data[2*idx + 2], v)
       self.lazy_data[idx] = self.lazy_ide_ele
@@ -484,7 +484,7 @@ when not declared ATCODER_LOWESTCOMMONANCESTOR_HPP:
       depth: seq[int]
       tree, parent: seq[seq[int]]
 
-  proc initLowestCommonAncestor*(tree: seq[seq[int]]): LowestCommonAncestor =
+  proc initLowestCommonAncestor*(tree: var seq[seq[int]]): LowestCommonAncestor =
     let
       size = tree.len
       LV = bitLength(size)
@@ -529,8 +529,8 @@ when not declared ATCODER_LOWESTCOMMONANCESTOR_HPP:
     return self.parent[0][v]
 
   proc dist*(self: var LowestCommonAncestor, u, v: Natural): int =
-      let ancestor = self.query(u, v)
-      return self.depth[u] + self.depth[v] - 2*self.depth[ancestor]
+    let ancestor = self.query(u, v)
+    return self.depth[u] + self.depth[v] - 2*self.depth[ancestor]
 
 when not declared ATCODER_SQUARESKIPLIST_HPP:
   const ATCODER_SQUARESKIPLIST_HPP* = 1
