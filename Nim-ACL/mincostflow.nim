@@ -112,7 +112,7 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
       if prevCostPerFlow == d:
         discard result.pop()
       result.add((flow, cost))
-      prevCostPerFlow = d
+      prevCostPerFlow = cost
   
   proc flow*[Cap, Cost](self: var MCFGraph[Cap, Cost], s, t: int, flowLimit: Cap): (Cap, Cost) =
     self.slope(s, t, flowLimit)[^1]
