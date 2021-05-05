@@ -609,8 +609,7 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
       idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
     if idx0 == self.layer0[idx1].len:
       return self.layer1[idx1] == x
-    else:
-      return self.layer0[idx1][idx0] == x
+    return self.layer0[idx1][idx0] == x
 
   proc pop*[T](self: var SquareSkipList[T], idx: Natural): T =
     var
@@ -624,22 +623,19 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
     if s == idx:
       self.layer0[i] = concat(self.layer0[i], @[self.layer0[i + 1]])
       self.layer0.delete(i + 1, i + 1)
-      let res = self.layer1[i]
+      result = self.layer1[i]
       self.layer1.delete(i, i)
-      return res
     else:
-      let res = self.layer0[i][idx - s]
+      result = self.layer0[i][idx - s]
       self.layer0[i].delete(idx - s, idx - s)
-      return res
 
   proc popMax*[T](self: var SquareSkipList[T]): T =
     if self.layer0[^1].len != 0:
       return self.layer0[^1].pop()
     elif 1 < self.layer1.len:
       self.layer0.delete(self.layer0.len - 1, self.layer0.len - 1)
-      let res = self.layer1[^2]
+      result = self.layer1[^2]
       self.layer1.delete(self.layer1.len - 2, self.layer1.len - 2)
-      return res
     else:
       assert(false, "This is empty")
 
@@ -657,10 +653,16 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
     return self.layer0[ii][k - s]
 
   proc min*[T](self: var SquareSkipList[T]): T =
-    return if self.layer0[0].len != 0: self.layer0[0][0] else: self.layer1[0]
+    if self.layer0[0].len != 0:
+      return self.layer0[0][0]
+    return self.layer1[0]
 
   proc max*[T](self: var SquareSkipList[T]): T =
-    return if self.layer0[^1].len != 0: self.layer0[^1][^1] elif 1 < self.layer1.len: self.layer1[^2] else: self.layer1[^1]
+    if self.layer0[^1].len != 0:
+      return self.layer0[^1][^1]
+    elif 1 < self.layer1.len:
+      return self.layer1[^2]
+    return self.layer1[^1]
 
 when not declared ATCODER_HLDECOMPOSITION_HPP:
   const ATCODER_HLDECOMPOSITION_HPP* = 1
