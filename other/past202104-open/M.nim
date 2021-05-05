@@ -86,140 +86,66 @@ proc chmax*[T: SomeNumber](n: var T, m: T) {.inline.} = n = max(n, m)
 proc chmin*[T: SomeNumber](n: var T, m: T) {.inline.} = n = min(n, m)
 proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
 
-when not declared ATCODER_SQUARESKIPLIST_HPP:
-  const ATCODER_SQUARESKIPLIST_HPP* = 1
-
+proc bitLength(n: Natural): Natural =
+  const BIT_SIZE = 24
+  if n == 0:
+    return 0
+  let s = toBin(n, BIT_SIZE)
+  return BIT_SIZE - s.find('1')
+  
+when not declared ATCODER_SEGMENTTREE_HPP:
+  const ATCODER_SEGMENTTREE_HPP* = 1
+  
   type
-    SquareSkipList*[T] = ref object
-      square: Natural
-      rand_y: int
-      layer1: seq[T]
-      layer0: seq[seq[T]]
-      cmpFunc: (T, T) -> int
-
-  proc initSquareSkipList*[T](inf: T, cmpFunc: (T, T) -> int, square=1000, rand_y=42): SquareSkipList[T] =
+    SegmentTree*[T, K] = ref object
+      N0: Positive
+      ideEle: T
+      data: seq[T]
+      fold: (T, T) -> T
+      eval: (T, K) -> T
+  
+  proc initSegmentTree*[T, K](size: Positive, ideEle: T, fold: (T, T) -> T, eval: (T, K) -> T): SegmentTree[T, K] =
+    let
+      N0 = 1 shl bitLength(size - 1)
+      data = newSeqWith(2*N0, ideEle)
+    return SegmentTree[T, K](N0: N0, ideEle: ideEle, data: data, fold: fold, eval: eval)
+  
+  proc toSegmentTree*[T, K](init_value: openArray[T], ideEle: T, fold: (T, T) -> T, eval: (T, K) -> T): SegmentTree[T, K] =
+    let N0 = 1 shl bitLength(init_value.len - 1)
+    var data = newSeqWith(2*N0, ideEle)
+    for i, x in init_value:
+      data[i + N0 - 1] = x
+    for i in countdown(N0 - 2, 0):
+      data[i] = fold(data[2*i + 1], data[2*i + 2])
+    return SegmentTree[T, K](N0: N0, ideEle: ideEle, data: data, fold: fold, eval: eval)
+  
+  proc update*[T, K](self: var SegmentTree[T, K], idx: Natural, x: K) =
+    var k = self.N0 - 1 + idx
+    self.data[k] = self.eval(self.data[k], x)
+    while k != 0:
+      k = (k - 1) div 2
+      self.data[k] = self.fold(self.data[2*k + 1], self.data[2*k + 2])
+  
+  proc query*[T, K](self: var SegmentTree[T, K], left, right: Natural): T =
     var
-      layer1 = @[inf]
-      layer0 = newSeqWith(1, newSeq[T]())
-    return SquareSkipList[T](square: square, rand_y: rand_y, layer1: layer1, layer0: layer0, cmpFunc: cmpFunc)
-
-  proc add*[T](self: var SquareSkipList[T], x: T) =
-    var y = self.rand_y
-    y = y xor ((y and 0x7ffff) shl 13)
-    y = y xor (y shr 17)
-    y = y xor ((y and 0x7ffffff) shl 5)
-    self.rand_y = y
-
-    if floorMod(y, self.square) == 0:
-      let idx1 = self.layer1.upperBound(x, self.cmpFunc)
-      self.layer1.insert(@[x], idx1)
-      let idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
-      self.layer0.insert(self.layer0[idx1][idx0..^1], idx1 + 1)
-      self.layer0[idx1].delete(idx0, self.layer0[idx1].len)
-    else:
-      let
-        idx1 = self.layer1.upperBound(x, self.cmpFunc)
-        idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
-      self.layer0[idx1].insert(@[x], idx0)
-
-  proc remove*[T](self: var SquareSkipList[T], x: T) =
-    let
-      idx1 = self.layer1.lowerBound(x, self.cmpFunc)
-      idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
-    if idx0 == self.layer0[idx1].len:
-      self.layer1.delete(idx1, idx1)
-      self.layer0[idx1] = concat(self.layer0[idx1], self.layer0[idx1 + 1])
-      self.layer0.delete(idx1 + 1, idx1 + 1)
-    else:
-      self.layer0[idx1].delete(idx0, idx0)
-
-  proc nextEqual*[T](self: var SquareSkipList[T], x: T): T =
-    let
-      idx1 = self.layer1.lowerBound(x, self.cmpFunc)
-      idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
-    if idx0 == len(self.layer0[idx1]):
-      return self.layer1[idx1]
-    return self.layer0[idx1][idx0]
-
-  proc next*[T](self: var SquareSkipList[T], x: T): T =
-    let
-      idx1 = self.layer1.upperBound(x, self.cmpFunc)
-      idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
-    if idx0 == len(self.layer0[idx1]):
-      return self.layer1[idx1]
-    return self.layer0[idx1][idx0]
-
-  proc prev*[T](self: var SquareSkipList[T], x: T): T =
-    let
-      idx1 = self.layer1.lowerBound(x, self.cmpFunc)
-      idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
-    if idx0 == 0:
-      return self.layer1[idx1 - 1]
-    return self.layer0[idx1][idx0 - 1]
-
-  proc contains*[T](self: var SquareSkipList[T], x: T): bool =
-    let
-      idx1 = self.layer1.lowerBound(x, self.cmpFunc)
-      idx0 = self.layer0[idx1].lowerBound(x, self.cmpFunc)
-    if idx0 == self.layer0[idx1].len:
-      return self.layer1[idx1] == x
-    return self.layer0[idx1][idx0] == x
-
-  proc pop*[T](self: var SquareSkipList[T], idx: Natural): T =
-    var
-      s = -1
-      i: int
-    for ii, l0 in self.layer0:
-      s += l0.len + 1
-      i = ii
-      if idx <= s:
-        break
-    if s == idx:
-      self.layer0[i] = concat(self.layer0[i], @[self.layer0[i + 1]])
-      self.layer0.delete(i + 1, i + 1)
-      let res = self.layer1[i]
-      self.layer1.delete(i, i)
-      return res
-    else:
-      let res = self.layer0[i][idx - s]
-      self.layer0[i].delete(idx - s, idx - s)
-      return res
-
-  proc popMax*[T](self: var SquareSkipList[T]): T =
-    if self.layer0[^1].len != 0:
-      return self.layer0[^1].pop()
-    elif 1 < self.layer1.len:
-      self.layer0.delete(self.layer0.len - 1, self.layer0.len - 1)
-      let res = self.layer1[^2]
-      self.layer1.delete(self.layer1.len - 2, self.layer1.len - 2)
-      return res
-    else:
-      assert(false, "This is empty")
-
-  proc `[]`*[T](self: var SquareSkipList[T], k: Natural): T =
-    var
-      s = -1
-      ii = 0
-    for i, l0 in self.layer0:
-      s += l0.len + 1
-      ii = i
-      if k <= s:
-        break
-    if s == k:
-      return self.layer1[ii]
-    return self.layer0[ii][k - s]
-
-  proc min*[T](self: var SquareSkipList[T]): T =
-    return if self.layer0[0].len != 0: self.layer0[0][0] else: self.layer1[0]
-
-  proc max*[T](self: var SquareSkipList[T]): T =
-    return if self.layer0[^1].len != 0: self.layer0[^1][^1] elif 1 < self.layer1.len: self.layer1[^2] else: self.layer1[^1]
+      L = left + self.N0
+      R = right + self.N0
+    result = self.ideEle
+  
+    while L < R:
+      if (L and 1) == 1:
+        result = self.fold(result, self.data[L - 1])
+        inc L
+      if (R and 1) == 1:
+        dec R
+        result = self.fold(result, self.data[R - 1])
+      L = L shr 1
+      R = R shr 1
+  
+  proc `[]`*[T, K](self: var SegmentTree[T, K], k: int): T =
+    return self.data[k + self.N0 - 1]
 
 type Seg* = tuple[l, r, x: int]
-proc cmp*(x, y: Seg): int =
-  if x.r > y.r: return 1
-  elif x.r == y.r: return 0
-  else: return -1
 
 when isMainModule:
   var
@@ -227,52 +153,53 @@ when isMainModule:
     A = inputInts()
     Q = inputInt()
     li, ri, xi: int
-    query: seq[Seg] = collect(newSeq):
+    queries: seq[Seg] = collect(newSeq):
       for _ in 0..<Q: (li, ri, xi) = inputInts(); (li - 1, ri - 1, xi)
   
+  const ideEle: Seg = (200001, 200001, 0)
   var
     counter = initTable[int, int]()
-    ssl = initSquareSkipList[Seg]((200001, 200001, 0), cmp, 450)
+    segTree = initSegmentTree(N, ideEle, (a, b) => (if a.l < b.l: a else: b), (a, b: Seg) => b)
   for i, ai in A:
     if counter.hasKeyOrPut(ai, 1):
       inc counter[ai]
-    ssl.add((i, i, ai))
+    segTree.update(i, (i, i, ai))
   
   var prevAns: int
   for _, val in counter:
     prevAns += val*(val - 1) div 2
   
   var ans = newSeq[int](Q)
-  for i, nxtSeg in query:
+  for i, nxtSeg in queries:
     var
       deff = initTable[int, int]()
-      seg = ssl.nextEqual((0, nxtSeg.l, 0))
-    ssl.remove(seg)
+      seg = segTree.query(nxtSeg.l, N)
+    segTree.update(seg.r, ideEle)
     deff[seg.x] = -(min(seg.r, nxtSeg.r) - nxtSeg.l + 1)
     if seg.l < nxtSeg.l:
       let newSeg = (seg.l, nxtSeg.l - 1, seg.x)
-      ssl.add(newSeg)
+      segTree.update(nxtSeg.l - 1, newSeg)
     if seg.r > nxtSeg.r:
       let newSeg = (nxtSeg.r + 1, seg.r, seg.x)
-      ssl.add(newSeg)
+      segTree.update(seg.r, newSeg)
     
     while true:
-      seg = ssl.next(seg)
+      seg = segTree.query(seg.r + 1, N)
       if seg.r >= nxtSeg.r:
         break
-      ssl.remove(seg)
+      segTree.update(seg.r, ideEle)
       if deff.hasKeyOrPut(seg.x, -(seg.r - seg.l + 1)):
         deff[seg.x] -= seg.r - seg.l + 1
     
     if seg.l <= nxtSeg.r:
-      ssl.remove(seg)
+      segTree.update(seg.r, ideEle)
       if deff.hasKeyOrPut(seg.x, -(nxtSeg.r - seg.l + 1)):
         deff[seg.x] -= nxtSeg.r - seg.l + 1
       if seg.r > nxtSeg.r:
         let newSeg = (nxtSeg.r + 1, seg.r, seg.x)
-        ssl.add(newSeg)
-
-    ssl.add(nxtSeg)
+        segTree.update(seg.r, newSeg)
+    
+    segTree.update(nxtSeg.r, nxtSeg)
     if deff.hasKeyOrPut(nxtSeg.x, nxtSeg.r - nxtSeg.l + 1):
       deff[nxtSeg.x] += nxtSeg.r - nxtSeg.l + 1
     
