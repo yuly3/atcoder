@@ -214,69 +214,32 @@ when not declared ATCODER_SEGTREE_HPP:
       if not ((r and -r) != r): break
     return 0
 
-type Seg* = tuple[l, r, x: int]
-
 when isMainModule:
+  var N, Q, ti, xi, yi: int
+  (N, Q) = inputInts()
+  let query = collect(newSeq):
+    for _ in 0..<Q: (ti, xi, yi) = inputInts(); (ti, xi, yi)
+  
+  const INF = 10^9
   var
-    N = inputInt()
-    A = inputInts()
-    Q = inputInt()
-    li, ri, xi: int
-    queries: seq[Seg] = collect(newSeq):
-      for _ in 0..<Q: (li, ri, xi) = inputInts(); (li - 1, ri - 1, xi)
+    a = toSeq(0..N + 1)
+    segTree = initSegTree(newSeqWith(N + 2, INF), (x: int, y: int) => min(x, y), () => INF)
   
-  const ideEle: Seg = (200001, 200001, 0)
-  var
-    counter = initTable[int, int]()
-    segTree = initSegTree(N, (a: Seg, b: Seg) => (if a.l < b.l: a else: b), () => ideEle)
-  for i, ai in A:
-    if counter.hasKeyOrPut(ai, 1):
-      inc counter[ai]
-    segTree.set(i, (i, i, ai))
+  proc f(x: int) =
+    swap(a[x], a[x + 1])
+    for i in x - 1..x + 1:
+      if a[i] > a[i + 1]:
+        segTree.set(i, i)
+      else:
+        segTree.set(i, INF)
   
-  var prevAns: int
-  for _, val in counter:
-    prevAns += val*(val - 1) div 2
-  
-  var ans = newSeq[int](Q)
-  for i, nxtSeg in queries:
-    var
-      deff = initTable[int, int]()
-      seg = segTree.prod(nxtSeg.l..<N)
-    segTree.set(seg.r, ideEle)
-    deff[seg.x] = -(min(seg.r, nxtSeg.r) - nxtSeg.l + 1)
-    if seg.l < nxtSeg.l:
-      let newSeg = (seg.l, nxtSeg.l - 1, seg.x)
-      segTree.set(nxtSeg.l - 1, newSeg)
-    if seg.r > nxtSeg.r:
-      let newSeg = (nxtSeg.r + 1, seg.r, seg.x)
-      segTree.set(seg.r, newSeg)
-    
-    while true:
-      seg = segTree.prod(seg.r + 1..<N)
-      if seg.r >= nxtSeg.r:
-        break
-      segTree.set(seg.r, ideEle)
-      if deff.hasKeyOrPut(seg.x, -(seg.r - seg.l + 1)):
-        deff[seg.x] -= seg.r - seg.l + 1
-    
-    if seg.l <= nxtSeg.r:
-      segTree.set(seg.r, ideEle)
-      if deff.hasKeyOrPut(seg.x, -(nxtSeg.r - seg.l + 1)):
-        deff[seg.x] -= nxtSeg.r - seg.l + 1
-      if seg.r > nxtSeg.r:
-        let newSeg = (nxtSeg.r + 1, seg.r, seg.x)
-        segTree.set(seg.r, newSeg)
-    
-    segTree.set(nxtSeg.r, nxtSeg)
-    if deff.hasKeyOrPut(nxtSeg.x, nxtSeg.r - nxtSeg.l + 1):
-      deff[nxtSeg.x] += nxtSeg.r - nxtSeg.l + 1
-    
-    for key, val in deff:
-      var cnt = counter.getOrDefault(key, 0)
-      prevAns -= cnt*(cnt - 1) div 2
-      cnt += val
-      prevAns += cnt*(cnt - 1) div 2
-      counter[key] = cnt
-    ans[i] = prevAns
-  echo ans.join("\n")
+  for (ti, xi, yi) in query:
+    if ti == 1:
+      f(xi)
+    else:
+      while true:
+        let left = segTree.prod(xi..<yi)
+        if left == INF:
+          break
+        f(left)
+  echo a[1..^2].join(" ")
