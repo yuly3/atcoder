@@ -94,32 +94,32 @@ when isMainModule:
   var dp: array[201, array[201, seq[seq[int]]]]
   dp[0][0].add(@[])
 
-  proc output(dpIJ: var seq[seq[int]], s: seq[int]) =
-    if s.len == 0:
+  proc output(dpIJ: var seq[seq[int]], s: ptr seq[int]) =
+    if s[].len == 0:
       return
     for t in dpIJ:
       if t.len == 0:
         continue
       var flg = false
-      if s.len == t.len:
-        for k in 0..<s.len:
-          if A[s[k] - 1] != A[t[k] - 1]:
+      if s[].len == t.len:
+        for k in 0..<s[].len:
+          if A[s[][k] - 1] != A[t[k] - 1]:
             flg = true
             break
       else:
         flg = true
       if flg:
         echo "Yes"
-        echo concat(@[s.len], s).join(" ")
+        echo concat(@[s[].len], s[]).join(" ")
         echo concat(@[t.len], t).join(" ")
         quit()
 
   for i, ai in A:
     for j in 0..<200:
       for se in dp[i][j]:
-        var s = concat(se, @[i + 1])
-        output(dp[i + 1][(j + ai) mod 200], s)
+        let s = concat(se, @[i + 1])
+        output(dp[i + 1][(j + ai) mod 200], s.unsafeAddr)
         dp[i + 1][(j + ai) mod 200].add(s)
-        output(dp[i + 1][j], se)
+        output(dp[i + 1][j], se.unsafeAddr)
         dp[i + 1][j].add(se)
   echo "No"
