@@ -91,7 +91,7 @@ when isMainModule:
     N = inputInt()
     A = inputInts()
   
-  var counter: array[200, seq[int]]
+  var counter: array[200, seq[seq[int]]]
   let length = min(N, 8)
   for S in 1..<1 shl length:
     var
@@ -102,10 +102,19 @@ when isMainModule:
         val += A[i]
         s.add(i + 1)
     val %= 200
-    if counter[val].len > 0:
-      echo "Yes"
-      echo concat(@[counter[val].len], counter[val]).join(" ")
-      echo concat(@[s.len], s).join(" ")
-      quit()
-    counter[val] = s
+    for t in counter[val]:
+      var flg = false
+      if t.len == s.len:
+        for j in 0..<t.len:
+          if A[t[j] - 1] != A[s[j] - 1]:
+            flg = true
+            break
+      else:
+        flg = true
+      if flg:
+        echo "Yes"
+        echo concat(@[t.len], t).join(" ")
+        echo concat(@[s.len], s).join(" ")
+        quit()
+    counter[val].add(s)
   echo "No"
