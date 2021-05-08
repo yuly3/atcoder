@@ -119,7 +119,7 @@ when isMainModule:
       for se in dp[i][j]:
         var s = concat(se, @[i + 1])
         output(dp[i + 1][(j + ai) mod 200], s)
-        dp[i + 1][(j + ai) mod 200].add(concat(se, @[i + 1]))
+        dp[i + 1][(j + ai) mod 200].add(s)
         output(dp[i + 1][j], se)
         dp[i + 1][j].add(se)
   echo "No"
