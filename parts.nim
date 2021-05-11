@@ -425,37 +425,19 @@ when not declared ATCODER_DUALSEGTREE_HPP:
     for i, x in init_value:
       lazy_data[i + N0 - 1] = x
     return DualSegmentTree[T](LV: LV, N0: N0, lazy_ide_ele: lazy_ide_ele, lazy_data: lazy_data, merge: merge, propagatesWhenUpdating: propagatesWhenUpdating)
-
-  iterator gindex*[T](self: var DualSegmentTree[T], left, right: Natural): Natural =
-    var
-      L = (left + self.N0) shr 1
-      R = (right + self.N0) shr 1
-      lc = if (left and 1) == 1: 0 else: bitLength(L and -L)
-      rc = if (right and 1) == 1: 0 else: bitLength(R and -R)
-    for i in 0..<self.LV:
-      if rc <= i:
-        yield R
-      if L < R and lc <= i:
-        yield L
-      L = L shr 1
-      R = R shr 1
-
-  proc propagates*[T](self: var DualSegmentTree[T], ids: seq[Natural]) =
-    var
-      idx: Natural
-      v: T
-    for id in reversed(ids):
-      idx = id - 1
-      v = self.lazy_data[idx]
-      if v == self.lazy_ide_ele:
-        continue
-      self.lazy_data[2*idx + 1] = self.merge(self.lazy_data[2*idx + 1], v)
-      self.lazy_data[2*idx + 2] = self.merge(self.lazy_data[2*idx + 2], v)
-      self.lazy_data[idx] = self.lazy_ide_ele
-
+  
+  proc propagate*[T](self: var DualSegmentTree[T], k: Natural) =
+    for i in countdown(self.LV, 1):
+      let t = k shr i
+      if self.lazy_data[t] != self.lazy_ide_ele:
+        self.lazy_data[2*t + 1] = self.merge(self.lazy_data[2*t + 1], self.lazy_data[t])
+        self.lazy_data[2*t + 2] = self.merge(self.lazy_data[2*t + 2], self.lazy_data[t])
+        self.lazy_data[t] = self.lazy_ide_ele
+  
   proc update*[T](self: var DualSegmentTree[T], left, right: Natural, x: T) =
     if self.propagatesWhenUpdating:
-      self.propagates(toSeq(self.gindex(left, right)))
+      self.propagate(left + self.N0)
+      self.propagate(right + self.N0 - 1)
     var
       L = left + self.N0
       R = right + self.N0
@@ -471,7 +453,7 @@ when not declared ATCODER_DUALSEGTREE_HPP:
       R = R shr 1
 
   proc `[]`*[T](self: var DualSegmentTree[T], k: Natural): T =
-    self.propagates(toSeq(self.gindex(k, k + 1)))
+    self.propagate(k + self.N0)
     return self.lazy_data[k + self.N0 - 1]
 
 when not declared ATCODER_LOWESTCOMMONANCESTOR_HPP:
