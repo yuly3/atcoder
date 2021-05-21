@@ -90,4 +90,34 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var H, W, sy, sx, gy, gx: int
+  (H, W) = inputInts()
+  (sy, sx) = inputInts().mapIt(it - 1)
+  (gy, gx) = inputInts().mapIt(it - 1)
+  let S = newSeqWith(H, input())
+
+  var
+    dist: array[1001, array[1001, array[4, int]]]
+    que = initDeque[(int, int, int)]()
+  for i in 0..<H:
+    for j in 0..<W:
+      dist[i][j].fill(10^9)
+  for i in 0..3:
+    dist[sy][sx][i] = 0
+    que.addLast((sy, sx, i))
+  
+  var cy, cx, dir: int
+  while que.len > 0:
+    (cy, cx, dir) = que.popFirst
+    for i, (dy, dx) in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
+      let (ny, nx) = (cy + dy, cx + dx)
+      if 0 <= ny and ny < H and 0 <= nx and nx < W:
+        if S[ny][nx] == '#':
+          continue
+        var nd = dist[cy][cx][dir]
+        if dir != i:
+          nd.inc
+        if nd < dist[ny][nx][i]:
+          dist[ny][nx][i] = nd
+          que.addLast((ny, nx, i))
+  echo min(dist[gy][gx])

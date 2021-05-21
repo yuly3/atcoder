@@ -90,4 +90,14 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  const MOD = 10^9 + 7
+  var K = inputInt()
+
+  var dp: array[100010, array[10, int]]
+  dp[0][0] = 1
+  for i in 0..<K:
+    for j in 0..<9:
+      for k in 1..9:
+        dp[i + k][(j + k) mod 9] += dp[i][j]
+        dp[i + k][(j + k) mod 9] %= MOD
+  echo dp[K][0]
