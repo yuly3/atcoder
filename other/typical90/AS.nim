@@ -90,36 +90,28 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
 
 when isMainModule:
-  var H, W, sy, sx, gy, gx: int
-  (H, W) = inputInts()
-  (sy, sx) = inputInts().mapIt(it - 1)
-  (gy, gx) = inputInts().mapIt(it - 1)
-  let S = newSeqWith(H, input())
-
-  var
-    dist: array[1001, array[1001, array[4, int]]]
-    que = initDeque[(int, int, int)]()
-  for i in 0..<H:
-    for j in 0..<W:
-      dist[i][j].fill(10^9)
-  for i in 0..3:
-    dist[sy][sx][i] = 0
-    que.addLast((sy, sx, i))
+  var N, K: int
+  (N, K) = inputInts()
+  var X, Y: array[20, int]
+  for i in 0..<N:
+    (X[i], Y[i]) = inputInts()
   
-  var cy, cx, dir: int
-  while que.len > 0:
-    (cy, cx, dir) = que.popFirst
-    if cy == gy and cx == gx:
-      echo dist[gy][gx][dir]
-      quit()
-    for i, (dy, dx) in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
-      let (ny, nx) = (cy + dy, cx + dx)
-      if 0 <= ny and ny < H and 0 <= nx and nx < W:
-        if S[ny][nx] == '#':
-          continue
-        if dir == i and dist[ny][nx][i] > dist[cy][cx][dir]:
-          dist[ny][nx][i] = dist[cy][cx][dir]
-          que.addFirst((ny, nx, i))
-        elif dir != i and dist[ny][nx][i] > dist[cy][cx][dir] + 1:
-          dist[ny][nx][i] = dist[cy][cx][dir] + 1
-          que.addLast((ny, nx, i))
+  var maxDist: array[2^16, int]
+  for S in 1..<1 shl N:
+    var bits = collect(newSeq):
+      for i in 0..<N:
+        if bitand(S shr i, 1) == 1: i
+    maxDist[S] = maxDist[S - (1 shl bits[0])]
+    for i in 1..<bits.len:
+      maxDist[S].chmax((X[bits[0]] - X[bits[i]])^2 + (Y[bits[0]] - Y[bits[i]])^2)
+  
+  var dp: array[2^16, array[16, int]]
+  for S in 1..<1 shl N:
+    dp[S].fill(10^18)
+    for i in 1..K:
+      var T = S
+      while T > 0:
+        dp[S][i].chmin(max(dp[S - T][i - 1], maxDist[T]))
+        T.dec
+        T = bitand(T, S)
+  echo dp[(1 shl N) - 1][K]
