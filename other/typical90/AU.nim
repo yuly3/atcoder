@@ -89,35 +89,108 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc chmin*[T: SomeNumber](n: var T, m: T) {.inline.} = n = min(n, m)
   proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
 
+when not declared ATCODER_ROLLINGHASH_HPP:
+  const ATCODER_ROLLINGHASH_HPP* = 1
+
+  const
+    mask30 = (1 shl 30) - 1
+    mask31 = (1 shl 31) - 1
+    mask61 = (1 shl 61) - 1
+  
+  proc calcMod(x, MOD: int): int =
+    let
+      xu = x shr 61
+      xd = x and mask61
+    result = xu + xd
+    if result >= MOD:
+      result -= MOD
+  
+  proc modMul(a, b, MOD: int): int =
+    let
+      au = a shr 31
+      ad = a and mask31
+      bu = b shr 31
+      bd = b and mask31
+      mid = ad*bu + au*bd
+      midu = mid shr 30
+      midd = mid and mask30
+    calcMod(au*bu*2 + midu + (midd shl 31) + ad*bd, MOD)
+  
+  type RollingHash = ref object
+    MOD: int
+    pw, h: seq[int]
+  
+  proc initRollingHash*(s: openArray[int], base=10007, MOD=(1 shl 61) - 1): RollingHash =
+    var
+      pw, h = newSeq[int](s.len + 1)
+    pw[0] = 1
+    var v = 0
+    for i in 0..<s.len:
+      v = (modMul(v, base, MOD) + s[i]) mod MOD
+      h[i + 1] = v
+    v = 1
+    for i in 0..<s.len:
+      v = modMul(v, base, MOD)
+      pw[i + 1] = v
+    RollingHash(MOD: MOD, pw: pw, h: h)
+  
+  proc slice*(self: var RollingHash, left, right: int): int =
+    return floorMod(self.h[right] - modMul(self.h[left], self.pw[right - left], self.MOD), self.MOD)
+
+  proc concat*(self: var RollingHash, left1, right1, left2, right2: int): int =
+    let
+      s = self.slice(left1, right1)
+      t = self.slice(left2, right2)
+    return (modMul(s, self.pw[right2 - left2], self.MOD) + t) mod self.MOD
+
 when isMainModule:
-  let
-    N = inputInt()
-    P = inputInts().mapIt(it - 1)
-    Q = inputInt()
-  var U, D: array[200001, int]
-  for i in 0..<Q:
-    (U[i], D[i]) = inputInts()
-  
-  var graph: array[200001, seq[int]]
-  for i, pi in P:
-    graph[pi].add(i + 1)
-
-  var qByU: array[200001, seq[(int, int)]]
-  for i in 0..<Q:
-    qByU[U[i] - 1].add((D[i], i))
-
   var
-    ans = newSeq[int](Q)
-    counter: array[200001, int]
-
-  proc dfs(cur, dist: int) =
-    let p = collect(newSeq):
-      for (di, _) in qByU[cur]: counter[di]
-    counter[dist].inc
-    for to in graph[cur]:
-      dfs(to, dist + 1)
-    for j, (di, i) in qByU[cur]:
-      ans[i] = counter[di] - p[j]
+    N = inputInt()
+    S, T = input()
   
-  dfs(0, 0)
-  echo ans.join("\n")
+  let
+    tr = {'R': 0, 'G': 1, 'B': 2}.toTable
+    numS = collect(newSeq):
+      for si in S: tr[si]
+    numT = collect(newSeq):
+      for ti in T: tr[ti]
+  
+  var t1, t2, t3: seq[int]
+  for ti in numT:
+    if ti == 0:
+      t1.add(0)
+      t2.add(2)
+      t3.add(1)
+    elif ti == 1:
+      t1.add(2)
+      t2.add(1)
+      t3.add(0)
+    else:
+      t1.add(1)
+      t2.add(0)
+      t3.add(2)
+  
+  var
+    rhs = initRollingHash(numS)
+    rh1 = initRollingHash(t1)
+    rh2 = initRollingHash(t2)
+    rh3 = initRollingHash(t3)
+  
+  var ans = 0
+  for i in 0..<N:
+    let
+      sls = rhs.slice(0, N - i)
+      sl1 = rh1.slice(i, N)
+      sl2 = rh2.slice(i, N)
+      sl3 = rh3.slice(i, N)
+    if sls in [sl1, sl2, sl3]:
+      ans.inc
+  for i in 1..<N:
+    let
+      sls = rhs.slice(i, N)
+      sl1 = rh1.slice(0, N - i)
+      sl2 = rh2.slice(0, N - i)
+      sl3 = rh3.slice(0, N - i)
+    if sls in [sl1, sl2, sl3]:
+      ans.inc
+  echo ans

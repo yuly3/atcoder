@@ -122,6 +122,60 @@ proc matPow*(A: seq[seq[int]], K: int, MOD=10^9 + 7): seq[seq[int]] =
     A = matMul(A, A, MOD)
     K = K shr 1
 
+when not declared ATCODER_ROLLINGHASH_HPP:
+  const ATCODER_ROLLINGHASH_HPP* = 1
+
+  const
+    mask30 = (1 shl 30) - 1
+    mask31 = (1 shl 31) - 1
+    mask61 = (1 shl 61) - 1
+  
+  proc calcMod(x, MOD: int): int =
+    let
+      xu = x shr 61
+      xd = x and mask61
+    result = xu + xd
+    if result >= MOD:
+      result -= MOD
+  
+  proc modMul(a, b, MOD: int): int =
+    let
+      au = a shr 31
+      ad = a and mask31
+      bu = b shr 31
+      bd = b and mask31
+      mid = ad*bu + au*bd
+      midu = mid shr 30
+      midd = mid and mask30
+    calcMod(au*bu*2 + midu + (midd shl 31) + ad*bd, MOD)
+  
+  type RollingHash = ref object
+    MOD: int
+    pw, h: seq[int]
+  
+  proc initRollingHash*(s: openArray[int], base=10007, MOD=(1 shl 61) - 1): RollingHash =
+    var
+      pw, h = newSeq[int](s.len + 1)
+    pw[0] = 1
+    var v = 0
+    for i in 0..<s.len:
+      v = (modMul(v, base, MOD) + s[i]) mod MOD
+      h[i + 1] = v
+    v = 1
+    for i in 0..<s.len:
+      v = modMul(v, base, MOD)
+      pw[i + 1] = v
+    RollingHash(MOD: MOD, pw: pw, h: h)
+  
+  proc slice*(self: var RollingHash, left, right: int): int =
+    return floorMod(self.h[right] - modMul(self.h[left], self.pw[right - left], self.MOD), self.MOD)
+
+  proc concat*(self: var RollingHash, left1, right1, left2, right2: int): int =
+    let
+      s = self.slice(left1, right1)
+      t = self.slice(left2, right2)
+    return (modMul(s, self.pw[right2 - left2], self.MOD) + t) mod self.MOD
+
 when not declared ATCODER_UNIONFIND_HPP:
   const ATCODER_UNIONFIND_HPP* = 1
 
@@ -514,31 +568,34 @@ when not declared ATCODER_LOWESTCOMMONANCESTOR_HPP:
     let ancestor = self.query(u, v)
     return self.depth[u] + self.depth[v] - 2*self.depth[ancestor]
 
+when not declared ATCODER_RAND_HPP:
+  const ATCODER_RAND_HPP* = 1
+
+  proc xor64(x: uint64): uint64 {.inline.} =
+    result = x xor ((x shl 7) and 0xffffffff.uint64)
+    result = result xor (result shr 9)
+
 when not declared ATCODER_SQUARESKIPLIST_HPP:
   const ATCODER_SQUARESKIPLIST_HPP* = 1
 
   type
     SquareSkipList*[T] = ref object
       square: Natural
-      rand_y: int
+      rand_y: uint64
       layer1: seq[T]
       layer0: seq[seq[T]]
       cmpFunc: (T, T) -> int
 
-  proc initSquareSkipList*[T](inf: T, cmpFunc: (T, T) -> int, square=1000, rand_y=42): SquareSkipList[T] =
+  proc initSquareSkipList*[T](inf: T, cmpFunc: (T, T) -> int, square=1000): SquareSkipList[T] =
     var
       layer1 = @[inf]
       layer0 = newSeqWith(1, newSeq[T]())
-    return SquareSkipList[T](square: square, rand_y: rand_y, layer1: layer1, layer0: layer0, cmpFunc: cmpFunc)
+    return SquareSkipList[T](square: square, rand_y: 88172645463325252.uint64, layer1: layer1, layer0: layer0, cmpFunc: cmpFunc)
 
   proc add*[T](self: var SquareSkipList[T], x: T) =
-    var y = self.rand_y
-    y = y xor ((y and 0x7ffff) shl 13)
-    y = y xor (y shr 17)
-    y = y xor ((y and 0x7ffffff) shl 5)
-    self.rand_y = y
+    self.rand_y = xor64(self.rand_y)
 
-    if floorMod(y, self.square) == 0:
+    if self.rand_y.int mod self.square == 0:
       let idx1 = self.layer1.upperBound(x, self.cmpFunc)
       self.layer1.insert(@[x], idx1)
       let idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
@@ -593,23 +650,24 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
       return self.layer1[idx1] == x
     return self.layer0[idx1][idx0] == x
 
-  proc pop*[T](self: var SquareSkipList[T], idx: Natural): T =
+  proc pop*[T](self: var SquareSkipList[T], k: Natural): T =
     var
       s = -1
       i: int
     for ii, l0 in self.layer0:
       s += l0.len + 1
       i = ii
-      if idx <= s:
+      if k <= s:
         break
-    if s == idx:
-      self.layer0[i] = concat(self.layer0[i], @[self.layer0[i + 1]])
+    if s == k:
+      self.layer0[i] = concat(self.layer0[i], self.layer0[i + 1])
       self.layer0.delete(i + 1, i + 1)
       result = self.layer1[i]
       self.layer1.delete(i, i)
     else:
-      result = self.layer0[i][idx - s]
-      self.layer0[i].delete(idx - s, idx - s)
+      let j = self.layer0[i].len + k - s
+      result = self.layer0[i][j]
+      self.layer0[i].delete(j, j)
 
   proc popMax*[T](self: var SquareSkipList[T]): T =
     if self.layer0[^1].len != 0:
@@ -632,7 +690,7 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
         break
     if s == k:
       return self.layer1[ii]
-    return self.layer0[ii][k - s]
+    return self.layer0[ii][^(s - k)]
 
   proc min*[T](self: var SquareSkipList[T]): T =
     if self.layer0[0].len != 0:
@@ -743,3 +801,135 @@ when not declared ATCODER_HLDECOMPOSITION_HPP:
 
   proc id*(self: var HeavyLightDecomposition, v: Natural): Natural =
     return self.left[v]
+
+when not declared ATCODER_TREAP_HPP:
+  const ATCODER_TREAP_HPP* = 1
+
+  type TreapNode[T] = ref object
+    key: T
+    priority, cnt: int
+    left, right: TreapNode[T]
+  
+  type Treap[T] = ref object
+    root: TreapNode[T]
+    randX: uint64
+  
+  proc initTreapNode*[T](key: T, priority: int, left, right: TreapNode[T]): TreapNode[T] =
+    TreapNode[T](key: key, priority: priority, cnt: 1, left: left, right: right)
+  proc initTreap*[T](): Treap[T] =
+    Treap[T](root: nil, randX: 88172645463325252.uint64)
+  
+  proc split*[T](v: TreapNode[T], key: T, left, right: var TreapNode[T]) =
+    if v == nil:
+      left = nil
+      right = nil
+    elif key < v.key:
+      split(v.left, key, left, v.left)
+      right = v
+    else:
+      split(v.right, key, v.right, right)
+      left = v
+  
+  proc merge*[T](v: var TreapNode[T], left, right: TreapNode[T]) =
+    if left == nil:
+      v = right
+    elif right == nil:
+      v = left
+    elif left.priority > right.priority:
+      merge(left.right, left.right, right)
+      v = left
+    else:
+      merge(right.left, left, right.left)
+      v = right
+  
+  proc insert*[T](v: var TreapNode[T], x: TreapNode[T]) =
+    if v == nil:
+      v = x
+    elif x.key == v.key:
+      v.cnt.inc
+    elif x.priority > v.priority:
+      split(v, x.key, x.left, x.right)
+      v = x
+    elif x.key < v.key:
+      insert(v.left, x)
+    else:
+      insert(v.right, x)
+  
+  proc erase*[T](v: var TreapNode[T], key: T) =
+    if v == nil:
+      return
+    if key == v.key:
+      if v.cnt == 1:
+        merge(v, v.left, v.right)
+      else:
+        v.cnt.dec
+    elif key < v.key:
+      erase(v.left, key)
+    else:
+      erase(v.right, key)
+  
+  proc contains*[T](v: var Treapnode[T], key: T): bool =
+    if v == nil:
+      return false
+    if key == v.key:
+      return true
+    if key < v.key:
+      return contains(v.left, key)
+    return contains(v.right, key)
+
+  proc min*[T](v: var TreapNode[T]): TreapNode[T] =
+    if v.left == nil:
+      return v
+    return min(v.left)
+
+  proc max*[T](v: var TreapNode[T]): TreapNode[T] =
+    if v.right == nil:
+      return v
+    return max(v.left)
+
+  proc next*[T](v: var TreapNode[T], key: T, incl: bool): TreapNode[T] =
+    if v == nil:
+      return nil
+    if incl and v.key == key:
+      return v
+    if key < v.key:
+      result = next(v.left, key, incl)
+      if result == nil:
+        return v
+    else:
+      return next(v.right, key, incl)
+  
+  proc prev*[T](v: var TreapNode[T], key: T, incl: bool): TreapNode[T] =
+    if v == nil:
+      return nil
+    if incl and v.key == key:
+      return v
+    if key > v.key:
+      result = prev(v.right, key, incl)
+      if result == nil:
+        return v
+    else:
+      return prev(v.left, key, incl)
+  
+  proc insert*[T](self: var Treap[T], key: T) {.inline.} =
+    self.randX = xor64(self.randX)
+    insert(self.root, initTreapNode(key, self.randX.int, nil, nil))
+  
+  proc erase*[T](self: var Treap[T], key: T) {.inline.} =
+    if self.root == nil: return
+    erase(self.root, key)
+  
+  proc contains*[T](self: var Treap[T], key: T): bool {.inline.} =
+    return contains(self.root, key)
+  
+  proc min*[T](self: var Treap[T]): T {.inline.} =
+    return min(self.root).key
+
+  proc max*[T](self: var Treap[T]): T {.inline.} =
+    return max(self.root).key
+
+  proc next*[T](self: var Treap[T], key: T, incl=false): T {.inline.} =
+    return next(self.root, key, incl).key
+  
+  proc prev*[T](self: var Treap[T], key: T, incl=false): T {.inline.} =
+    return prev(self.root, key, incl).key
