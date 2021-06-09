@@ -2,8 +2,18 @@ when not declared ATCODER_YULY3HEADER_HPP:
   const ATCODER_YULY3HEADER_HPP* = 1
 
   import
-    algorithm, bitops, deques, heapqueue, math, macros, sets, sequtils,
-    strformat, strutils, sugar, tables
+    algorithm,
+    bitops,
+    deques,
+    heapqueue,
+    math,
+    macros,
+    sets,
+    sequtils,
+    strformat,
+    strutils,
+    sugar,
+    tables
 
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
@@ -88,6 +98,11 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc chmax*[T: SomeNumber](n: var T, m: T) {.inline.} = n = max(n, m)
   proc chmin*[T: SomeNumber](n: var T, m: T) {.inline.} = n = min(n, m)
   proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
+  proc `|=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n or m
+  proc `&=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n and m
+  proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
+  proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
+  proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
 when isMainModule:
   echo "Hello, AtCoder!!"
