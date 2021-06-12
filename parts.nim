@@ -482,7 +482,7 @@ when not declared ATCODER_DUALSEGTREE_HPP:
   
   proc propagate*[T](self: var DualSegmentTree[T], k: Natural) =
     for i in countdown(self.LV, 1):
-      let t = k shr i
+      let t = (k shr i) - 1
       if self.lazy_data[t] != self.lazy_ide_ele:
         self.lazy_data[2*t + 1] = self.merge(self.lazy_data[2*t + 1], self.lazy_data[t])
         self.lazy_data[2*t + 2] = self.merge(self.lazy_data[2*t + 2], self.lazy_data[t])
