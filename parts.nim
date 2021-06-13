@@ -97,7 +97,7 @@ proc matVecMul*(A: seq[seq[int]], B: seq[int], MOD=10^9 + 7): seq[int] =
     for j in 0..<N:
       result[i] = floorMod(result[i] + floorMod(A[i][j]*B[j], MOD), MOD)
 
-proc matMul*(A, B: seq[seq[int]], MOD=10^9 + 7): seq[seq[int]] =
+proc matMul*(A, B: seq[seq[int]], M=10^9 + 7): seq[seq[int]] =
   let
     N0 = A.len
     N1 = B[0].len
@@ -106,9 +106,9 @@ proc matMul*(A, B: seq[seq[int]], MOD=10^9 + 7): seq[seq[int]] =
   for i in 0..<N0:
     for j in 0..<N1:
       for k in 0..<N2:
-        result[i][j] = floorMod(result[i][j] + A[i][k]*B[k][j], MOD)
+        result[i][j] = floorMod(result[i][j] + A[i][k]*B[k][j], M)
 
-proc matPow*(A: seq[seq[int]], K: int, MOD=10^9 + 7): seq[seq[int]] =
+proc matPow*(A: seq[seq[int]], K: int, M=10^9 + 7): seq[seq[int]] =
   let N = len(A)
   var
     A = A
@@ -118,8 +118,8 @@ proc matPow*(A: seq[seq[int]], K: int, MOD=10^9 + 7): seq[seq[int]] =
     result[i][i] = 1
   while K > 0:
     if bitand(K, 1) == 1:
-      result = matMul(result, A, MOD)
-    A = matMul(A, A, MOD)
+      result = matMul(result, A, M)
+    A = matMul(A, A, M)
     K = K shr 1
 
 when not declared ATCODER_ROLLINGHASH_HPP:
