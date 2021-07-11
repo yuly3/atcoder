@@ -113,7 +113,7 @@ when isMainModule:
   var N = inputInt()
   const size = 52^3
   var
-    revGraph: array[200001, seq[int]]
+    revGraph: array[size, seq[int]]
     edges: array[200001, (int, int)]
     counter: array[size, int]
     si: string
