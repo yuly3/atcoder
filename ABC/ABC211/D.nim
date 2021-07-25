@@ -103,7 +103,37 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
-  proc `&=`*[string](s: var string, t: string) = s = s & t
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  const MOD = 10^9 + 7
+  var N, M: int
+  (N, M) = inputInts()
+  var
+    graph: array[200001, seq[int]]
+    ai, bi: int
+  for _ in 0..<M:
+    (ai, bi) = inputInts().mapIt(it - 1)
+    graph[ai].add(bi)
+    graph[bi].add(ai)
+  
+  var
+    dist: array[200001, int]
+    que = initDeque[int]()
+    dp: array[200001, int]
+  dist.fill(-1)
+  dist[0] = 0
+  dp[0] = 1
+  que.addLast(0)
+
+  while que.len > 0:
+    let cur = que.popFirst()
+    for to in graph[cur]:
+      if dist[to] != -1:
+        if dist[to] == dist[cur] + 1:
+          dp[to] += dp[cur]
+          dp[to] %= MOD
+        continue
+      dist[to] = dist[cur] + 1
+      dp[to] = dp[cur]
+      que.addLast(to)
+  echo dp[N - 1]

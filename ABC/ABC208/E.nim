@@ -103,7 +103,47 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
-  proc `&=`*[string](s: var string, t: string) = s = s & t
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var N, K: int
+  (N, K) = inputInts()
+  let
+    S = $N
+    INF = K + 1
+
+  var
+    dp = initTable[int, int]()
+    eq = 1
+  for i in 0..<S.len:
+    let si = parseInt($S[i])
+    var dpn = initTable[int, int]()
+    
+    for p, v in dp.pairs:
+      for d in 0..9:
+        let nx = min(p*d, INF)
+        if dpn.hasKeyOrPut(nx, v):
+          dpn[nx] += v
+    
+    for d in 0..<si:
+      if i == 0 and d == 0:
+        continue
+      let nx = min(eq*d, INF)
+      if dpn.hasKeyOrPut(nx, 1):
+        dpn[nx].inc
+    
+    eq = min(eq*si, INF)
+    
+    if i != 0:
+      for d in 1..9:
+        let nx = min(d, INF)
+        if dpn.hasKeyOrPut(nx, 1):
+          dpn[nx].inc
+    dp = dpn
+  
+  var ans = 0
+  for p, v in dp.pairs:
+    if p <= K:
+      ans += v
+  if eq <= K:
+    ans.inc
+  echo ans

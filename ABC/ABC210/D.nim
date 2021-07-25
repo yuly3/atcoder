@@ -103,7 +103,28 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
-  proc `&=`*[string](s: var string, t: string) = s = s & t
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var H, W, C: int
+  (H, W, C) = inputInts()
+  var A = newSeqWith(H, inputInts())
+  const INF = 10^18
+
+  proc calc(): int =
+    var dp: array[1001, array[1001, int]]
+    dp[0].fill(INF)
+    for i in 1..H:
+      dp[i][0] = INF
+      for j in 1..W:
+        dp[i][j] = min([A[i - 1][j - 1], dp[i - 1][j] + C, dp[i][j - 1] + C])
+
+    result = INF
+    for i in 1..H:
+      for j in 1..W:
+        result.chmin(min(dp[i - 1][j], dp[i][j - 1]) + C + A[i - 1][j - 1])
+
+  var ans = calc()
+  for i in 0..<H:
+    A[i].reverse()
+  ans.chmin(calc())
+  echo ans

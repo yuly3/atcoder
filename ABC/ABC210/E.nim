@@ -103,7 +103,25 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
-  proc `&=`*[string](s: var string, t: string) = s = s & t
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var N, M: int
+  (N, M) = inputInts()
+  var
+    AC = newSeq[(int, int)](M)
+    ai, ci: int
+  for i in 0..<M:
+    (ai, ci) = inputInts()
+    AC[i] = (ai, ci)
+  AC = sortedByIt(AC, it[1])
+
+  var
+    ans = 0
+    cnt = N
+  for (ai, ci) in AC:
+    ans += ci*(cnt - gcd(cnt, ai))
+    cnt = gcd(cnt, ai)
+  
+  if cnt > 1:
+    ans = -1
+  echo ans

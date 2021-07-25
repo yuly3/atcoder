@@ -103,7 +103,52 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
-  proc `&=`*[string](s: var string, t: string) = s = s & t
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var
+    N = inputInt()
+    K = inputInt()
+    S: seq[seq[char]] = collect(newSeq):
+      for _ in 0..<N:
+        let si = input(); si.toSeq()
+  
+  var
+    searched = initHashSet[string]()
+    ans = 0
+
+  proc dfs(d: int) =
+    var s: string
+    for si in S:
+      s = s & si.join("")
+    if s in searched:
+      return
+    searched.incl(s)
+
+    if d == 0:
+      ans.inc
+      return
+
+    var nxt = newSeq[(int, int)]()
+    for i in 0..<N:
+      for j in 0..<N:
+        if S[i][j] != '.':
+          continue
+        for (dy, dx) in [(-1, 0), (0, 1), (1, 0), (0, -1)]:
+          let (ny, nx) = (i + dy, j + dx)
+          if 0 <= ny and ny < N and 0 <= nx and nx < N:
+            if S[ny][nx] == '@':
+              nxt.add((i, j))
+              break
+    
+    for (i, j) in nxt:
+      S[i][j] = '@'
+      dfs(d - 1)
+      S[i][j] = '.'
+  
+  for i in 0..<N:
+    for j in 0..<N:
+      if S[i][j] == '.':
+        S[i][j] = '@'
+        dfs(K - 1)
+        S[i][j] = '.'
+  echo ans
