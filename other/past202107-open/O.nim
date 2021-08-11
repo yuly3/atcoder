@@ -120,12 +120,8 @@ when isMainModule:
     else:
       sumA += ai
   N = A.len
-
-  const INF = 10^18
-  var dp: array[200001, int]
-  dp.fill(INF)
-  dp[0] = 0
   
+  var dp: array[200001, int]
   var accA = @[0]
   for i in 0..<N:
     accA.add(accA[^1] + A[i])
