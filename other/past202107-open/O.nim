@@ -121,14 +121,14 @@ when isMainModule:
       sumA += ai
   N = A.len
   
-  var dp: array[200001, int]
-  var accA = @[0]
+  var accA = newSeq[int](N + 1)
   for i in 0..<N:
-    accA.add(accA[^1] + A[i])
+    accA[i + 1] = accA[i] + A[i]
   
   var hque: HeapQueue[(int, int)]
   hque.push((0, A[0]))
   
+  var cost: int
   for i in 1..N:
     let bi = B[i - 1]
     while hque.len > 0 and hque[0][1] < bi:
@@ -137,7 +137,7 @@ when isMainModule:
       echo -1
       quit()
     
-    dp[i] = hque[0][0] + bi
+    cost = hque[0][0] + bi
     if i != N:
-      hque.push((dp[i], accA[i + 1] - dp[i]))
-  echo accA[^1] - dp[N] + sumA
+      hque.push((cost, accA[i + 1] - cost))
+  echo accA[^1] - cost + sumA
