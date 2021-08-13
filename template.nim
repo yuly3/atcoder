@@ -103,7 +103,6 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
-  proc `&=`*[string](s: var string, t: string) = s = s & t
 
 when isMainModule:
   echo "Hello, AtCoder!!"
