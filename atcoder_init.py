@@ -17,7 +17,7 @@ def make_contest_dir(contest_name, contest_num, extention):
         return
     print('Making ' + new_contest)
     os.mkdir(new_contest)
-    for i in range(6):
+    for i in range(8):
         new_problem = chr(ord('A') + i) + '.' + extention
         copyfile('./template.' + extention, './' + new_contest + '/' + new_problem)
     print('Done')
