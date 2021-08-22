@@ -125,15 +125,15 @@ when isMainModule:
   var A = inputInts()
   
   var sieve = newSeq[bool](M + 1)
-  var alldivs: HashSet[int]
+  var allfacts: HashSet[int]
   for ai in A:
     if ai == 1:
       continue
     let facts = factorization(ai)
     for (f, _) in facts:
-      alldivs.incl(f)
+      allfacts.incl(f)
   
-  for di in toSeq(alldivs):
+  for di in toSeq(allfacts):
     for j in countup(di, M, di):
       sieve[j] = true
   
