@@ -226,23 +226,25 @@ when not declared ATCODER_BINOMIAL_COEFFICIENTS_HPP:
   const ATCODER_BINOMIAL_COEFFICIENTS_HPP* = 1
   
   type BinomialCoefficients*[N, M: static int] = object
-    fact, factInv, inv: ptr array[0..N - 1, int]
+    fact, factInv, inv: array[0..N - 1, int]
   
-  proc initBinomialCoefficients*[N, M: static int](fact, factInv, inv: var array[0..N - 1, int]): BinomialCoefficients[N, M] =
-    fact[0] = 1; fact[1] = 1
-    factInv[0] = 1; factInv[1] = 1
-    inv[1] = 1
+  proc initBinomialCoefficients*(N, M: static int): BinomialCoefficients[N, M] =
+    return BinomialCoefficients[N, M]()
+  
+  proc preprocess*[N, M: static int](self: var BinomialCoefficients[N, M]) =
+    self.fact[0] = 1; self.fact[1] = 1
+    self.factInv[0] = 1; self.factInv[1] = 1
+    self.inv[1] = 1
     for i in 2..<N:
-      fact[i] = floorMod(fact[i - 1]*i, M)
-      inv[i] = floorMod(-inv[M mod i]*(M div i), M)
-      factInv[i] = floorMod(factInv[i - 1]*inv[i], M)
-    return BinomialCoefficients[N, M](fact: fact.addr, factInv: factInv.addr, inv: inv.addr)
+      self.fact[i] = floorMod(self.fact[i - 1]*i, M)
+      self.inv[i] = floorMod(-self.inv[M mod i]*(M div i), M)
+      self.factInv[i] = floorMod(self.factInv[i - 1]*self.inv[i], M)
   
   proc nCr*[N, M: static int](self: var BinomialCoefficients[N, M], n, r: int): int =
     if r < 0 or n < r:
       return 0
     let r = min(r, n - r)
-    return (self.fact[][n]*self.factInv[][r] mod M)*self.factInv[][n - r] mod M
+    return (self.fact[n]*self.factInv[r] mod M)*self.factInv[n - r] mod M
   
   proc nHr*[N, M: static int](self: var BinomialCoefficients[N, M], n, r: int): int =
     return self.nCr(n + r - 1, r)
@@ -250,7 +252,7 @@ when not declared ATCODER_BINOMIAL_COEFFICIENTS_HPP:
   proc nPr*[N, M: static int](self: var BinomialCoefficients[N, M], n, r: int): int =
     if r < 0 or n < r:
       return 0
-    return self.fact[][n]*self.factInv[][n - r] mod M
+    return self.fact[n]*self.factInv[n - r] mod M
 
 proc bitLength(n: Natural): Natural =
   const BIT_SIZE = 24
