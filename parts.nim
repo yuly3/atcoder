@@ -224,39 +224,33 @@ when not declared ATCODER_UNIONFIND_HPP:
 
 when not declared ATCODER_BINOMIAL_COEFFICIENTS_HPP:
   const ATCODER_BINOMIAL_COEFFICIENTS_HPP* = 1
-
-  type
-    BinomialCoefficients* = ref object
-      MOD: int
-      fact, factInv, inv: seq[int]
   
-  proc initBinomialCoefficients*(n: int, MOD=10^9 + 7): BinomialCoefficients =
-    var
-      fact = newSeq[int](n + 1)
-      factInv = newSeq[int](n + 1)
-      inv = newSeq[int](n + 1)
+  type BinomialCoefficients*[N, M: static int] = object
+    fact, factInv, inv: ptr array[0..N - 1, int]
+  
+  proc initBinomialCoefficients*[N, M: static int](fact, factInv, inv: var array[0..N - 1, int]): BinomialCoefficients[N, M] =
     fact[0] = 1; fact[1] = 1
     factInv[0] = 1; factInv[1] = 1
     inv[1] = 1
-    for i in 2..n:
-      fact[i] = floorMod(fact[i - 1]*i, MOD)
-      inv[i] = floorMod(-inv[MOD mod i]*(MOD div i), MOD)
-      factInv[i] = floorMod(factInv[i - 1]*inv[i], MOD)
-    return BinomialCoefficients(MOD: MOD, fact: fact, factInv: factInv, inv: inv)
-
-  proc nCr*(self: var BinomialCoefficients, n, r: int): int =
+    for i in 2..<N:
+      fact[i] = floorMod(fact[i - 1]*i, M)
+      inv[i] = floorMod(-inv[M mod i]*(M div i), M)
+      factInv[i] = floorMod(factInv[i - 1]*inv[i], M)
+    return BinomialCoefficients[N, M](fact: fact.addr, factInv: factInv.addr, inv: inv.addr)
+  
+  proc nCr*[N, M: static int](self: var BinomialCoefficients[N, M], n, r: int): int =
     if r < 0 or n < r:
       return 0
     let r = min(r, n - r)
-    return (self.fact[n]*self.factInv[r] mod self.MOD)*self.factInv[n - r] mod self.MOD
-
-  proc nHr*(self: var BinomialCoefficients, n, r: int): int =
+    return (self.fact[][n]*self.factInv[][r] mod M)*self.factInv[][n - r] mod M
+  
+  proc nHr*[N, M: static int](self: var BinomialCoefficients[N, M], n, r: int): int =
     return self.nCr(n + r - 1, r)
-
-  proc nPr*(self: var BinomialCoefficients, n, r: int): int =
+  
+  proc nPr*[N, M: static int](self: var BinomialCoefficients[N, M], n, r: int): int =
     if r < 0 or n < r:
       return 0
-    return self.fact[n]*self.factInv[n - r] mod self.MOD
+    return self.fact[][n]*self.factInv[][n - r] mod M
 
 proc bitLength(n: Natural): Natural =
   const BIT_SIZE = 24
