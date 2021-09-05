@@ -117,7 +117,4 @@ when isMainModule:
       dp[j] %= MOD
     dp[0] = 0
   
-  var ans = newSeq[int](N)
-  for i in 1..N:
-    ans[i - 1] = dp[i]
-  echo ans.join("\n")
+  echo dp[1..N].join("\n")
