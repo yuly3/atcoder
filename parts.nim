@@ -798,6 +798,36 @@ when not declared ATCODER_HLDECOMPOSITION_HPP:
   proc id*(self: var HeavyLightDecomposition, v: Natural): Natural =
     return self.left[v]
 
+when not declared ATCODER_SLOPE_TRICK_HPP:
+  const ATCODER_SLOPE_TRICK_HPP* = 1
+  
+  type SlopeTrick = object
+    minf, al, ar: int
+    leftQueue, rightQueue: HeapQueue[int]
+  
+  proc initSlopeTrick*(minimum: int): SlopeTrick =
+    var leftQueue, rightQueue: HeapQueue[int]
+    return SlopeTrick(minf: minimum, al: 0, ar: 0, leftQueue: leftQueue, rightQueue: rightQueue)
+  
+  proc min*(self: var SlopeTrick): int {.inline.} = self.minf
+  proc addConst*(self: var SlopeTrick, a: int) {.inline.} = self.minf += a
+  proc addLeft*(self: var SlopeTrick, a: int) {.inline.} = self.al += a
+  proc addRight*(self: var SlopeTrick, a: int) {.inline.} = self.ar += a
+  proc topLeft*(self: var SlopeTrick): int {.inline.} = -self.leftQueue[0] + self.al
+  proc topRight*(self: var SlopeTrick): int {.inline.} = self.rightQueue[0] + self.ar
+  
+  proc addXmA*(self: var SlopeTrick, a: int) =
+    if self.leftQueue.len != 0:
+      self.minf += max(0, self.topLeft() - a)
+    self.leftQueue.push(-a + self.al)
+    self.rightQueue.push(-self.leftQueue.pop() + self.al - self.ar)
+  
+  proc addAmX*(self: var SlopeTrick, a: int) =
+    if self.rightQueue.len != 0:
+      self.minf += max(0, a - self.topRight())
+    self.rightQueue.push(a - self.ar)
+    self.leftQueue.push(-self.rightQueue.pop() - self.ar + self.al)
+
 when not declared ATCODER_TREAP_HPP:
   const ATCODER_TREAP_HPP* = 1
 
