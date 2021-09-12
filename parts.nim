@@ -798,6 +798,73 @@ when not declared ATCODER_HLDECOMPOSITION_HPP:
   proc id*(self: var HeavyLightDecomposition, v: Natural): Natural =
     return self.left[v]
 
+when not declared ATCODER_REROOTING_HPP:
+  const ATCODER_REROOTING_HPP* = 1
+  
+  type RerootingTree[N: static int, T] = object
+    tree: array[0..N - 1, seq[int]]
+    sz, depth, parent, dp1, dp2, left, right: array[0..N - 1, int]
+    order: seq[int]
+    op: (T, int, int) -> T
+    merge: (T, T) -> T
+    ide: T
+  
+  proc initRerootingTree*[N: static int, T](op: (T, int, int) -> T, merge: (T, T) -> T, ide: T): RerootingTree[N, T] =
+    return RerootingTree[N, T](order: newSeq[int](), op: op, merge: merge, ide: ide)
+  
+  proc addEdge*[N: static int, T](self: var RerootingTree[N, T], u, v: int) =
+    self.tree[u].add(v)
+    self.tree[v].add(u)
+  
+  proc topologicalSort*[N: static int, T](self: var RerootingTree[N, T], root: int) =
+    self.sz.fill(1)
+    self.depth.fill(-1)
+    self.depth[root] = 0
+    self.order.add(root)
+    var stack = @[root]
+    while stack.len > 0:
+      let cur = stack.pop()
+      for to in self.tree[cur]:
+        if self.depth[to] != -1:
+          continue
+        self.parent[to] = cur
+        self.depth[to] = self.depth[cur] + 1
+        self.order.add(to)
+        stack.add(to)
+    for fr in reversed(self.order):
+      for to in self.tree[fr]:
+        if self.parent[fr] == to:
+          continue
+        self.sz[fr] += self.sz[to]
+  
+  proc solve*[N: static int, T](self: var RerootingTree[N, T], root=0): array[0..N - 1, T] =
+    self.topologicalSort(root)
+    self.dp1.fill(self.ide)
+    self.dp2.fill(self.ide)
+    self.left.fill(self.ide)
+    self.right.fill(self.ide)
+    
+    for fr in reversed(self.order):
+      var acc = self.ide
+      for to in self.tree[fr]:
+        if self.parent[fr] == to:
+          continue
+        self.left[to] = acc
+        acc = self.merge(acc, self.op(self.dp1[to], fr, to))
+      acc = self.ide
+      for to in reversed(self.tree[fr]):
+        if self.parent[fr] == to:
+          continue
+        self.right[to] = acc
+        acc = merge(acc, self.op(self.dp1[to], fr, to))
+      self.dp1[fr] = acc
+    
+    for to in self.order[1..^1]:
+      self.dp2[to] = self.merge(self.left[to], self.right[to])
+      self.dp2[to] = self.op(self.merge(self.dp2[to], self.dp2[self.parent[to]]), to, self.parent[to])
+      self.dp1[to] = self.merge(self.dp1[to], self.dp2[to])
+    return self.dp1
+
 when not declared ATCODER_SLOPE_TRICK_HPP:
   const ATCODER_SLOPE_TRICK_HPP* = 1
   
