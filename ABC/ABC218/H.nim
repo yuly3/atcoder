@@ -1,6 +1,6 @@
 when not declared ATCODER_YULY3HEADER_HPP:
   const ATCODER_YULY3HEADER_HPP* = 1
-  
+
   import
     algorithm,
     bitops,
@@ -14,7 +14,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
     strutils,
     sugar,
     tables
-  
+
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -51,7 +51,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
         bracketExpr.add(newCall(bindSym"typeof", newEmptyNode()))
       template adder(res, v) = res.add(v)
       result[0] = getAst(adder(res, n))
-  
+
   macro collect*(init, body: untyped): untyped =
     runnableExamples:
       import sets, tables
@@ -90,7 +90,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
       for i in 1 ..< init.len:
         call.add init[i]
     result = newTree(nnkStmtListExpr, newVarStmt(res, call), resBody, res)
-  
+
   proc input*(): string {.inline.} = stdin.readLine
   proc inputs*(): seq[string] {.inline.} = stdin.readLine.split
   proc inputInt*(): int {.inline.} = stdin.readLine.parseInt
@@ -105,4 +105,33 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var N, R: int
+  (N, R) = inputInts()
+  var A = inputInts()
+  
+  R.chmin(N - R)
+  var B: array[200001, int]
+  for i in 0..<N - 1:
+    B[i] += A[i]
+    B[i + 1] += A[i]
+  
+  proc f(t: int): (int, int) =
+    var d, e, nd, ne: (int, int)
+    for i in 0..<N:
+      nd = (e[0] + B[i] - t, e[1] + 1)
+      ne = max(d, e)
+      (d, e) = (nd, ne)
+    return max(d, e)
+  
+  var (ok, ng) = (0, 10^18)
+  while ng - ok > 1:
+    let mid = (ok + ng) div 2
+    let cnt = f(mid)[1]
+    if cnt >= R:
+      ok = mid
+    else:
+      ng = mid
+  
+  var ans = f(ok)[0]
+  ans += R*ok
+  echo ans
