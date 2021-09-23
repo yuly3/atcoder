@@ -178,22 +178,23 @@ when not declared ATCODER_ROLLINGHASH_HPP:
 
 when not declared ATCODER_UNIONFIND_HPP:
   const ATCODER_UNIONFIND_HPP* = 1
-
+  
   type
     UnionFind* = ref object
       n: Positive
+      cnt: int
       parents: seq[int]
-
+  
   proc initUnionFind*(n: Positive): UnionFind =
-    return UnionFind(n: n, parents: newSeqWith(n, -1))
-
+    return UnionFind(n: n, cnt: n, parents: newSeqWith(n, -1))
+  
   proc find*(self: var UnionFind, x: Natural): Natural =
     if self.parents[x] < 0:
       return x
     else:
       self.parents[x] = self.find(self.parents[x])
       return self.parents[x]
-
+  
   proc union*(self: var UnionFind, x, y: Natural) =
     var
       root_x = self.find(x)
@@ -205,7 +206,8 @@ when not declared ATCODER_UNIONFIND_HPP:
       (root_x, root_y) = (root_y, root_x)
     self.parents[root_x] += self.parents[root_y]
     self.parents[root_y] = root_x
-
+    self.cnt.dec
+  
   proc size*(self: var UnionFind, x: Natural): Positive =
     return -self.parents[self.find(x)]
 
@@ -215,12 +217,9 @@ when not declared ATCODER_UNIONFIND_HPP:
   proc members*(self: var UnionFind, x: Natural): seq[int] =
     let root = self.find(x)
     return toSeq(0..<int(self.n)).filterIt(self.find(it) == root)
-
+  
   proc roots*(self: var UnionFind): seq[int] =
     return toSeq(0..<int(self.n)).filterIt(self.parents[it] < 0)
-
-  proc groupCount*(self: var UnionFind): Positive =
-    return self.roots.len
 
 when not declared ATCODER_BINOMIAL_COEFFICIENTS_HPP:
   const ATCODER_BINOMIAL_COEFFICIENTS_HPP* = 1
