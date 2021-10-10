@@ -76,7 +76,7 @@ proc crt*(r, m: openArray[int]): (int, int) =
     m0 = u1
   return (r0, m0)
 
-proc modPow*(a, k: int, MOD=10^9 + 7): int =
+proc modPow*(a: int, k: Natural, MOD=10^9 + 7): int =
   var
     a = a
     k = k
@@ -89,6 +89,31 @@ proc modPow*(a, k: int, MOD=10^9 + 7): int =
 
 proc modInv*(a: int, MOD=10^9 + 7): int =
   return modPow(a, MOD - 2, MOD)
+
+proc modInv2*(a, m: int): int =
+  if a == 1:
+    return 1
+  return m + (1 - m*modInv2(m mod a, a)) div a
+
+proc babyStepGiantStep*(a, m: int): int =
+  var a = a mod m
+  if gcd(a, m) != 1:
+    return -1
+  
+  let lim = floor(sqrt(m.float)).int
+  var mp = initTable[int, int]()
+  var s = a
+  for i in 1..lim:
+    if s notin mp:
+      mp[s] = i
+    s = s*a mod m
+  
+  let g = modInv2(modPow(a, lim, m), m)
+  var x = 1
+  for i in 0..<m:
+    if x in mp:
+      return lim*i + mp[x]
+    x = x*g mod m
 
 proc matVecMul*(A: seq[seq[int]], B: seq[int], MOD=10^9 + 7): seq[int] =
   let N = B.len
