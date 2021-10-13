@@ -1,42 +1,138 @@
-import algorithm, math, sequtils, strutils
-
-
-proc solve() =
-    var N, M: int
-    (N, M) = stdin.readLine.split.map(parseInt)
-    var A = stdin.readLine.split.map(parseInt)
-    A.sort()
-
-    proc calc(t: int): bool =
-        var cnt = 0
-        for ai in A:
-            cnt += N - A.lowerBound(t - ai)
-        return M <= cnt
-
-    var ok, ng, mid: int
-    (ok, ng) = (0, 2 * 10^5 + 1)
-    while 1 < ng - ok:
-        mid = (ok + ng) div 2
-        if calc(mid):
-            ok = mid
-        else:
-            ng = mid
+when not declared ATCODER_YULY3HEADER_HPP:
+  const ATCODER_YULY3HEADER_HPP* = 1
+  
+  import
+    algorithm,
+    bitops,
+    deques,
+    heapqueue,
+    math,
+    macros,
+    sets,
+    sequtils,
+    strformat,
+    strutils,
+    sugar,
+    tables
+  
+  proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
+    # Looks for the last statement of the last statement, etc...
+    case n.kind
+    of nnkIfExpr, nnkIfStmt, nnkTryStmt, nnkCaseStmt:
+      result[0] = copyNimTree(n)
+      result[1] = copyNimTree(n)
+      result[2] = copyNimTree(n)
+      for i in ord(n.kind == nnkCaseStmt)..<n.len:
+        (result[0][i], result[1][^1], result[2][^1]) = transLastStmt(n[i], res, bracketExpr)
+    of nnkStmtList, nnkStmtListExpr, nnkBlockStmt, nnkBlockExpr, nnkWhileStmt,
+        nnkForStmt, nnkElifBranch, nnkElse, nnkElifExpr, nnkOfBranch, nnkExceptBranch:
+      result[0] = copyNimTree(n)
+      result[1] = copyNimTree(n)
+      result[2] = copyNimTree(n)
+      if n.len >= 1:
+        (result[0][^1], result[1][^1], result[2][^1]) = transLastStmt(n[^1], res, bracketExpr)
+    of nnkTableConstr:
+      result[1] = n[0][0]
+      result[2] = n[0][1]
+      if bracketExpr.len == 1:
+        bracketExpr.add([newCall(bindSym"typeof", newEmptyNode()), newCall(
+            bindSym"typeof", newEmptyNode())])
+      template adder(res, k, v) = res[k] = v
+      result[0] = getAst(adder(res, n[0][0], n[0][1]))
+    of nnkCurly:
+      result[2] = n[0]
+      if bracketExpr.len == 1:
+        bracketExpr.add(newCall(bindSym"typeof", newEmptyNode()))
+      template adder(res, v) = res.incl(v)
+      result[0] = getAst(adder(res, n[0]))
+    else:
+      result[2] = n
+      if bracketExpr.len == 1:
+        bracketExpr.add(newCall(bindSym"typeof", newEmptyNode()))
+      template adder(res, v) = res.add(v)
+      result[0] = getAst(adder(res, n))
+  
+  macro collect*(init, body: untyped): untyped =
+    runnableExamples:
+      import sets, tables
+      let data = @["bird", "word"]
+      ## seq:
+      let k = collect(newSeq):
+        for i, d in data.pairs:
+          if i mod 2 == 0: d
+      assert k == @["bird"]
+      ## seq with initialSize:
+      let x = collect(newSeqOfCap(4)):
+        for i, d in data.pairs:
+          if i mod 2 == 0: d
+      assert x == @["bird"]
+      ## HashSet:
+      let y = initHashSet.collect:
+        for d in data.items: {d}
+      assert y == data.toHashSet
+      ## Table:
+      let z = collect(initTable(2)):
+        for i, d in data.pairs: {i: d}
+      assert z == {0: "bird", 1: "word"}.toTable
     
-    var acc_A = newSeq[int](N)
-    acc_A[^1] = A[^1]
-    for i in countdown(N - 2, 0):
-        acc_A[i] = acc_A[i + 1] + A[i]
-    
-    var ans, add_cnt, idx: int
+    let res = genSym(nskVar, "collectResult")
+    expectKind init, {nnkCall, nnkIdent, nnkSym}
+    let bracketExpr = newTree(nnkBracketExpr,
+      if init.kind == nnkCall: init[0] else: init)
+    let (resBody, keyType, valueType) = transLastStmt(body, res, bracketExpr)
+    if bracketExpr.len == 3:
+      bracketExpr[1][1] = keyType
+      bracketExpr[2][1] = valueType
+    else:
+      bracketExpr[1][1] = valueType
+    let call = newTree(nnkCall, bracketExpr)
+    if init.kind == nnkCall:
+      for i in 1 ..< init.len:
+        call.add init[i]
+    result = newTree(nnkStmtListExpr, newVarStmt(res, call), resBody, res)
+  
+  proc input*(): string {.inline.} = stdin.readLine
+  proc inputs*(): seq[string] {.inline.} = stdin.readLine.split
+  proc inputInt*(): int {.inline.} = stdin.readLine.parseInt
+  proc inputInts*(): seq[int] {.inline.} = stdin.readLine.split.map(parseInt)
+  proc chmax*[T](n: var T, m: T) {.inline.} = n = max(n, m)
+  proc chmin*[T](n: var T, m: T) {.inline.} = n = min(n, m)
+  proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
+  proc `|=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n or m
+  proc `&=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n and m
+  proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
+  proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
+  proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
+
+when isMainModule:
+  var N, M: int
+  (N, M) = inputInts()
+  var A = inputInts()
+  A.sort()
+  
+  proc check(t: int): bool =
+    var cnt = 0
     for ai in A:
-        idx = A.lowerBound(ok - ai)
-        if idx == N:
-            continue
-        add_cnt += N - idx
-        ans += (N - idx) * ai + acc_A[idx]
-    ans -= ok * (add_cnt - M)
-    echo ans
-
-
-when is_main_module:
-    solve()
+      let idx = A.lowerBound(t - ai)
+      cnt += N - idx
+    return M <= cnt
+  
+  var (ok, ng) = (0, 200001)
+  while ng - ok > 1:
+    let med = (ok + ng) shr 1
+    if check(med):
+      ok = med
+    else:
+      ng = med
+  
+  var accA: array[100010, int]
+  for i, ai in A:
+    accA[i + 1] = accA[i] + ai
+  
+  var ans, cnt: int
+  for ai in A:
+    let idx = A.lowerBound(ok - ai)
+    cnt += N - idx
+    ans += (N - idx)*ai + accA[N] - accA[idx]
+  ans -= ok*(cnt - M)
+  echo ans
