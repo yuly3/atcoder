@@ -133,7 +133,7 @@ proc matMul*(A, B: seq[seq[int]], M=10^9 + 7): seq[seq[int]] =
       for k in 0..<N2:
         result[i][j] = floorMod(result[i][j] + A[i][k]*B[k][j], M)
 
-proc matPow*(A: seq[seq[int]], K: int, M=10^9 + 7): seq[seq[int]] =
+proc matPow*(A: seq[seq[int]], K: Natural, M=10^9 + 7): seq[seq[int]] =
   let N = len(A)
   var
     A = A
