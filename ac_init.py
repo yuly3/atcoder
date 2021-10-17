@@ -12,14 +12,17 @@ def make_contest_dir(contest_name, contest_num, extention):
         new_contest = contest_name.upper() + '/' + contest_name.upper() + contest_num
     else:
         new_contest = 'other/' + contest_name
-    if path_check(new_contest):
+    if os.path.exists(new_contest):
         print('This contest is already there.')
         return
     print('Making ' + new_contest)
     os.mkdir(new_contest)
-    for i in range(8):
+    problem_num = 6
+    if contest_name.lower() in ('abc',):
+      problem_num = 8
+    for i in range(problem_num):
         new_problem = chr(ord('A') + i) + '.' + extention
-        copyfile('./template.' + extention, './' + new_contest + '/' + new_problem)
+        copyfile('./template.' + extention, new_contest + '/' + new_problem)
     print('Done')
 
 
