@@ -827,7 +827,8 @@ when not declared ATCODER_REROOTING_HPP:
   
   type RerootingTree[N: static int, T] = object
     tree: array[0..N - 1, seq[int]]
-    sz, depth, parent, dp1, dp2, left, right: array[0..N - 1, int]
+    sz, depth, parent: array[0..N - 1, int]
+    dp1, dp2, left, right: array[0..N - 1, T]
     order: seq[int]
     op: (T, int, int) -> T
     merge: (T, T) -> T
