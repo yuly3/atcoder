@@ -1,6 +1,6 @@
 when not declared ATCODER_YULY3HEADER_HPP:
   const ATCODER_YULY3HEADER_HPP* = 1
-  
+
   import
     algorithm,
     bitops,
@@ -14,7 +14,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
     strutils,
     sugar,
     tables
-  
+
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -30,7 +30,8 @@ when not declared ATCODER_YULY3HEADER_HPP:
       result[1] = copyNimTree(n)
       result[2] = copyNimTree(n)
       if n.len >= 1:
-        (result[0][^1], result[1][^1], result[2][^1]) = transLastStmt(n[^1], res, bracketExpr)
+        (result[0][^1], result[1][^1], result[2][^1]) = transLastStmt(n[^1],
+            res, bracketExpr)
     of nnkTableConstr:
       result[1] = n[0][0]
       result[2] = n[0][1]
@@ -51,7 +52,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
         bracketExpr.add(newCall(bindSym"typeof", newEmptyNode()))
       template adder(res, v) = res.add(v)
       result[0] = getAst(adder(res, n))
-  
+
   macro collect*(init, body: untyped): untyped =
     runnableExamples:
       import sets, tables
@@ -74,7 +75,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
       let z = collect(initTable(2)):
         for i, d in data.pairs: {i: d}
       assert z == {0: "bird", 1: "word"}.toTable
-    
+
     let res = genSym(nskVar, "collectResult")
     expectKind init, {nnkCall, nnkIdent, nnkSym}
     let bracketExpr = newTree(nnkBracketExpr,
@@ -90,11 +91,19 @@ when not declared ATCODER_YULY3HEADER_HPP:
       for i in 1 ..< init.len:
         call.add init[i]
     result = newTree(nnkStmtListExpr, newVarStmt(res, call), resBody, res)
-  
-  proc input*(): string {.inline.} = stdin.readLine
-  proc inputs*(): seq[string] {.inline.} = stdin.readLine.split
-  proc inputInt*(): int {.inline.} = stdin.readLine.parseInt
-  proc inputInts*(): seq[int] {.inline.} = stdin.readLine.split.map(parseInt)
+
+  proc nextString*(f: auto = stdin): string =
+    var get = false
+    result = ""
+    while true:
+      let c = f.readChar
+      if c.int > ' '.int:
+        get = true
+        result.add(c)
+      elif get: return
+  proc nextInt*(f: auto = stdin): int = parseInt(f.nextString)
+  proc nextFloat*(f: auto = stdin): float = parseFloat(f.nextString)
+
   proc chmax*[T](n: var T, m: T) {.inline.} = n = max(n, m)
   proc chmin*[T](n: var T, m: T) {.inline.} = n = min(n, m)
   proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
