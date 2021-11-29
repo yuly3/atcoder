@@ -15,8 +15,6 @@ when not declared ATCODER_YULY3HEADER_HPP:
     sugar,
     tables
 
-  {.warning[UnusedImport]: off.}
-
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -115,5 +113,43 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
+proc eratosthenes*(n: Positive): seq[int] =
+  var isPrime = newSeqWith(n + 1, true)
+  isPrime[0] = false; isPrime[1] = false
+  for p in 2..n:
+    if not isPrime[p]:
+      continue
+    result.add(p)
+    for i in countup(2*p, n, p):
+      isPrime[i] = false
+
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  const MOD = 998244353
+  var N, K = nextInt()
+
+  var primes = eratosthenes(10^6 + 10)
+  var dn, nm: array[1000001, int]
+  var sh = N - K + 1
+  for i in 0..K:
+    dn[i] = i
+    nm[i] = sh + i
+
+  var ans = 1
+  for pi in primes:
+    var cnt = 0
+    for i in countup(pi, K, pi):
+      while dn[i] mod pi == 0:
+        cnt.dec
+        dn[i] = dn[i] div pi
+    for i in countup((sh + pi - 1) div pi*pi, N, pi):
+      while nm[i - sh] mod pi == 0:
+        cnt.inc
+        nm[i - sh] = nm[i - sh] div pi
+    ans *= cnt + 1
+    ans %= MOD
+
+  for i in sh..N:
+    if nm[i - sh] != 1:
+      ans *= 2
+      ans %= MOD
+  echo ans

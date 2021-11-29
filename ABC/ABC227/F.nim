@@ -15,8 +15,6 @@ when not declared ATCODER_YULY3HEADER_HPP:
     sugar,
     tables
 
-  {.warning[UnusedImport]: off.}
-
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -116,4 +114,33 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var
+    H, W, K = nextInt()
+    A: array[31, array[31, int]]
+    uni = initHashSet[int](2^12)
+  for i in 0..<H:
+    for j in 0..<W:
+      A[i][j] = nextInt()
+      uni.incl(A[i][j])
+
+  const INF = 10^18
+  var ans = INF
+  for t in uni:
+    var dp: array[62, array[31, array[31, int]]]
+    for i in 0..H:
+      for j in 0..W:
+        for k in 0..H + W:
+          dp[k][i][j] = INF
+    dp[0][0][1] = 0
+    dp[0][1][0] = 0
+    for i in 1..H:
+      for j in 1..W:
+        for k in 0..H + W:
+          if A[i - 1][j - 1] >= t:
+            dp[k + 1][i][j].chmin(
+              min(dp[k][i - 1][j], dp[k][i][j - 1]) + A[i - 1][j - 1]
+            )
+          if A[i - 1][j - 1] <= t:
+            dp[k][i][j].chmin(min(dp[k][i - 1][j], dp[k][i][j - 1]))
+    ans.chmin(dp[K][H][W])
+  echo ans

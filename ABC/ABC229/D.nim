@@ -15,8 +15,6 @@ when not declared ATCODER_YULY3HEADER_HPP:
     sugar,
     tables
 
-  {.warning[UnusedImport]: off.}
-
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -116,4 +114,17 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var
+    S = nextString()
+    K = nextInt()
+
+  var cnt, left, ans: int
+  for right in 0..<S.len:
+    if S[right] == '.':
+      cnt.inc
+    while cnt > K:
+      if S[left] == '.':
+        cnt.dec
+      left += 1
+    ans.chmax(right - left + 1)
+  echo ans

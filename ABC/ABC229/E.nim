@@ -15,8 +15,6 @@ when not declared ATCODER_YULY3HEADER_HPP:
     sugar,
     tables
 
-  {.warning[UnusedImport]: off.}
-
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -115,5 +113,66 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
+when not declared ATCODER_UNIONFIND_HPP:
+  const ATCODER_UNIONFIND_HPP* = 1
+
+  type
+    UnionFind* = ref object
+      n: Positive
+      cnt: int
+      parents: seq[int]
+
+  proc initUnionFind*(n: Positive): UnionFind =
+    return UnionFind(n: n, cnt: n, parents: newSeqWith(n, -1))
+
+  proc find*(self: var UnionFind, x: Natural): Natural =
+    if self.parents[x] < 0:
+      return x
+    else:
+      self.parents[x] = self.find(self.parents[x])
+      return self.parents[x]
+
+  proc union*(self: var UnionFind, x, y: Natural) =
+    var
+      root_x = self.find(x)
+      root_y = self.find(y)
+
+    if root_x == root_y:
+      return
+    if self.parents[root_y] < self.parents[root_x]:
+      (root_x, root_y) = (root_y, root_x)
+    self.parents[root_x] += self.parents[root_y]
+    self.parents[root_y] = root_x
+    self.cnt.dec
+
+  proc size*(self: var UnionFind, x: Natural): Positive =
+    return -self.parents[self.find(x)]
+
+  proc same*(self: var UnionFind, x, y: Natural): bool =
+    return self.find(x) == self.find(y)
+
+  proc members*(self: var UnionFind, x: Natural): seq[int] =
+    let root = self.find(x)
+    return toSeq(0..<int(self.n)).filterIt(self.find(it) == root)
+
+  proc roots*(self: var UnionFind): seq[int] =
+    return toSeq(0..<int(self.n)).filterIt(self.parents[it] < 0)
+
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  var
+    N, M = nextInt()
+    graph: array[200001, seq[int]]
+  for i in 0..<M:
+    let ai, bi = nextInt() - 1
+    graph[ai].add(bi)
+    graph[bi].add(ai)
+
+  var uf = initUnionFind(N)
+  var ans = newSeq[int](N + 1)
+  for i in countdown(N - 1, 0):
+    for to in graph[i]:
+      if to < i:
+        continue
+      uf.union(i, to)
+    ans[i] = uf.cnt - i
+  echo ans[1..N].join("\n")

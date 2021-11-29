@@ -15,8 +15,6 @@ when not declared ATCODER_YULY3HEADER_HPP:
     sugar,
     tables
 
-  {.warning[UnusedImport]: off.}
-
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
     case n.kind
@@ -115,5 +113,26 @@ when not declared ATCODER_YULY3HEADER_HPP:
   proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
   proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
+proc modPow*(a: int, k: Natural, MOD = 10^9 + 7): int =
+  var
+    a = a
+    k = k
+  result = 1
+  while k > 0:
+    if bitand(k, 1) == 1:
+      result = floorMod(result*a, MOD)
+    a = floorMod(a*a, MOD)
+    k = k shr 1
+
 when isMainModule:
-  echo "Hello, AtCoder!!"
+  const MOD = 998244353
+  var N, K, M = nextInt()
+
+  if M mod MOD == 0:
+    echo 0
+    quit()
+
+  K %= MOD - 1
+  M %= MOD
+  var kpown = modPow(K, N, MOD - 1)
+  echo modPow(M, kpown, MOD)
