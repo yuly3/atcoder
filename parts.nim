@@ -209,11 +209,11 @@ when not declared ATCODER_UNIONFIND_HPP:
   type
     UnionFind* = ref object
       n: Positive
-      cnt: int
+      count: int
       parents: seq[int]
 
   proc initUnionFind*(n: Positive): UnionFind =
-    return UnionFind(n: n, cnt: n, parents: newSeqWith(n, -1))
+    return UnionFind(n: n, count: n, parents: newSeqWith(n, -1))
 
   proc find*(self: var UnionFind, x: Natural): Natural =
     if self.parents[x] < 0:
@@ -233,7 +233,7 @@ when not declared ATCODER_UNIONFIND_HPP:
       (root_x, root_y) = (root_y, root_x)
     self.parents[root_x] += self.parents[root_y]
     self.parents[root_y] = root_x
-    self.cnt.dec
+    self.count.dec
 
   proc size*(self: var UnionFind, x: Natural): Positive =
     return -self.parents[self.find(x)]
@@ -635,8 +635,9 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
       layer0: seq[seq[T]]
       cmpFunc: (T, T) -> int
 
-  proc initSquareSkipList*[T](inf: T, cmpFunc: (T, T) -> int,
-      square = 1000): SquareSkipList[T] =
+  proc initSquareSkipList*[T](
+    inf: T, cmpFunc: (T, T) -> int, square = 500
+  ): SquareSkipList[T] =
     var
       layer1 = @[inf]
       layer0 = newSeqWith(1, newSeq[T]())

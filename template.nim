@@ -16,6 +16,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
     tables
 
   {.warning[UnusedImport]: off.}
+  {.hint[XDeclaredButNotUsed]: off.}
 
   proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
     # Looks for the last statement of the last statement, etc...
@@ -32,14 +33,17 @@ when not declared ATCODER_YULY3HEADER_HPP:
       result[1] = copyNimTree(n)
       result[2] = copyNimTree(n)
       if n.len >= 1:
-        (result[0][^1], result[1][^1], result[2][^1]) = transLastStmt(n[^1],
-            res, bracketExpr)
+        (result[0][^1], result[1][^1], result[2][^1]) = transLastStmt(
+          n[^1], res, bracketExpr
+        )
     of nnkTableConstr:
       result[1] = n[0][0]
       result[2] = n[0][1]
       if bracketExpr.len == 1:
-        bracketExpr.add([newCall(bindSym"typeof", newEmptyNode()), newCall(
-            bindSym"typeof", newEmptyNode())])
+        bracketExpr.add([
+          newCall(bindSym"typeof", newEmptyNode()),
+          newCall(bindSym"typeof", newEmptyNode())
+        ])
       template adder(res, k, v) = res[k] = v
       result[0] = getAst(adder(res, n[0][0], n[0][1]))
     of nnkCurly:
