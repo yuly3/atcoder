@@ -6,7 +6,7 @@ when not declared ATCODER_INTERNAL_CSR_HPP:
   type csr*[E] = object
     start*: seq[int]
     elist*: seq[E]
-  proc initCsr*[E](n:int, edges:seq[(int, E)]):csr[E] =
+  proc initCsr*[E](n: int, edges: seq[(int, E)]): csr[E] =
     var start = newSeq[int](n + 1)
     var elist = newSeq[E](edges.len)
     for e in edges: start[e[0] + 1].inc
@@ -15,35 +15,35 @@ when not declared ATCODER_INTERNAL_CSR_HPP:
     for e in edges:
       elist[counter[e[0]]] = e[1]
       counter[e[0]].inc
-    return csr[E](start:start, elist:elist)
+    return csr[E](start: start, elist: elist)
 
 when not declared ATCODER_INTERNAL_QUEUE_HPP:
   const ATCODER_INTERNAL_QUEUE_HPP* = 1
 
   type simple_queue[T] = object
-    payload:seq[T]
-    pos:int
-  proc init_simple_queue*[T]():auto = simple_queue[T](payload:newSeq[T](), pos:0)
+    payload: seq[T]
+    pos: int
+  proc init_simple_queue*[T](): auto = simple_queue[T](payload: newSeq[T](), pos: 0)
 
-  proc len*[T](self:simple_queue[T]):int = self.payload.len - self.pos
-  proc empty*[T](self:simple_queue[T]):bool = self.pos == self.payload.len
-  proc push*[T](self:var simple_queue[T], t:T) = self.payload.add(t)
-  proc front*[T](self:simple_queue[T]):T = self.payload[self.pos]
-  proc clear*[T](self:var simple_queue[T]) =
+  proc len*[T](self: simple_queue[T]): int = self.payload.len - self.pos
+  proc empty*[T](self: simple_queue[T]): bool = self.pos == self.payload.len
+  proc push*[T](self: var simple_queue[T], t: T) = self.payload.add(t)
+  proc front*[T](self: simple_queue[T]): T = self.payload[self.pos]
+  proc clear*[T](self: var simple_queue[T]) =
     self.payload.setLen(0)
-    self.pos = 0;
-  proc pop*[T](self:var simple_queue[T]) = self.pos.inc
+    self.pos = 0
+  proc pop*[T](self: var simple_queue[T]) = self.pos.inc
 
 when not declared ATCODER_INTERNAL_HEAP:
   const ATCODER_INTERNAL_HEAP* = 1
-  proc push_heap*[T](v: var openArray[T], p:Slice[int]) {.inline.} =
+  proc push_heap*[T](v: var openArray[T], p: Slice[int]) {.inline.} =
     var i = p.b
     while i > 0:
       var p = (i - 1) shr 1
       if v[p] < v[i]: swap v[p], v[i]
       else: break
       i = p
-  proc pop_heap*[T](v: var openArray[T], p:Slice[int]) {.inline.} =
+  proc pop_heap*[T](v: var openArray[T], p: Slice[int]) {.inline.} =
     swap v[0], v[p.b]
     var p = p
     p.b.dec
@@ -83,40 +83,48 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
     cost: Cost
 
   type MCFGraph*[Cap, Cost] = object
-    n:int
-    edges:seq[MCFEdge[Cap, Cost]]
-  
-  proc initMCFGraph*[Cap, Cost](n:int):MCFGraph[Cap, Cost] = result.n = n
-  proc initMinCostFLow*[Cap, Cost](n:int):MCFGraph[Cap, Cost] = result.n = n
+    n: int
+    edges: seq[MCFEdge[Cap, Cost]]
 
-  proc add_edge*[Cap, Cost](self: var MCFGraph[Cap, Cost], src, dst:int, cap:Cap, cost:Cost):int {.discardable.} =
+  proc initMCFGraph*[Cap, Cost](n: int): MCFGraph[Cap, Cost] = result.n = n
+  proc initMinCostFLow*[Cap, Cost](n: int): MCFGraph[Cap, Cost] = result.n = n
+
+  proc add_edge*[Cap, Cost](
+    self: var MCFGraph[Cap, Cost], src, dst: int, cap: Cap, cost: Cost
+  ): int {.discardable.} =
     assert src in 0..<self.n
     assert dst in 0..<self.n
     assert 0 <= cap
     assert 0 <= cost
     var m = self.edges.len
-    self.edges.add(MCFEdge[Cap, Cost](src:src, dst:dst, cap:cap, flow:0, cost:cost))
+    self.edges.add(MCFEdge[Cap, Cost](src: src, dst: dst, cap: cap, flow: 0, cost: cost))
     return m
 
-  proc get_edge*[Cap, Cost](self:MCFGraph[Cap, Cost], i:int): MCFEdge[Cap, Cost] =
+  proc get_edge*[Cap, Cost](self: MCFGraph[Cap, Cost], i: int): MCFEdge[Cap, Cost] =
     let m = self.edges.len
     assert i in 0..<m
     return self.edges[i]
 
-  proc edges*[Cap, Cost](self:var MCFGraph[Cap, Cost]):seq[MCFEdge[Cap, Cost]] = self.edges
+  proc edges*[Cap, Cost](self: var MCFGraph[Cap, Cost]): seq[MCFEdge[Cap, Cost]] =
+    self.edges
   type MCFQ[Cost] = object
-    key:Cost
-    dst:int
-  proc `<`*[Cost](l, r:MCFQ[Cost]):bool = l.key > r.key
+    key: Cost
+    dst: int
+  proc `<`*[Cost](l, r: MCFQ[Cost]): bool = l.key > r.key
 
-  proc slope*[Cap, Cost](self: MCFGraph[Cap, Cost], g:var csr[MCFInternalEdge[Cap, Cost]], s, t:int, flow_limit:Cap):seq[tuple[cap:Cap, cost:Cost]] =
+  proc slope*[Cap, Cost](
+    self: MCFGraph[Cap, Cost],
+    g: var csr[MCFInternalEdge[Cap, Cost]],
+    s, t: int,
+    flow_limit: Cap
+  ): seq[tuple[cap: Cap, cost: Cost]] =
     var
       dual_dist = newSeq[(Cap, Cost)](self.n)
       prev_e = newSeq[int](self.n)
       vis = newSeq[bool](self.n)
       que_min = newSeq[int]()
       que = newSeq[MCFQ[Cost]]()
-    proc dual_ref(g:csr[MCFInternalEdge[Cap, Cost]]):bool =
+    proc dual_ref(g: csr[MCFInternalEdge[Cap, Cost]]): bool =
       for i in 0..<self.n: dual_dist[i][1] = Cost.high
       vis.fill(false)
       que_min.setLen(0)
@@ -127,7 +135,7 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
       dual_dist[s][1] = 0
       que_min.add(s)
       while que_min.len > 0 or que.len > 0:
-        var v:int
+        var v: int
         if que_min.len > 0:
           v = que_min.pop()
         else:
@@ -153,7 +161,7 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
             if dist_to == dist_v:
               que_min.add(e.dst)
             else:
-              que.add(MCFQ[Cost](key:dist_to, dst:e.dst))
+              que.add(MCFQ[Cost](key: dist_to, dst: e.dst))
       if not vis[t]:
         return false
 
@@ -162,9 +170,9 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
         dual_dist[v][0] -= dual_dist[t][1] - dual_dist[v][1]
       return true
     var
-      flow:Cap = 0
-      cost:Cost = 0
-      prev_cost_per_flow:Cost = -1
+      flow: Cap = 0
+      cost: Cost = 0
+      prev_cost_per_flow: Cost = -1
     result = @[(Cap(0), Cost(0))]
     while flow < flow_limit:
       if not g.dual_ref(): break
@@ -189,7 +197,11 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
       result.add((flow, cost))
       prev_cost_per_flow = d
 
-  proc slope*[Cap, Cost](self:var MCFGraph[Cap, Cost], s, t:int, flow_limit:Cap):seq[tuple[cap:Cap, cost:Cost]] =
+  proc slope*[Cap, Cost](
+    self: var MCFGraph[Cap, Cost],
+    s, t: int,
+    flow_limit: Cap
+  ): seq[tuple[cap: Cap, cost: Cost]] =
     assert s in 0..<self.n
     assert t in 0..<self.n
     assert s != t
@@ -207,8 +219,18 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
         degree[e.src].inc
         redge_idx[i] = degree[e.dst]
         degree[e.dst].inc
-        elist.add((e.src, MCFInternalEdge[Cap, Cost](dst: e.dst, rev: -1, cap:e.cap - e.flow, cost:e.cost)))
-        elist.add((e.dst, MCFInternalEdge[Cap, Cost](dst: e.src, rev: -1, cap:e.flow, cost: -e.cost)))
+        elist.add(
+          (
+            e.src,
+            MCFInternalEdge[Cap, Cost](dst: e.dst, rev: -1, cap: e.cap - e.flow, cost: e.cost)
+          )
+        )
+        elist.add(
+          (
+            e.dst,
+            MCFInternalEdge[Cap, Cost](dst: e.src, rev: -1, cap: e.flow, cost: -e.cost)
+          )
+        )
       var g = initCSR[MCFInternalEdge[Cap, Cost]](self.n, elist)
       for i in 0..<m:
         let e = self.edges[i]
@@ -224,6 +246,12 @@ when not declared ATCODER_MINCOSTFLOW_HPP:
       let e = g.elist[edge_idx[i]]
       self.edges[i].flow = self.edges[i].cap - e.cap
 
-  proc flow*[Cap, Cost](self:var MCFGraph[Cap, Cost], s, t:int, flow_limit:Cap):tuple[cap:Cap, cost:Cost] = self.slope(s, t, flow_limit)[^1]
-  proc flow*[Cap, Cost](self:var MCFGraph[Cap, Cost], s, t:int):tuple[cap:Cap, cost:Cost] = self.flow(s, t, Cap.high)
-  proc slope*[Cap, Cost](self:var MCFGraph[Cap, Cost], s, t:int):seq[tuple[cap:Cap, cost:Cost]] = self.slope(s, t, Cap.high)
+  proc flow*[Cap, Cost](
+    self: var MCFGraph[Cap, Cost],
+    s, t: int,
+    flow_limit: Cap
+  ): tuple[cap: Cap, cost: Cost] = self.slope(s, t, flow_limit)[^1]
+  proc flow*[Cap, Cost](self: var MCFGraph[Cap, Cost], s, t: int): tuple[
+      cap: Cap, cost: Cost] = self.flow(s, t, Cap.high)
+  proc slope*[Cap, Cost](self: var MCFGraph[Cap, Cost], s, t: int): seq[tuple[
+      cap: Cap, cost: Cost]] = self.slope(s, t, Cap.high)

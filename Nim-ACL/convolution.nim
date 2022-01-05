@@ -6,22 +6,22 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
   # Reference: https:#en.wikipedia.org/wiki/Barrett_reduction
   # NOTE: reconsider after Ice Lake
   type Barrett* = object
-    m*, im:uint
+    m*, im: uint
 
   # @param m `1 <= m`
-  proc initBarrett*(m:uint):auto = Barrett(m:m, im:(0'u - 1'u) div m + 1)
+  proc initBarrett*(m: uint): auto = Barrett(m: m, im: (0'u - 1'u) div m + 1)
 
   # @return m
-  proc umod*(self: Barrett):uint =
+  proc umod*(self: Barrett): uint =
     self.m
 
   {.emit: """inline unsigned long long calc_mul(const unsigned long long &a, const unsigned long long &b){
   return (unsigned long long)(((unsigned __int128)(a)*b) >> 64);}""".}
-  proc calc_mul*(a,b:culonglong):culonglong {.importcpp: "calc_mul(#,#)", nodecl.}
+  proc calc_mul*(a, b: culonglong): culonglong {.importcpp: "calc_mul(#,#)", nodecl.}
   # @param a `0 <= a < m`
   # @param b `0 <= b < m`
   # @return `a * b % m`
-  proc mul*(self: Barrett, a:uint, b:uint):uint =
+  proc mul*(self: Barrett, a: uint, b: uint): uint =
     # [1] m = 1
     # a = b = im = 0, so okay
 
@@ -49,7 +49,7 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
   # @param n `0 <= n`
   # @param m `1 <= m`
   # @return `(x ** n) % m`
-  proc pow_mod_constexpr*(x,n,m:int):int =
+  proc pow_mod_constexpr*(x, n, m: int): int =
     if m == 1: return 0
     var
       r = 1
@@ -60,12 +60,12 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
       y = (y * y) mod m
       n = n shr 1
     return r.int
-  
+
   # Reference:
   # M. Forisek and J. Jancina,
   # Fast Primality Testing for Integers That Fit into a Machine Word
   # @param n `0 <= n`
-  proc is_prime_constexpr*(n:int):bool =
+  proc is_prime_constexpr*(n: int): bool =
     if n <= 1: return false
     if n == 2 or n == 7 or n == 61: return true
     if n mod 2 == 0: return false
@@ -77,18 +77,18 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
         y = pow_mod_constexpr(a, t, n)
       while t != n - 1 and y != 1 and y != n - 1:
         y = y * y mod n
-        t =  t shl 1
+        t = t shl 1
       if y != n - 1 and t mod 2 == 0:
         return false
     return true
-  proc is_prime*[n:static[int]]():bool = is_prime_constexpr(n)
-  
+  proc is_prime*[n: static[int]](): bool = is_prime_constexpr(n)
+
   # @param b `1 <= b`
   # @return pair(g, x) s.t. g = gcd(a, b), xa = g (mod b), 0 <= x < b/g
-  proc inv_gcd*(a, b:int):(int,int) =
+  proc inv_gcd*(a, b: int): (int, int) =
     var a = floorMod(a, b)
     if a == 0: return (b, 0)
-  
+
     # Contracts:
     # [1] s - m0 * a = 0 (mod b)
     # [2] t - m1 * a = 0 (mod b)
@@ -98,21 +98,21 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
       t = a
       m0 = 0
       m1 = 1
-  
+
     while t != 0:
       var u = s div t
-      s -= t * u;
-      m0 -= m1 * u;  # |m1 * u| <= |m1| * s <= b
+      s -= t * u
+      m0 -= m1 * u # |m1 * u| <= |m1| * s <= b
   
       # [3]:
       # (s - t * u) * |m1| + t * |m0 - m1 * u|
       # <= s * |m1| - t * u * |m1| + t * (|m0| + |m1| * u)
       # = s * |m1| + t * |m0| <= b
-  
+
       var tmp = s
-      s = t;t = tmp;
-      tmp = m0;m0 = m1;m1 = tmp;
-    # by [3]: |m0| <= b/g
+      s = t; t = tmp
+      tmp = m0; m0 = m1; m1 = tmp
+      # by [3]: |m0| <= b/g
     # by g != b: |m0| < b/g
     if m0 < 0: m0 += b div s
     return (s, m0)
@@ -120,13 +120,13 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
   # Compile time primitive root
   # @param m must be prime
   # @return primitive root (and minimum in now)
-  proc primitive_root_constexpr*(m:int):int =
+  proc primitive_root_constexpr*(m: int): int =
     if m == 2: return 1
     if m == 167772161: return 3
     if m == 469762049: return 3
     if m == 754974721: return 11
     if m == 998244353: return 3
-    var divs:array[20, int]
+    var divs: array[20, int]
     divs[0] = 2
     var cnt = 1
     var x = (m - 1) div 2
@@ -151,7 +151,7 @@ when not declared ATCODER_INTERNAL_MATH_HPP:
           break
       if ok: return g
       g.inc
-  proc primitive_root*[m:static[int]]():auto =
+  proc primitive_root*[m: static[int]](): auto =
     primitive_root_constexpr(m)
 
 when not declared ATCODER_INTERNAL_BITOP_HPP:
@@ -159,18 +159,18 @@ when not declared ATCODER_INTERNAL_BITOP_HPP:
 
   import std/bitops
 
-  proc ceil_pow2*(n:SomeInteger):int =
+  proc ceil_pow2*(n: SomeInteger): int =
     var x = 0
     while (1.uint shl x) < n.uint: x.inc
     return x
-  
-  proc bsf*(n:SomeInteger):int =
+
+  proc bsf*(n: SomeInteger): int =
     return countTrailingZeroBits(n)
 
 when not declared ATCODER_ELEMENT_CONCEPTS_HPP:
   const ATCODER_ELEMENT_CONCEPTS_HPP* = 1
-  proc inv*[T:SomeFloat](a:T):auto = T(1) / a
-  proc init*(self:typedesc[SomeFloat], a:SomeNumber):auto = self(a)
+  proc inv*[T: SomeFloat](a: T): auto = T(1) / a
+  proc init*(self: typedesc[SomeFloat], a: SomeNumber): auto = self(a)
   type AdditiveGroupElem* = concept x, y, type T
     x + y
     x - y
@@ -204,14 +204,16 @@ when not declared ATCODER_ELEMENT_CONCEPTS_HPP:
     T(Inf)
 
 when not declared ATCODER_GENERATE_DEFINITIONS_NIM:
-  const ATCODER_GENERATE_DEFINITIONS_NIM* = 1
+  const ATCODER_GENERATE_DEFINITIONS_NIM * = 1
   import std/strformat, std/macros
 
   type hasInv* = concept x
     var t: x
     t.inv()
 
-  template generateDefinitions*(name, l, r, typeObj, typeBase, body: untyped): untyped {.dirty.} =
+  template generateDefinitions*(
+    name, l, r, typeObj, typeBase, body: untyped
+  ): untyped {.dirty.} =
     proc name*(l, r: typeObj): auto {.inline.} =
       type T = l.type
       body
@@ -237,7 +239,7 @@ when not declared ATCODER_GENERATE_DEFINITIONS_NIM:
           if (p and 1'u) != 0'u: result *= m
           m *= m
           p = p shr 1'u
-    proc `^`*[T:name](m: T; p: SomeInteger): T {.inline.} = m.pow(p)
+    proc `^`*[T: name](m: T; p: SomeInteger): T {.inline.} = m.pow(p)
 
   macro generateConverter*(name, from_type, to_type) =
     parseStmt(fmt"""type {name.repr}* = {to_type.repr}{'\n'}converter to{name.repr}OfGenerateConverter*(a:{from_type}):{name.repr} {{.used.}} = {name.repr}.init(a){'\n'}""")
@@ -248,28 +250,28 @@ when not declared ATCODER_MODINT_HPP:
 
   type
     StaticModInt*[M: static[int]] = object
-      a:uint32
+      a: uint32
     DynamicModInt*[T: static[int]] = object
-      a:uint32
+      a: uint32
 
   type ModInt* = StaticModInt or DynamicModInt
 
-  proc isStaticModInt*(T:typedesc):bool = T is StaticModInt
-  proc isDynamicModInt*(T:typedesc):bool = T is DynamicModInt
-  proc isModInt*(T:typedesc):bool = T.isStaticModInt or T.isDynamicModInt
-  proc isStatic*(T:typedesc[ModInt]):bool = T is StaticModInt
-  
-  proc getBarrett*[T:static[int]](t:typedesc[DynamicModInt[T]]):ptr Barrett =
+  proc isStaticModInt*(T: typedesc): bool = T is StaticModInt
+  proc isDynamicModInt*(T: typedesc): bool = T is DynamicModInt
+  proc isModInt*(T: typedesc): bool = T.isStaticModInt or T.isDynamicModInt
+  proc isStatic*(T: typedesc[ModInt]): bool = T is StaticModInt
+
+  proc getBarrett*[T: static[int]](t: typedesc[DynamicModInt[T]]): ptr Barrett =
     var Barrett_of_DynamicModInt {.global.} = initBarrett(998244353.uint)
     return Barrett_of_DynamicModInt.addr
-  proc getMod*[T:static[int]](t:typedesc[DynamicModInt[T]]):uint32 {.inline.} =
+  proc getMod*[T: static[int]](t: typedesc[DynamicModInt[T]]): uint32 {.inline.} =
     (t.getBarrett)[].m.uint32
-  proc setMod*[T:static[int]](t:typedesc[DynamicModInt[T]], M:SomeInteger){.used inline.} =
+  proc setMod*[T: static[int]](t: typedesc[DynamicModInt[T]], M: SomeInteger){.used inline.} =
     (t.getBarrett)[] = initBarrett(M.uint)
 
   proc `$`*(m: ModInt): string {.inline.} = $(m.val())
 
-  template umod*[T:ModInt](self: typedesc[T] or T):uint32 =
+  template umod*[T: ModInt](self: typedesc[T] or T): uint32 =
     when T is typedesc:
       when T is StaticModInt:
         T.M.uint32
@@ -279,33 +281,35 @@ when not declared ATCODER_MODINT_HPP:
         static: assert false
     else: T.umod
 
-  proc `mod`*[T:ModInt](self:typedesc[T] or T):int = T.umod.int
+  proc `mod`*[T: ModInt](self: typedesc[T] or T): int = T.umod.int
 
-  proc init*[T:ModInt](t:typedesc[T], v: SomeInteger or T): auto {.inline.} =
+  proc init*[T: ModInt](t: typedesc[T], v: SomeInteger or T): auto {.inline.} =
     when v is T: return v
     else:
       when v is SomeUnsignedInt:
         if v.uint < T.umod:
-          return T(a:v.uint32)
+          return T(a: v.uint32)
         else:
-          return T(a:(v.uint mod T.umod.uint).uint32)
+          return T(a: (v.uint mod T.umod.uint).uint32)
       else:
         var v = v.int
         if 0 <= v:
-          if v < T.mod: return T(a:v.uint32)
-          else: return T(a:(v mod T.mod).uint32)
+          if v < T.mod: return T(a: v.uint32)
+          else: return T(a: (v mod T.mod).uint32)
         else:
           v = v mod T.mod
           if v < 0: v += T.mod
-          return T(a:v.uint32)
-  proc unit*[T:ModInt](t:typedesc[T] or T):T = T.init(1)
+          return T(a: v.uint32)
+  proc unit*[T: ModInt](t: typedesc[T] or T): T = T.init(1)
 
-  template initModInt*(v: SomeInteger or ModInt; M: static[int] = 1_000_000_007): auto =
+  template initModInt*(
+    v: SomeInteger or ModInt; M: static[int] = 1_000_000_007
+  ): auto =
     StaticModInt[M].init(v)
-  
-  proc raw*[T:ModInt](t:typedesc[T], v:SomeInteger):auto = T(a:v)
 
-  proc inv*[T:ModInt](v:T):T {.inline.} =
+  proc raw*[T: ModInt](t: typedesc[T], v: SomeInteger): auto = T(a: v)
+
+  proc inv*[T: ModInt](v: T): T {.inline.} =
     var
       a = v.a.int
       b = T.mod
@@ -313,25 +317,25 @@ when not declared ATCODER_MODINT_HPP:
       v = 0
     while b > 0:
       let t = a div b
-      a -= t * b;swap(a, b)
-      u -= t * v;swap(u, v)
+      a -= t * b; swap(a, b)
+      u -= t * v; swap(u, v)
     return T.init(u)
 
   proc val*(m: ModInt): int {.inline.} = int(m.a)
 
-  proc `-`*[T:ModInt](m: T): T {.inline.} =
+  proc `-`*[T: ModInt](m: T): T {.inline.} =
     if int(m.a) == 0: return m
-    else: return T(a:m.umod() - m.a)
+    else: return T(a: m.umod() - m.a)
 
-  proc `+=`*[T:ModInt](m: var T; n: SomeInteger | T) {.inline.} =
+  proc `+=`*[T: ModInt](m: var T; n: SomeInteger | T) {.inline.} =
     m.a += T.init(n).a
     if m.a >= T.umod: m.a -= T.umod
 
-  proc `-=`*[T:ModInt](m: var T; n: SomeInteger | T) {.inline.} =
+  proc `-=`*[T: ModInt](m: var T; n: SomeInteger | T) {.inline.} =
     m.a -= T.init(n).a
     if m.a >= T.umod: m.a += T.umod
 
-  proc `*=`*[T:ModInt](m: var T; n: SomeInteger | T) {.inline.} =
+  proc `*=`*[T: ModInt](m: var T; n: SomeInteger | T) {.inline.} =
     when T is StaticModInt:
       m.a = (m.a.uint * T.init(n).a.uint mod T.umod).uint32
     elif T is DynamicModInt:
@@ -339,7 +343,9 @@ when not declared ATCODER_MODINT_HPP:
     else:
       static: assert false
 
-  proc `/=`*[T:ModInt](m: var T; n: SomeInteger | T) {.inline.} =
+  proc `/=`*[T: ModInt](
+    m: var T; n: SomeInteger | T
+  ) {.inline.} =
     m.a = (m.a.uint * T.init(n).inv().a.uint mod T.umod).uint32
 
   generateDefinitions(`+`, m, n, ModInt, SomeInteger):
@@ -388,17 +394,17 @@ when not declared ATCODER_CONVOLUTION_HPP:
 
   import std/math, std/sequtils, std/sugar
 
-  proc butterfly*[mint:FiniteFieldElem](a:var seq[mint]) =
+  proc butterfly*[mint: FiniteFieldElem](a: var seq[mint]) =
     const g = primitive_root[mint.mod]()
     let
       n = a.len
       h = ceil_pow2(n)
     var
       first {.global.} = true
-      sum_e {.global.} :array[30, mint]   # sum_e[i] = ies[0] * ... * ies[i - 1] * es[i]
+      sum_e {.global.}: array[30, mint] # sum_e[i] = ies[0] * ... * ies[i - 1] * es[i]
     if first:
       first = false
-      var es, ies:array[30, mint] # es[i]^(2^(2+i)) == 1
+      var es, ies: array[30, mint] # es[i]^(2^(2+i)) == 1
       let cnt2 = bsf(mint.mod - 1)
       mixin inv, init
       var
@@ -428,8 +434,8 @@ when not declared ATCODER_CONVOLUTION_HPP:
           a[i + offset] = l + r
           a[i + offset + p] = l - r
         now *= sum_e[bsf(not s)]
-  
-  proc butterfly_inv*[mint:FiniteFieldElem](a:var seq[mint]) =
+
+  proc butterfly_inv*[mint: FiniteFieldElem](a: var seq[mint]) =
     mixin val
     const g = primitive_root[mint.mod]()
     let
@@ -437,7 +443,7 @@ when not declared ATCODER_CONVOLUTION_HPP:
       h = ceil_pow2(n)
     var
       first{.global.} = true
-      sum_ie{.global.}:array[30, mint]  # sum_ie[i] = es[0] * ... * es[i - 1] * ies[i]
+      sum_ie{.global.}: array[30, mint] # sum_ie[i] = es[0] * ... * es[i - 1] * ies[i]
     mixin inv, init
     if first:
       first = false
@@ -470,8 +476,8 @@ when not declared ATCODER_CONVOLUTION_HPP:
           a[i + offset] = l + r
           a[i + offset + p] = mint.init((mint.mod + l.val - r.val) * inow.val)
         inow *= sum_ie[bsf(not s)]
-  
-  proc convolution*[mint:FiniteFieldElem](a, b:seq[mint]):seq[mint] =
+
+  proc convolution*[mint: FiniteFieldElem](a, b: seq[mint]): seq[mint] =
     var
       n = a.len
       m = b.len
@@ -499,26 +505,28 @@ when not declared ATCODER_CONVOLUTION_HPP:
     let iz = mint.init(z).inv()
     for i in 0..<n+m-1: a[i] *= iz
     return a
-  
-  proc convolution*[T:SomeInteger](a, b:seq[T], M:static[uint] = 998244353):seq[T] =
+
+  proc convolution*[T: SomeInteger](
+    a, b: seq[T], M: static[uint] = 998244353
+  ): seq[T] =
     let (n, m) = (a.len, b.len)
     if n == 0 or m == 0: return newSeq[T]()
-  
+
     type mint = StaticModInt[M.int]
     static:
       assert mint is FiniteFieldElem
     return convolution(
-      a.map((x:T) => mint.init(x)), 
-      b.map((x:T) => mint.init(x))
-    ).map((x:mint) => T(x.val()))
+      a.map((x: T) => mint.init(x)),
+      b.map((x: T) => mint.init(x))
+    ).map((x: mint) => T(x.val()))
 
-  proc convolution_ll*(a, b:seq[int]):seq[int] =
+  proc convolution_ll*(a, b: seq[int]): seq[int] =
     let (n, m) = (a.len, b.len)
     if n == 0 or m == 0: return newSeq[int]()
     const
-      MOD1:uint = 754974721  # 2^24
-      MOD2:uint = 167772161  # 2^25
-      MOD3:uint = 469762049  # 2^26
+      MOD1: uint = 754974721 # 2^24
+      MOD2: uint = 167772161 # 2^25
+      MOD3: uint = 469762049 # 2^26
       M2M3 = MOD2 * MOD3
       M1M3 = MOD1 * MOD3
       M1M2 = MOD1 * MOD2
@@ -527,12 +535,12 @@ when not declared ATCODER_CONVOLUTION_HPP:
       i1 = inv_gcd((MOD2 * MOD3).int, MOD1.int)[1].uint
       i2 = inv_gcd((MOD1 * MOD3).int, MOD2.int)[1].uint
       i3 = inv_gcd((MOD1 * MOD2).int, MOD3.int)[1].uint
-    
+
     let
       c1 = convolution(a, b, MOD1)
       c2 = convolution(a, b, MOD2)
       c3 = convolution(a, b, MOD3)
-  
+
     var c = newSeq[int](n + m - 1)
     for i in 0..<n + m - 1:
       var x = 0.uint

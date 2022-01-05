@@ -1,12 +1,12 @@
 when not declared ATCODER_INTERNAL_SCC_HPP:
   const ATCODER_INTERNAL_SCC_HPP* = 1
-  
+
   import std/sequtils
-  
+
   type csr[E] = object
-    start:seq[int]
-    elist:seq[E]
-  proc initCsr*[E](n:int, edges:seq[(int,E)]):auto =
+    start: seq[int]
+    elist: seq[E]
+  proc initCsr*[E](n: int, edges: seq[(int, E)]): auto =
     var
       start = newSeq[int](n + 1)
       elist = newSeq[E](edges.len)
@@ -18,25 +18,27 @@ when not declared ATCODER_INTERNAL_SCC_HPP:
     for e in edges:
       elist[counter[e[0]]] = e[1]
       counter[e[0]].inc
-    return csr[E](start:start, elist:elist)
-  
+    return csr[E](start: start, elist: elist)
+
   type edge* = object
-    dst:int
+    dst: int
   # Reference:
   # R. Tarjan,
   # Depth-First Search and Linear Graph Algorithms
   type internal_scc_graph* = object
-    n:int
-    edges:seq[(int,edge)]
+    n: int
+    edges: seq[(int, edge)]
 
-  proc init_internal_scc_graph*(n:int):auto = internal_scc_graph(n:n, edges:newSeq[(int,edge)]())
-  
-  proc num_vertices*(self: internal_scc_graph):int =  self.n
+  proc init_internal_scc_graph*(n: int): auto =
+    internal_scc_graph(n: n, edges: newSeq[(int, edge)]())
 
-  proc add_edge*(self: var internal_scc_graph, src, dst:int) = self.edges.add((src, edge(dst:dst)))
+  proc num_vertices*(self: internal_scc_graph): int = self.n
+
+  proc add_edge*(self: var internal_scc_graph, src, dst: int) = self.edges.add((
+      src, edge(dst: dst)))
 
   # @return pair of (# of scc, scc id)
-  proc scc_ids*(self: internal_scc_graph):(int,seq[int]) =
+  proc scc_ids*(self: internal_scc_graph): (int, seq[int]) =
     var g = initCsr[edge](self.n, self.edges)
     var now_ord, group_num = 0
     var
@@ -44,7 +46,7 @@ when not declared ATCODER_INTERNAL_SCC_HPP:
       low = newSeq[int](self.n)
       ord = newSeqWith(self.n, -1)
       ids = newSeq[int](self.n)
-    proc dfs(v:int) =
+    proc dfs(v: int) =
       low[v] = now_ord
       ord[v] = now_ord
       now_ord.inc
@@ -69,7 +71,7 @@ when not declared ATCODER_INTERNAL_SCC_HPP:
     ids.applyIt(group_num - 1 - it)
     return (group_num, ids)
 
-  proc scc*(self: internal_scc_graph):auto =
+  proc scc*(self: internal_scc_graph): auto =
     let
       ids = self.scc_ids()
       group_num = ids[0]
@@ -83,17 +85,17 @@ when not declared ATCODER_INTERNAL_SCC_HPP:
 
 when not declared ATCODER_SCC_HPP:
   const ATCODER_SCC_HPP* = 1
-  
+
   type SCCGraph* = object
     internal: internal_scc_graph
 
-  proc initSccGraph*(n:int):auto =
-    SCCGraph(internal:init_internal_scc_graph(n))
-  
-  proc add_edge*(self:var SCCgraph, src, dst:int) =
+  proc initSccGraph*(n: int): auto =
+    SCCGraph(internal: init_internal_scc_graph(n))
+
+  proc add_edge*(self: var SCCgraph, src, dst: int) =
     let n = self.internal.num_vertices()
     assert 0 <= src and dst < n
     assert 0 <= dst and dst < n
     self.internal.add_edge(src, dst)
 
-  proc scc*(self:SCCGraph):auto = self.internal.scc()
+  proc scc*(self: SCCGraph): auto = self.internal.scc()

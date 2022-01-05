@@ -1,30 +1,30 @@
 when not declared ATCODER_STRING_HPP:
   const ATCODER_STRING_HPP* = 1
-  
+
   import std/algorithm, std/sequtils
-  
-  proc sa_naive*(s:seq[int]):seq[int] =
+
+  proc sa_naive*(s: seq[int]): seq[int] =
     let n = s.len
     var sa = newSeq[int](n)
-    for i in 0..<n:sa[i] = i
-    sa.sort() do (l, r:int) -> int:
+    for i in 0..<n: sa[i] = i
+    sa.sort() do (l, r: int) -> int:
       if l == r: return 0
       var (l, r) = (l, r)
       while l < n and r < n:
         if s[l] != s[r]: return cmp[int](s[l], s[r])
-        l.inc;r.inc
+        l.inc; r.inc
       return cmp[int](n, l)
     return sa
-  
-  proc sa_doubling*(s:seq[int]):seq[int] =
+
+  proc sa_doubling*(s: seq[int]): seq[int] =
     let n = s.len
     var
       sa, tmp = newSeq[int](n)
       rnk = s
-    for i in 0..<n:sa[i] = i
+    for i in 0..<n: sa[i] = i
     var k = 1
     while k < n:
-      proc cmp0(x, y:int):int =
+      proc cmp0(x, y: int): int =
         if rnk[x] != rnk[y]: return cmp[int](rnk[x], rnk[y])
         let
           rx = if x + k < n: rnk[x + k] else: -1
@@ -37,12 +37,17 @@ when not declared ATCODER_STRING_HPP:
       swap(tmp, rnk)
       k = k shl 1
     return sa
-  
+
   # SA-IS, linear-time suffix array construction
   # Reference:
   # G. Nong, S. Zhang, and W. H. Chan,
   # Two Efficient Algorithms for Linear Time Suffix Array Construction
-  proc sa_is*(s:seq[int], upper:int, THRESHOLD_NAIVE:static[int] = 10, THRESHOLD_DOUBLING:static[int] = 40):seq[int] =
+  proc sa_is*(
+    s: seq[int],
+    upper: int,
+    THRESHOLD_NAIVE: static[int] = 10,
+    THRESHOLD_DOUBLING: static[int] = 40
+  ): seq[int] =
     let n = s.len
     if n == 0: return @[]
     if n == 1: return @[0]
@@ -55,7 +60,7 @@ when not declared ATCODER_STRING_HPP:
       return sa_naive(s)
     if n < THRESHOLD_DOUBLING:
       return sa_doubling(s)
-    
+
     var sa, ls = newSeq[int](n)
     for i in countdown(n - 2, 0):
       ls[i] = if s[i] == s[i + 1]: ls[i + 1] else: (s[i] < s[i + 1]).int
@@ -68,8 +73,8 @@ when not declared ATCODER_STRING_HPP:
     for i in 0..upper:
       sum_s[i] += sum_l[i]
       if i < upper: sum_l[i + 1] += sum_s[i]
-    
-    proc induce(lms:seq[int]):auto =
+
+    proc induce(lms: seq[int]): auto =
       sa.fill(-1)
       var buf = sum_s
       for d in lms:
@@ -90,7 +95,7 @@ when not declared ATCODER_STRING_HPP:
         if v >= 1 and ls[v - 1] != 0:
           buf[s[v - 1] + 1].dec
           sa[buf[s[v - 1] + 1]] = v - 1
-    
+
     var lms_map = newSeqWith(n + 1, -1)
     var m = 0
     for i in 1..<n:
@@ -101,16 +106,16 @@ when not declared ATCODER_STRING_HPP:
     for i in 1..<n:
       if ls[i - 1] == 0 and ls[i] != 0:
         lms.add(i)
-    
+
     induce(lms)
-    
+
     if m != 0:
       var sorted_lms = newSeqOfCap[int](m)
       for v in sa:
         if lms_map[v] != -1: sorted_lms.add(v)
       var
         rec_s = newSeq[int](m)
-        rec_upper = 0;
+        rec_upper = 0
       rec_s[lms_map[sorted_lms[0]]] = 0
       for i in 1..<m:
         var (l, r) = (sorted_lms[i - 1], sorted_lms[i])
@@ -129,41 +134,40 @@ when not declared ATCODER_STRING_HPP:
           if l == n or s[l] != s[r]: same = false
         if not same: rec_upper.inc
         rec_s[lms_map[sorted_lms[i]]] = rec_upper
-      
-      let rec_sa =
-        sa_is[THRESHOLD_NAIVE, THRESHOLD_DOUBLING](rec_s, rec_upper)
-      
+
+      let rec_sa = sa_is[THRESHOLD_NAIVE, THRESHOLD_DOUBLING](rec_s, rec_upper)
+
       for i in 0..<m:
         sorted_lms[i] = lms[rec_sa[i]]
       induce(sorted_lms)
     return sa
-  
-  proc suffix_array*(s:seq[int], upper:int):seq[int] =
+
+  proc suffix_array*(s: seq[int], upper: int): seq[int] =
     assert 0 <= upper
     for d in s:
       assert 0 <= d and d <= upper
     return sa_is(s, upper)
-  
-  proc suffix_array*[T](s:seq[T]):seq[int] =
+
+  proc suffix_array*[T](s: seq[T]): seq[int] =
     let n = s.len
     var idx = newSeq[int](n)
     for i in 0..<n: idx[i] = i
-    idx.sort(proc(l,r:int):int = cmp[int](s[l], s[r]))
+    idx.sort(proc(l, r: int): int = cmp[int](s[l], s[r]))
     var s2 = newSeq[int](n)
     var now = 0
     for i in 0..<n:
       if i != 0 and s[idx[i - 1]] != s[idx[i]]: now.inc
       s2[idx[i]] = now
     return sa_is(s2, now)
-  
-  proc suffix_array*(s:string):seq[int] =
-    return sa_is(s.mapIt(it.int), 255);
-  
+
+  proc suffix_array*(s: string): seq[int] =
+    return sa_is(s.mapIt(it.int), 255)
+
   # Reference:
   # T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
   # Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its
   # Applications
-  proc lcp_array*[T](s:seq[T], sa:seq[int]):seq[int] =
+  proc lcp_array*[T](s: seq[T], sa: seq[int]): seq[int] =
     let n = s.len
     assert n >= 1
     var rnk = newSeq[int](n)
@@ -180,14 +184,15 @@ when not declared ATCODER_STRING_HPP:
         h.inc
       lcp[rnk[i] - 1] = h
     return lcp
-  
-  proc lcp_array*(s:string, sa:seq[int]):seq[int] = lcp_array(s.mapIt(it.int), sa)
-  
+
+  proc lcp_array*(s: string, sa: seq[int]): seq[int] =
+    lcp_array(s.mapIt(it.int), sa)
+
   # Reference:
   # D. Gusfield,
   # Algorithms on Strings, Trees, and Sequences: Computer Science and
   # Computational Biology
-  proc z_algorithm*[T](s:seq[T]):seq[T] =
+  proc z_algorithm*[T](s: seq[T]): seq[T] =
     let n = s.len
     if n == 0: return @[]
     var z = newSeq[int](n)
@@ -200,5 +205,5 @@ when not declared ATCODER_STRING_HPP:
       if j + z[j] < i + z[i]: j = i
     z[0] = n
     return z
-  
-  proc z_algorithm*(s:string):auto = z_algorithm(s.mapIt(it.int))
+
+  proc z_algorithm*(s: string): auto = z_algorithm(s.mapIt(it.int))

@@ -6,8 +6,8 @@ when not declared ATCODER_INTERNAL_QUEUE_HPP:
   type simpleQueue[T] = object
     payload: seq[T]
     pos: int
-  
-  proc initSimpleQueue*[T](): auto = simpleQueue[T](payload: newSeq[T](), pos:0)
+
+  proc initSimpleQueue*[T](): auto = simpleQueue[T](payload: newSeq[T](), pos: 0)
   proc len*[T](self: simpleQueue[T]): int = self.payload.len - self.pos
   proc empty*[T](self: simpleQueue[T]): bool = self.pos == self.payload.len
   proc push*[T](self: var simpleQueue[T], t: T) = self.payload.add(t)
@@ -23,13 +23,14 @@ when not declared ATCODER_MAXFLOW_HPP:
   type edge[Cap] = object
     dst, rev: int
     cap: Cap
-  
+
   type MFGraph*[Cap] = object
     n: int
     pos: seq[(int, int)]
     g: seq[seq[edge[Cap]]]
-  
-  proc initMFGraph*[Cap](n: int): auto = MFGraph[Cap](n: n, g: newSeq[seq[edge[Cap]]](n))
+
+  proc initMFGraph*[Cap](n: int): auto =
+    MFGraph[Cap](n: n, g: newSeq[seq[edge[Cap]]](n))
 
   proc addEdge*[Cap](self: var MFGraph[Cap], src, dst: int, cap: Cap): int {.discardable.} =
     let m = self.pos.len
@@ -45,7 +46,7 @@ when not declared ATCODER_MAXFLOW_HPP:
   type EdgeInfo*[Cap] = object
     src*, dst*: int
     cap*, flow*: Cap
-  
+
   proc getEdge*[Cap](self: MFGraph[Cap], i: int): EdgeInfo[Cap] =
     let
       m = self.pos.len
@@ -58,19 +59,19 @@ when not declared ATCODER_MAXFLOW_HPP:
     result = newSeqOfCap[EdgeInfo[Cap]](m)
     for i in 0..<m:
       result.add(self.getEdge(i))
-  
+
   proc changeEdge*[Cap](self: var MFGraph[Cap], i: int, newCap, newFlow: Cap) =
     var
       e = self.g[self.pos[i][0]][self.pos[i][1]].addr
       re = self.g[e[].dst][e[].rev].addr
     e[].cap = newCap - newFlow
     re[].cap = newFlow
-  
+
   proc flow*[Cap](self: var MFGraph[Cap], s, t: int, flowLimit: Cap): Cap =
     var
       level, iter = newSeq[int](self.n)
       que = initSimpleQueue[int]()
-    
+
     proc bfs(self: MFGraph[Cap]) =
       level.fill(-1)
       level[s] = 0
@@ -84,7 +85,7 @@ when not declared ATCODER_MAXFLOW_HPP:
           level[e.dst] = level[v] + 1
           if e.dst == t: return
           que.push(e.dst)
-    
+
     proc dfs(self: var MFGraph[Cap], v: int, up: Cap): Cap =
       if v == s: return up
       result = Cap(0)
@@ -104,7 +105,7 @@ when not declared ATCODER_MAXFLOW_HPP:
         result += d
         if result == up: break
         i[].inc
-    
+
     var flow = Cap(0)
     while flow < flowLimit:
       self.bfs()

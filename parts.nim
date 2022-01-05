@@ -178,8 +178,9 @@ when not declared ATCODER_ROLLINGHASH_HPP:
     MOD: int
     pw, h: seq[int]
 
-  proc initRollingHash*(s: openArray[int], base = 10007, MOD = (1 shl 61) -
-      1): RollingHash =
+  proc initRollingHash*(
+    s: openArray[int], base = 10007, MOD = (1 shl 61) - 1
+  ): RollingHash =
     var
       pw, h = newSeq[int](s.len + 1)
     pw[0] = 1
@@ -194,8 +195,9 @@ when not declared ATCODER_ROLLINGHASH_HPP:
     RollingHash(MOD: MOD, pw: pw, h: h)
 
   proc slice*(self: var RollingHash, left, right: int): int =
-    return floorMod(self.h[right] - modMul(self.h[left], self.pw[right - left],
-        self.MOD), self.MOD)
+    return floorMod(
+      self.h[right] - modMul(self.h[left], self.pw[right - left], self.MOD), self.MOD
+    )
 
   proc concat*(self: var RollingHash, left1, right1, left2, right2: int): int =
     let
@@ -630,7 +632,7 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
   type
     SquareSkipList*[T] = ref object
       square: Natural
-      rand_y: uint64
+      rand: uint64
       layer1: seq[T]
       layer0: seq[seq[T]]
       cmpFunc: (T, T) -> int
@@ -638,16 +640,18 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
   proc initSquareSkipList*[T](
     inf: T, cmpFunc: (T, T) -> int, square = 500
   ): SquareSkipList[T] =
-    var
-      layer1 = @[inf]
-      layer0 = newSeqWith(1, newSeq[T]())
-    return SquareSkipList[T](square: square, rand_y: 88172645463325252.uint64,
-        layer1: layer1, layer0: layer0, cmpFunc: cmpFunc)
+    return SquareSkipList[T](
+      square: square,
+      rand: 88172645463325252.uint64,
+      layer1: @[inf],
+      layer0: newSeqWith(1, newSeq[T]()),
+      cmpFunc: cmpFunc
+    )
 
   proc add*[T](self: var SquareSkipList[T], x: T) =
-    self.rand_y = xor64(self.rand_y)
+    self.rand = xor64(self.rand)
 
-    if self.rand_y.int mod self.square == 0:
+    if self.rand.int mod self.square == 0:
       let idx1 = self.layer1.upperBound(x, self.cmpFunc)
       self.layer1.insert(@[x], idx1)
       let idx0 = self.layer0[idx1].upperBound(x, self.cmpFunc)
@@ -755,6 +759,12 @@ when not declared ATCODER_SQUARESKIPLIST_HPP:
     elif 1 < self.layer1.len:
       return self.layer1[^2]
     return self.layer1[^1]
+
+  iterator items*[T](self: var SquareSkipList[T]): T =
+    for i, head in self.layer1:
+      for it in self.layer0[i]:
+        yield it
+      yield head
 
 when not declared ATCODER_HLDECOMPOSITION_HPP:
   const ATCODER_HLDECOMPOSITION_HPP* = 1
