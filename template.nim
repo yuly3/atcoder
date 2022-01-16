@@ -4,6 +4,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
   import
     algorithm,
     bitops,
+    complex,
     deques,
     heapqueue,
     math,
