@@ -1,52 +1,157 @@
-import math, sequtils, strutils
+when not declared ATCODER_YULY3HEADER_HPP:
+  const ATCODER_YULY3HEADER_HPP* = 1
 
+  import
+    algorithm,
+    bitops,
+    deques,
+    heapqueue,
+    math,
+    macros,
+    sets,
+    sequtils,
+    strformat,
+    strutils,
+    sugar,
+    tables
 
-type
-    Graph[N: static[int]; T] = array[N, array[N, T]]
+  {.warning[UnusedImport]: off.}
+  {.hint[XDeclaredButNotUsed]: off.}
 
-proc floyd_warshall*(graph: var Graph, n: Natural) =
-    for k in 0..<n:
-        for i in 0..<n:
-            for j in 0..<n:
-                graph[i][j] = min(graph[i][j], graph[i][k] + graph[k][j])
+  proc transLastStmt(n, res, bracketExpr: NimNode): (NimNode, NimNode, NimNode) =
+    # Looks for the last statement of the last statement, etc...
+    case n.kind
+    of nnkIfExpr, nnkIfStmt, nnkTryStmt, nnkCaseStmt:
+      result[0] = copyNimTree(n)
+      result[1] = copyNimTree(n)
+      result[2] = copyNimTree(n)
+      for i in ord(n.kind == nnkCaseStmt)..<n.len:
+        (result[0][i], result[1][^1], result[2][^1]) = transLastStmt(n[i], res, bracketExpr)
+    of nnkStmtList, nnkStmtListExpr, nnkBlockStmt, nnkBlockExpr, nnkWhileStmt,
+        nnkForStmt, nnkElifBranch, nnkElse, nnkElifExpr, nnkOfBranch, nnkExceptBranch:
+      result[0] = copyNimTree(n)
+      result[1] = copyNimTree(n)
+      result[2] = copyNimTree(n)
+      if n.len >= 1:
+        (result[0][^1], result[1][^1], result[2][^1]) = transLastStmt(
+          n[^1], res, bracketExpr
+        )
+    of nnkTableConstr:
+      result[1] = n[0][0]
+      result[2] = n[0][1]
+      if bracketExpr.len == 1:
+        bracketExpr.add([
+          newCall(bindSym"typeof", newEmptyNode()),
+          newCall(bindSym"typeof", newEmptyNode())
+        ])
+      template adder(res, k, v) = res[k] = v
+      result[0] = getAst(adder(res, n[0][0], n[0][1]))
+    of nnkCurly:
+      result[2] = n[0]
+      if bracketExpr.len == 1:
+        bracketExpr.add(newCall(bindSym"typeof", newEmptyNode()))
+      template adder(res, v) = res.incl(v)
+      result[0] = getAst(adder(res, n[0]))
+    else:
+      result[2] = n
+      if bracketExpr.len == 1:
+        bracketExpr.add(newCall(bindSym"typeof", newEmptyNode()))
+      template adder(res, v) = res.add(v)
+      result[0] = getAst(adder(res, n))
 
+  macro collect*(init, body: untyped): untyped =
+    runnableExamples:
+      import sets, tables
+      let data = @["bird", "word"]
+      ## seq:
+      let k = collect(newSeq):
+        for i, d in data.pairs:
+          if i mod 2 == 0: d
+      assert k == @["bird"]
+      ## seq with initialSize:
+      let x = collect(newSeqOfCap(4)):
+        for i, d in data.pairs:
+          if i mod 2 == 0: d
+      assert x == @["bird"]
+      ## HashSet:
+      let y = initHashSet.collect:
+        for d in data.items: {d}
+      assert y == data.toHashSet
+      ## Table:
+      let z = collect(initTable(2)):
+        for i, d in data.pairs: {i: d}
+      assert z == {0: "bird", 1: "word"}.toTable
 
-const INF = 10^18
-var dist, cost: Graph[300, int]
+    let res = genSym(nskVar, "collectResult")
+    expectKind init, {nnkCall, nnkIdent, nnkSym}
+    let bracketExpr = newTree(nnkBracketExpr,
+      if init.kind == nnkCall: init[0] else: init)
+    let (resBody, keyType, valueType) = transLastStmt(body, res, bracketExpr)
+    if bracketExpr.len == 3:
+      bracketExpr[1][1] = keyType
+      bracketExpr[2][1] = valueType
+    else:
+      bracketExpr[1][1] = valueType
+    let call = newTree(nnkCall, bracketExpr)
+    if init.kind == nnkCall:
+      for i in 1 ..< init.len:
+        call.add init[i]
+    result = newTree(nnkStmtListExpr, newVarStmt(res, call), resBody, res)
 
+  proc nextString*(f: auto = stdin): string =
+    var get = false
+    result = ""
+    while true:
+      let c = f.readChar
+      if c.int > ' '.int:
+        get = true
+        result.add(c)
+      elif get: return
+  proc nextInt*(f: auto = stdin): int = parseInt(f.nextString)
+  proc nextFloat*(f: auto = stdin): float = parseFloat(f.nextString)
 
-proc solve() =
-    var N, M, L, a, b, c: int
-    (N, M, L) = stdin.readLine.split.map(parseInt)
-    for i in 0..<N:
-        for j in 0..<N:
-            dist[i][j] = INF
-            cost[i][j] = INF
-    for _ in 0..<M:
-        (a, b, c) = stdin.readLine.split.map(parseInt)
-        dec a; dec b
-        dist[a][b] = c
-        dist[b][a] = c
-    
-    dist.floyd_warshall(N)
-    
-    for i in 0..<N:
-        for j in 0..<N:
-            if dist[i][j] <= L:
-                cost[i][j] = 1
-    
-    cost.floyd_warshall(N)
-    
-    var
-        Q = stdin.readLine.parseInt
-        ans = newSeqWith(Q, -1)
-        s, t: int
-    for i in 0..<Q:
-        (s, t) = stdin.readLine.split.mapIt(it.parseInt - 1)
-        if cost[s][t] != INF:
-            ans[i] = cost[s][t] - 1
-    echo ans.join("\n")
+  proc chmax*[T](n: var T, m: T) {.inline.} = n = max(n, m)
+  proc chmin*[T](n: var T, m: T) {.inline.} = n = min(n, m)
+  proc `%=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = floorMod(n, m)
+  proc `|=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n or m
+  proc `&=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n and m
+  proc `^=`*[T: SomeInteger or bool](n: var T, m: T) {.inline.} = n = n xor m
+  proc `<<=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shl m
+  proc `>>=`*[T: SomeInteger](n: var T, m: T) {.inline.} = n = n shr m
 
+when isMainModule:
+  const INF = 10^18
+  var
+    N, M, L = nextInt()
+    dist: array[301, array[301, int]]
+  for i in 1..N:
+    for j in 1..N:
+      dist[i][j] = INF
+  for i in 0..<M:
+    let ai, bi, ci = nextInt()
+    dist[ai][bi] = ci
+    dist[bi][ai] = ci
 
-when is_main_module:
-    solve()
+  proc floydWarshall() =
+    for m in 1..N:
+      for u in 1..N:
+        for v in 1..N:
+          dist[u][v].chmin(dist[u][m] + dist[m][v])
+
+  floydWarshall()
+  for i in 1..N:
+    for j in 1..N:
+      if dist[i][j] <= L:
+        dist[i][j] = 1
+      else:
+        dist[i][j] = INF
+  floydWarshall()
+
+  let Q = nextInt()
+  var ans = newSeqWith(Q, -1)
+  for i in 0..<Q:
+    let si, ti = nextInt()
+    if dist[si][ti] == INF:
+      continue
+    ans[i] += dist[si][ti]
+  echo ans.join("\n")

@@ -881,15 +881,16 @@ when not declared ATCODER_REROOTING_HPP:
     merge: (T, T) -> T
     ide: T
 
-  proc initRerootingTree*[N: static int, T](op: (T, int, int) -> T, merge: (T,
-      T) -> T, ide: T): RerootingTree[N, T] =
+  proc initRerootingTree*[N: static int, T](
+    op: (T, int, int) -> T, merge: (T, T) -> T, ide: T
+  ): RerootingTree[N, T] =
     return RerootingTree[N, T](order: newSeq[int](), op: op, merge: merge, ide: ide)
 
   proc addEdge*[N: static int, T](self: var RerootingTree[N, T], u, v: int) =
     self.tree[u].add(v)
     self.tree[v].add(u)
 
-  proc topologicalSort*[N: static int, T](self: var RerootingTree[N, T], root: int) =
+  proc topologicalSort[N: static int, T](self: var RerootingTree[N, T], root: int) =
     self.sz.fill(1)
     self.depth.fill(-1)
     self.depth[root] = 0
@@ -910,8 +911,9 @@ when not declared ATCODER_REROOTING_HPP:
           continue
         self.sz[fr] += self.sz[to]
 
-  proc solve*[N: static int, T](self: var RerootingTree[N, T], root = 0): array[
-      0..N - 1, T] =
+  proc solve*[N: static int, T](
+    self: var RerootingTree[N, T], root = 0
+  ): array[0..N - 1, T] =
     self.topologicalSort(root)
     self.dp1.fill(self.ide)
     self.dp2.fill(self.ide)
@@ -935,8 +937,9 @@ when not declared ATCODER_REROOTING_HPP:
 
     for to in self.order[1..^1]:
       self.dp2[to] = self.merge(self.left[to], self.right[to])
-      self.dp2[to] = self.op(self.merge(self.dp2[to], self.dp2[self.parent[
-          to]]), to, self.parent[to])
+      self.dp2[to] = self.op(
+        self.merge(self.dp2[to], self.dp2[self.parent[to]]), to, self.parent[to]
+      )
       self.dp1[to] = self.merge(self.dp1[to], self.dp2[to])
     return self.dp1
 
