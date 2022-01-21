@@ -1106,3 +1106,123 @@ when not declared ATCODER_TREAP_HPP:
 
   proc prev*[T](self: var Treap[T], key: T, incl = false): T {.inline.} =
     return prev(self.root, key, incl).key
+
+when not declared ATCODER_SQUARELIST:
+  const ATCODER_SQUARELIST* = 1
+
+  type SquareList*[T] = object
+    sz: int
+    d: seq[seq[T]]
+    idMin, idMax: () -> T
+
+  const BUCKET_RATIO = 50
+  const REBUILD_RATIO = 170
+
+  iterator items*[T](self: SquareList[T]): T =
+    for i in 0..<self.d.len:
+      for j in 0..<self.d[i].len:
+        yield self.d[i][j]
+
+  proc build[T](self: var SquareList[T]) =
+    let
+      a = toSeq(self.items)
+      bucketCount = sqrt(self.sz.float/BUCKET_RATIO.float).ceil.int
+    self.d = newSeqWith(bucketCount, newSeq[T]())
+    for i in 0..<bucketCount:
+      self.d[i] = a[self.sz*i div bucketCount..<self.sz*(i + 1) div bucketCount]
+
+  proc initSquareList*[T](
+    idMin, idMax: () -> T,
+    a: seq[T] = @[]
+  ): SquareList[T] =
+    var a = a
+    if not issorted(a):
+      a.sort()
+    var d: seq[seq[T]]
+    if a.len > 0:
+      d.add(a)
+    result = SquareList[T](sz: a.len, d: d, idMin: idMin, idMax: idMax)
+    result.build
+
+  proc len*[T](self: SquareList[T]): int {.inline.} = self.sz
+
+  proc findBucket[T](self: var SquareList, x: T): ptr seq[T] =
+    for i in 0..<self.d.len:
+      if x <= self.d[i][^1]:
+        return self.d[i].addr
+    return self.d[^1].addr
+
+  proc contains*[T](self: var SquareList[T], x: T): bool =
+    if self.sz == 0: return false
+    var
+      a = self.findBucket(x)
+      i = a[].lowerBound(x)
+    return i != a[].len and a[][i] == x
+
+  proc index*[T](self: SquareList[T], x: T): int =
+    for i in 0..<self.d.len:
+      if self.d[i][^1] >= x:
+        return result + self.d[i].lowerBound(x)
+      result += self.d[i].len
+  proc indexRight*[T](self: SquareList[T], x: T): int =
+    for i in 0..<self.d.len:
+      if self.d[i][^1] > x:
+        return result + self.d[i].lowerBound(x)
+      result += self.d[i].len
+
+  proc count*[T](self: SquareList, x: T): int {.inline.} =
+    self.indexRight(x) - self.index(x)
+
+  proc incl*[T](self: var SquareList[T], x: T) =
+    if self.sz == 0:
+      self.d = @[@[x]]
+      self.sz = 1
+      return
+    var
+      a = self.findBucket(x)
+      i = a[].lowerBound(x)
+    a[].insert(@[x], i)
+    self.sz.inc
+    if a[].len > self.d.len*REBUILD_RATIO:
+      self.build
+
+  proc excl*[T](self: var SquareList[T], x: T): bool {.discardable.} =
+    if self.sz == 0: return false
+    var
+      a = self.findBucket(x)
+      i = a[].lowerBound(x)
+    if i == a[].len or a[][i] != x: return false
+    a[].del(i)
+    self.sz.dec
+    if a[].len == 0: self.build
+    return true
+
+  proc prev*[T](self: SquareList[T], x: T): T =
+    for i in countdown(self.d.len - 1, 0):
+      if self.d[i][0] <= x:
+        return self.d[i][self.d[i].lowerBound(x) - 1]
+    return self.idMin()
+  proc prevEqual*[T](self: SquareList[T], x: T): T =
+    for i in countdown(self.d.len - 1, 0):
+      if self.d[i][0] <= x:
+        return self.d[i][self.d[i].upperBound(x) - 1]
+    return self.idMin()
+  proc next*[T](self: SquareList[T], x: T): T =
+    for i in 0..<self.d.len:
+      if self.d[i][^1] > x:
+        return self.d[i][self.d[i].upperBound(x)]
+    return self.idMax()
+  proc nextEqual*[T](self: SquareList[T], x: T): T =
+    for i in 0..<self.d.len:
+      if self.d[i][^1] > x:
+        return self.d[i][self.d[i].lowerBound(x)]
+    return self.idMax()
+
+  proc `[]`*[T](self: SquareList[T], k: int): T =
+    var k = k
+    if k < 0: k += self.sz
+    assert k >= 0
+    for i in 0..<self.d.len:
+      if k < self.d[i].len: return self.d[i][k]
+      k -= self.d[i].len
+    assert false
