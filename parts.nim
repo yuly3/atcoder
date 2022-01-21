@@ -1115,8 +1115,9 @@ when not declared ATCODER_SQUARELIST:
     d: seq[seq[T]]
     idMin, idMax: () -> T
 
-  const BUCKET_RATIO = 50
-  const REBUILD_RATIO = 170
+  const
+    BUCKET_RATIO = 4
+    REBUILD_RATIO = 12
 
   iterator items*[T](self: SquareList[T]): T =
     for i in 0..<self.d.len:
