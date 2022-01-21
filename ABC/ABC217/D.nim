@@ -311,7 +311,7 @@ when isMainModule:
   var L, Q = nextInt()
 
   var
-    sl = initSquareList(() => 0, () => L, @[0, L])
+    sl = initSquareList(() => 0, () => L)
     ans: seq[int]
   for _ in 0..<Q:
     let ci, xi = nextInt()
