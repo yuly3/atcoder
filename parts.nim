@@ -1200,7 +1200,7 @@ when not declared ATCODER_SQUARELIST:
 
   proc prev*[T](self: SquareList[T], x: T): T =
     for i in countdown(self.d.len - 1, 0):
-      if self.d[i][0] <= x:
+      if self.d[i][0] < x:
         return self.d[i][self.d[i].lowerBound(x) - 1]
     return self.idMin()
   proc prevEqual*[T](self: SquareList[T], x: T): T =
@@ -1215,7 +1215,7 @@ when not declared ATCODER_SQUARELIST:
     return self.idMax()
   proc nextEqual*[T](self: SquareList[T], x: T): T =
     for i in 0..<self.d.len:
-      if self.d[i][^1] > x:
+      if self.d[i][^1] >= x:
         return self.d[i][self.d[i].lowerBound(x)]
     return self.idMax()
 
