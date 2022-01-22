@@ -256,10 +256,7 @@ when not declared ATCODER_BINOMIAL_COEFFICIENTS_HPP:
   type BinomialCoefficients*[N, M: static int] = object
     fact, factInv, inv: array[0..N - 1, int]
 
-  proc initBinomialCoefficients*(N, M: static int): BinomialCoefficients[N, M] =
-    return BinomialCoefficients[N, M]()
-
-  proc preprocess*[N, M: static int](self: var BinomialCoefficients[N, M]) =
+  proc init*[N, M: static int](self: var BinomialCoefficients[N, M]) =
     self.fact[0] = 1; self.fact[1] = 1
     self.factInv[0] = 1; self.factInv[1] = 1
     self.inv[1] = 1
