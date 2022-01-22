@@ -38,13 +38,15 @@ when not declared ATCODER_LAZYSEGTREE_HPP:
     block:
       let e = ST.p.e
       e()
-  template calc_mapping[ST: LazySegTree](self: typedesc[ST], a: ST.F,
-      b: ST.S): auto =
+  template calc_mapping[ST: LazySegTree](
+    self: typedesc[ST], a: ST.F, b: ST.S
+  ): auto =
     block:
       let mapping = ST.p.mapping
       mapping(a, b)
-  template calc_composition[ST: LazySegTree](self: typedesc[ST], a,
-      b: ST.F): auto =
+  template calc_composition[ST: LazySegTree](
+    self: typedesc[ST], a, b: ST.F
+  ): auto =
     block:
       let composition = ST.p.composition
       composition(a, b)
