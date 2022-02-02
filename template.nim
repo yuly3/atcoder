@@ -18,6 +18,7 @@ when not declared ATCODER_YULY3HEADER_HPP:
 
   {.warning[UnusedImport]: off.}
   {.hint[XDeclaredButNotUsed]: off.}
+  {.hint[Processing]: off.}
 
   proc freshIdentNodes(ast: NimNode): NimNode =
     # Replace NimIdent and NimSym by a fresh ident node
